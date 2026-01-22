@@ -10,8 +10,8 @@ const footerLinks = [
 
 const socialLinks = [
   { label: "X", href: "#" },
-  { label: "Instagram", href: "#" },
-  { label: "TikTok", href: "#" },
+  { label: "IG", href: "#" },
+  { label: "TT", href: "#" },
 ];
 
 export const Footer = () => {
@@ -27,7 +27,7 @@ export const Footer = () => {
         <div className="flex flex-col md:flex-row items-center justify-between gap-8">
           <div className="flex items-center gap-3">
             <XenithLogo size="sm" />
-            <span className="font-serif text-lg">Xenith</span>
+            <span className="font-chomsky text-2xl">Xenith</span>
           </div>
 
           <nav className="flex flex-wrap justify-center gap-6">
@@ -42,14 +42,14 @@ export const Footer = () => {
             ))}
           </nav>
 
-          <div className="flex gap-4">
+          <div className="flex gap-3">
             {socialLinks.map((link) => (
               <a
                 key={link.label}
                 href={link.href}
-                className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center text-sm font-medium hover:bg-foreground hover:text-background transition-colors"
+                className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center text-xs font-medium hover:bg-foreground hover:text-background transition-all duration-200"
               >
-                {link.label[0]}
+                {link.label}
               </a>
             ))}
           </div>

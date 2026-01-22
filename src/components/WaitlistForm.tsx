@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, Check, Loader2 } from "lucide-react";
+import { ArrowRight, Check, Loader2, Sparkles } from "lucide-react";
 
 interface WaitlistFormProps {
   variant?: "hero" | "footer";
@@ -56,13 +56,13 @@ export const WaitlistForm = ({ variant = "hero" }: WaitlistFormProps) => {
             }}
             placeholder="Enter your email"
             disabled={status === "loading" || status === "success"}
-            className="w-full px-4 py-3 bg-background border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-foreground/20 transition-all duration-200 disabled:opacity-50"
+            className="w-full px-5 py-4 bg-card border border-border rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-foreground/20 focus:border-foreground/30 transition-all duration-200 disabled:opacity-50"
           />
         </div>
         <motion.button
           type="submit"
           disabled={status === "loading" || status === "success"}
-          className="px-6 py-3 bg-primary text-primary-foreground font-medium rounded-lg flex items-center justify-center gap-2 hover:opacity-90 transition-opacity duration-200 disabled:opacity-50"
+          className="px-6 py-4 bg-foreground text-background font-medium rounded-xl flex items-center justify-center gap-2 hover:opacity-90 transition-all duration-200 disabled:opacity-50 shadow-lg hover:shadow-xl"
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
         >
@@ -113,13 +113,14 @@ export const WaitlistForm = ({ variant = "hero" }: WaitlistFormProps) => {
           </motion.p>
         )}
         {status === "success" && (
-          <motion.p
+          <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mt-3 text-sm text-muted-foreground"
+            className="mt-4 flex items-center justify-center gap-2 text-sm text-muted-foreground"
           >
-            We'll notify you when Xenith launches. 🎉
-          </motion.p>
+            <Sparkles className="w-4 h-4" />
+            <span>We'll notify you when Xenith launches.</span>
+          </motion.div>
         )}
       </AnimatePresence>
     </form>

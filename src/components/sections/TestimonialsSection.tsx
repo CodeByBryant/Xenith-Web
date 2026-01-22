@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-import { Quote } from "lucide-react";
 
 const testimonials = [
   {
@@ -39,7 +38,7 @@ const itemVariants = {
 
 export const TestimonialsSection = () => {
   return (
-    <section className="py-32 px-6 bg-secondary/30">
+    <section className="py-32 px-6 bg-foreground text-background">
       <div className="container mx-auto max-w-5xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -48,10 +47,10 @@ export const TestimonialsSection = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <h2 className="text-3xl md:text-4xl font-serif font-medium mb-4">
+          <h2 className="text-3xl md:text-5xl font-serif font-medium mb-4">
             Early believers
           </h2>
-          <p className="text-muted-foreground max-w-lg mx-auto">
+          <p className="text-background/60 max-w-lg mx-auto text-lg">
             What our beta community is saying.
           </p>
         </motion.div>
@@ -67,15 +66,17 @@ export const TestimonialsSection = () => {
             <motion.div
               key={index}
               variants={itemVariants}
-              className="bg-card border border-border rounded-xl p-8 relative"
+              className="bg-background/5 border border-background/10 rounded-2xl p-8 relative hover:bg-background/10 transition-colors duration-300"
             >
-              <Quote className="w-8 h-8 text-muted-foreground/30 absolute top-6 right-6" />
-              <p className="text-lg font-serif leading-relaxed mb-6">
-                "{testimonial.quote}"
+              <div className="font-chomsky text-6xl text-background/20 absolute top-4 left-6">
+                "
+              </div>
+              <p className="text-lg font-serif leading-relaxed mb-6 pt-8">
+                {testimonial.quote}
               </p>
               <div>
                 <p className="font-medium text-sm">{testimonial.author}</p>
-                <p className="text-muted-foreground text-sm">{testimonial.role}</p>
+                <p className="text-background/60 text-sm">{testimonial.role}</p>
               </div>
             </motion.div>
           ))}

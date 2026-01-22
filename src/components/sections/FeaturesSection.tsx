@@ -54,7 +54,7 @@ const itemVariants = {
 
 export const FeaturesSection = () => {
   return (
-    <section id="features" className="py-32 px-6">
+    <section id="features" className="py-32 px-6 bg-secondary/30">
       <div className="container mx-auto max-w-5xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -63,10 +63,10 @@ export const FeaturesSection = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <h2 className="text-3xl md:text-4xl font-serif font-medium mb-4">
-            Everything you need. Nothing you don't.
+          <h2 className="text-3xl md:text-5xl font-serif font-medium mb-4">
+            Everything you need. <span className="text-muted-foreground">Nothing you don't.</span>
           </h2>
-          <p className="text-muted-foreground max-w-lg mx-auto">
+          <p className="text-muted-foreground max-w-lg mx-auto text-lg">
             Thoughtfully crafted features that work together seamlessly.
           </p>
         </motion.div>
@@ -76,16 +76,16 @@ export const FeaturesSection = () => {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
-          className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"
+          className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4"
         >
-          {features.map((feature) => (
+          {features.map((feature, index) => (
             <motion.div
               key={feature.title}
               variants={itemVariants}
-              className="group p-6 rounded-xl border border-transparent hover:border-border hover:bg-card transition-all duration-300"
+              className="group p-6 rounded-2xl glass hover-lift cursor-default"
             >
-              <div className="w-10 h-10 bg-secondary rounded-lg flex items-center justify-center mb-4 group-hover:bg-foreground group-hover:text-background transition-colors duration-300">
-                <feature.icon className="w-5 h-5" />
+              <div className="w-12 h-12 bg-foreground text-background rounded-xl flex items-center justify-center mb-4 group-hover:rotate-6 transition-transform duration-300">
+                <feature.icon className="w-6 h-6" />
               </div>
               <h3 className="text-lg font-serif font-medium mb-2">{feature.title}</h3>
               <p className="text-muted-foreground text-sm leading-relaxed">
