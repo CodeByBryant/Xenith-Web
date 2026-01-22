@@ -4,40 +4,58 @@ import { WaitlistForm } from "../WaitlistForm";
 
 export const HeroSection = () => {
   return (
-    <section className="min-h-screen flex items-center justify-center pt-16 px-6">
-      <div className="container mx-auto max-w-4xl text-center">
+    <section className="min-h-screen flex items-center justify-center pt-16 px-6 relative overflow-hidden">
+      {/* Animated background grid */}
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.02)_1px,transparent_1px)] dark:bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:60px_60px]" />
+      
+      {/* Radial gradient overlay */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,hsl(var(--background))_70%)]" />
+
+      <div className="container mx-auto max-w-5xl text-center relative z-10">
         <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
+          initial={{ opacity: 0, scale: 0.5 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-          className="mb-8"
+          transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
+          className="mb-6"
         >
-          <XenithLogo size="xl" />
+          <XenithLogo size="hero" animated />
         </motion.div>
 
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2, duration: 0.5 }}
-          className="text-sm font-sans uppercase tracking-[0.2em] text-muted-foreground mb-6"
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4, duration: 0.6 }}
+          className="flex items-center justify-center gap-4 md:gap-8 mb-8"
         >
-          Intentional living. Meaningful progress.
-        </motion.p>
+          <span className="text-xs md:text-sm font-sans uppercase tracking-[0.3em] text-foreground font-medium">
+            Discipline
+          </span>
+          <span className="w-1 h-1 rounded-full bg-foreground" />
+          <span className="text-xs md:text-sm font-sans uppercase tracking-[0.3em] text-foreground font-medium">
+            Intention
+          </span>
+          <span className="w-1 h-1 rounded-full bg-foreground" />
+          <span className="text-xs md:text-sm font-sans uppercase tracking-[0.3em] text-foreground font-medium">
+            Execution
+          </span>
+        </motion.div>
 
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.6 }}
-          className="text-4xl sm:text-5xl md:text-6xl font-serif font-medium leading-tight mb-6 text-balance"
+          transition={{ delay: 0.5, duration: 0.6 }}
+          className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-medium leading-tight mb-6 text-balance"
         >
-          Your journey to intentional living starts here
+          Your journey to intentional living
+          <br />
+          <span className="text-muted-foreground">starts here</span>
         </motion.h1>
 
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4, duration: 0.6 }}
-          className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 font-sans"
+          transition={{ delay: 0.6, duration: 0.6 }}
+          className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto mb-12 font-sans"
         >
           A minimalist productivity platform for students and young professionals. 
           Track intentions, build sustainable routines, and grow across all dimensions of life.
@@ -46,7 +64,7 @@ export const HeroSection = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 0.6 }}
+          transition={{ delay: 0.7, duration: 0.6 }}
           className="flex flex-col items-center"
         >
           <WaitlistForm variant="hero" />
@@ -54,20 +72,24 @@ export const HeroSection = () => {
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.7, duration: 0.5 }}
+            transition={{ delay: 0.9, duration: 0.5 }}
             className="mt-4 text-sm text-muted-foreground"
           >
-            Join 2,000+ students already signed up
+            Join <span className="font-medium text-foreground">2,000+</span> students already signed up
           </motion.p>
         </motion.div>
 
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1, duration: 0.8 }}
-          className="mt-20"
+          transition={{ delay: 1.2, duration: 0.8 }}
+          className="mt-24"
         >
-          <div className="w-px h-16 bg-border mx-auto" />
+          <motion.div 
+            animate={{ y: [0, 8, 0] }}
+            transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+            className="w-px h-16 bg-gradient-to-b from-foreground/50 to-transparent mx-auto"
+          />
           <p className="text-xs uppercase tracking-widest text-muted-foreground mt-4">
             Scroll to explore
           </p>

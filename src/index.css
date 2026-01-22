@@ -1,8 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Chomsky&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Xenith Design System - Premium Monochrome Aesthetic */
+/* Xenith Design System - Premium Bold Aesthetic */
 
 @layer base {
   :root {
@@ -44,6 +46,9 @@
     --text-primary: 0 0% 4%;
     --text-secondary: 0 0% 35%;
     --text-tertiary: 0 0% 55%;
+    
+    /* Glow effect */
+    --glow: 0 0% 60%;
   }
 
   .dark {
@@ -81,6 +86,8 @@
     --text-primary: 0 0% 98%;
     --text-secondary: 0 0% 70%;
     --text-tertiary: 0 0% 50%;
+    
+    --glow: 0 0% 40%;
   }
 }
 
@@ -111,8 +118,48 @@
   .font-sans {
     font-family: 'Inter', system-ui, sans-serif;
   }
+  
+  .font-chomsky {
+    font-family: 'Chomsky', serif;
+  }
 
   .text-balance {
     text-wrap: balance;
+  }
+  
+  .text-glow {
+    text-shadow: 0 0 40px hsl(var(--glow) / 0.5), 0 0 80px hsl(var(--glow) / 0.3);
+  }
+  
+  .glass {
+    @apply bg-card/60 backdrop-blur-xl border border-border/50;
+  }
+  
+  .gradient-text {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-foreground via-muted-foreground to-foreground;
+  }
+  
+  .shimmer {
+    background: linear-gradient(
+      90deg,
+      hsl(var(--muted)) 0%,
+      hsl(var(--background)) 50%,
+      hsl(var(--muted)) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+  }
+  
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+  
+  .hover-lift {
+    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-xl;
+  }
+  
+  .glow-border {
+    box-shadow: 0 0 20px hsl(var(--glow) / 0.2), inset 0 0 20px hsl(var(--glow) / 0.05);
   }
 }
