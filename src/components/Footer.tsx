@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-import { XenithLogo } from "./XenithLogo";
 
 const footerLinks = [
   { label: "About", href: "#" },
@@ -21,15 +20,22 @@ export const Footer = () => {
       whileInView={{ opacity: 1 }}
       viewport={{ once: true }}
       transition={{ duration: 0.6 }}
-      className="py-16 px-6 border-t border-border"
+      className="py-12 px-6 border-t border-border bg-background"
     >
-      <div className="container mx-auto max-w-5xl">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+      <div className="container mx-auto max-w-6xl">
+        <div className="grid md:grid-cols-3 gap-8 items-center">
+          {/* Logo */}
           <div className="flex items-center gap-3">
-            <XenithLogo size="sm" />
-            <span className="font-chomsky text-2xl">Xenith</span>
+            <span className="font-chomsky text-4xl text-foreground leading-none">X</span>
+            <div>
+              <span className="font-chomsky text-xl text-foreground block">Xenith</span>
+              <span className="text-xs text-muted-foreground tracking-widest uppercase">
+                Discipline • Intention • Execution
+              </span>
+            </div>
           </div>
 
+          {/* Links */}
           <nav className="flex flex-wrap justify-center gap-6">
             {footerLinks.map((link) => (
               <a
@@ -42,7 +48,8 @@ export const Footer = () => {
             ))}
           </nav>
 
-          <div className="flex gap-3">
+          {/* Social */}
+          <div className="flex justify-center md:justify-end gap-2">
             {socialLinks.map((link) => (
               <a
                 key={link.label}
@@ -55,9 +62,12 @@ export const Footer = () => {
           </div>
         </div>
 
-        <div className="mt-12 pt-8 border-t border-border text-center">
+        <div className="mt-12 pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-sm text-muted-foreground">
             © 2026 Xenith. All rights reserved.
+          </p>
+          <p className="text-xs text-muted-foreground/60">
+            Built for the ambitious. By the ambitious.
           </p>
         </div>
       </div>
