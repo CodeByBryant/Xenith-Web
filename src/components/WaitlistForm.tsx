@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, Check, Loader2, Sparkles } from "lucide-react";
+import { ArrowRight, Check, Loader2 } from "lucide-react";
 
 interface WaitlistFormProps {
   variant?: "hero" | "footer";
@@ -18,10 +18,10 @@ export const WaitlistForm = ({ variant = "hero" }: WaitlistFormProps) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateEmail(email)) {
       setStatus("error");
-      setErrorMessage("Please enter a valid email address");
+      setErrorMessage("Enter a valid email");
       return;
     }
 
@@ -41,11 +41,11 @@ export const WaitlistForm = ({ variant = "hero" }: WaitlistFormProps) => {
     setEmail("");
   };
 
-  const isHero = variant === "hero";
+  const isFooter = variant === "footer";
 
   return (
-    <form onSubmit={handleSubmit} className="w-full max-w-md">
-      <div className={`flex ${isHero ? "flex-col sm:flex-row" : "flex-col"} gap-3`}>
+    <form onSubmit={handleSubmit} className="w-full">
+      <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
           <input
             type="email"
@@ -54,15 +54,23 @@ export const WaitlistForm = ({ variant = "hero" }: WaitlistFormProps) => {
               setEmail(e.target.value);
               if (status === "error") setStatus("idle");
             }}
-            placeholder="Enter your email"
+            placeholder="your@email.com"
             disabled={status === "loading" || status === "success"}
-            className="w-full px-5 py-4 bg-card border border-border rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-foreground/20 focus:border-foreground/30 transition-all duration-200 disabled:opacity-50"
+            className={`w-full px-5 py-4 rounded-xl text-sm font-medium transition-all duration-200 disabled:opacity-50 focus:outline-none focus:ring-2 ${
+              isFooter
+                ? "bg-background/10 border border-background/20 text-background placeholder:text-background/40 focus:ring-background/30 focus:border-background/40"
+                : "bg-secondary border border-border text-foreground placeholder:text-muted-foreground focus:ring-foreground/20 focus:border-foreground/30"
+            }`}
           />
         </div>
         <motion.button
           type="submit"
           disabled={status === "loading" || status === "success"}
-          className="px-6 py-4 bg-foreground text-background font-medium rounded-xl flex items-center justify-center gap-2 hover:opacity-90 transition-all duration-200 disabled:opacity-50 shadow-lg hover:shadow-xl"
+          className={`px-6 py-4 font-medium rounded-xl flex items-center justify-center gap-2 transition-all duration-200 disabled:opacity-50 ${
+            isFooter
+              ? "bg-background text-foreground hover:bg-background/90"
+              : "bg-foreground text-background hover:opacity-90"
+          }`}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
         >
@@ -84,7 +92,7 @@ export const WaitlistForm = ({ variant = "hero" }: WaitlistFormProps) => {
                 className="flex items-center gap-2"
               >
                 <Check className="w-5 h-5" />
-                <span>You're in!</span>
+                <span>You're in</span>
               </motion.div>
             ) : (
               <motion.div
@@ -93,7 +101,7 @@ export const WaitlistForm = ({ variant = "hero" }: WaitlistFormProps) => {
                 animate={{ opacity: 1 }}
                 className="flex items-center gap-2"
               >
-                <span>Join the Waitlist</span>
+                <span>Join Waitlist</span>
                 <ArrowRight className="w-4 h-4" />
               </motion.div>
             )}
@@ -107,20 +115,19 @@ export const WaitlistForm = ({ variant = "hero" }: WaitlistFormProps) => {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="mt-2 text-sm text-destructive"
+            className={`mt-2 text-sm ${isFooter ? "text-red-400" : "text-destructive"}`}
           >
             {errorMessage}
           </motion.p>
         )}
         {status === "success" && (
-          <motion.div
+          <motion.p
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mt-4 flex items-center justify-center gap-2 text-sm text-muted-foreground"
+            className={`mt-3 text-sm ${isFooter ? "text-background/60" : "text-muted-foreground"}`}
           >
-            <Sparkles className="w-4 h-4" />
-            <span>We'll notify you when Xenith launches.</span>
-          </motion.div>
+            We'll notify you when Xenith launches.
+          </motion.p>
         )}
       </AnimatePresence>
     </form>
