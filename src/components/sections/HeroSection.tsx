@@ -46,9 +46,9 @@ export const HeroSection = () => {
           transition={{ delay: 0.5, duration: 0.6 }}
           className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-medium leading-tight mb-6 text-balance"
         >
-          Your journey to intentional living
+          Stop drifting.
           <br />
-          <span className="text-muted-foreground">starts here</span>
+          <span className="text-muted-foreground">Start executing.</span>
         </motion.h1>
 
         <motion.p
@@ -57,8 +57,8 @@ export const HeroSection = () => {
           transition={{ delay: 0.6, duration: 0.6 }}
           className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto mb-12 font-sans"
         >
-          A minimalist productivity platform for students and young professionals. 
-          Track intentions, build sustainable routines, and grow across all dimensions of life.
+          A no-nonsense productivity system for students and ambitious professionals. 
+          Set intentions. Track progress. Build the discipline to dominate every dimension of your life.
         </motion.p>
 
         <motion.div
