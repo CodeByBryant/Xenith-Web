@@ -1,4 +1,5 @@
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { useRef } from "react";
 
 const audiences = [
   {
@@ -25,12 +26,23 @@ const audiences = [
 ];
 
 export const AudienceSection = () => {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"],
+  });
+
+  const xMove = useTransform(scrollYProgress, [0, 1], ["-10%", "10%"]);
+
   return (
-    <section className="py-32 md:py-48 px-6 relative overflow-hidden">
-      {/* Background X */}
-      <div className="absolute top-1/2 left-0 -translate-y-1/2 -translate-x-1/3 font-chomsky text-[60vw] text-foreground/[0.02] pointer-events-none select-none leading-none">
+    <section ref={sectionRef} className="py-32 md:py-48 px-6 relative overflow-hidden">
+      {/* Animated Background X */}
+      <motion.div
+        style={{ x: xMove }}
+        className="absolute top-1/2 left-0 -translate-y-1/2 -translate-x-1/3 font-chomsky text-[60vw] text-foreground/[0.02] pointer-events-none select-none leading-none"
+      >
         X
-      </div>
+      </motion.div>
 
       <div className="container mx-auto max-w-6xl relative">
         {/* Section header */}
@@ -44,7 +56,13 @@ export const AudienceSection = () => {
           <span className="text-xs uppercase tracking-[0.4em] text-muted-foreground font-sans whitespace-nowrap">
             Who It's For
           </span>
-          <div className="h-px flex-1 bg-border" />
+          <motion.div
+            initial={{ scaleX: 0 }}
+            whileInView={{ scaleX: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1, delay: 0.3 }}
+            className="h-px flex-1 bg-border origin-left"
+          />
         </motion.div>
 
         <motion.div
@@ -61,7 +79,7 @@ export const AudienceSection = () => {
           </h2>
         </motion.div>
 
-        {/* Audience cards - Horizontal scroll on mobile, grid on desktop */}
+        {/* Audience cards */}
         <div className="grid md:grid-cols-3 gap-6">
           {audiences.map((audience, index) => (
             <motion.div
@@ -70,34 +88,54 @@ export const AudienceSection = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 0.6, delay: index * 0.15 }}
+              whileHover={{ y: -8 }}
               className="group relative"
             >
-              <div className="absolute inset-0 border border-border rounded-2xl group-hover:border-foreground/30 transition-colors duration-300" />
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-foreground/[0.02] rounded-2xl" />
+              <motion.div
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                className="absolute inset-0 border border-border rounded-2xl group-hover:border-foreground/30 transition-all duration-500"
+              />
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-foreground/[0.02] rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               
               <div className="relative p-8">
-                {/* Stat callout */}
+                {/* Stat callout with counter animation */}
                 <div className="mb-8">
-                  <div className="text-5xl font-serif font-bold mb-1">{audience.stat}</div>
+                  <motion.div
+                    initial={{ scale: 0.5, opacity: 0 }}
+                    whileInView={{ scale: 1, opacity: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.2 + index * 0.1, type: "spring", stiffness: 100 }}
+                    className="text-5xl font-serif font-bold mb-1"
+                  >
+                    {audience.stat}
+                  </motion.div>
                   <div className="text-xs uppercase tracking-widest text-muted-foreground">
                     {audience.statLabel}
                   </div>
                 </div>
 
-                <h3 className="text-2xl font-serif font-medium mb-4">{audience.title}</h3>
+                <h3 className="text-2xl font-serif font-medium mb-4 group-hover:translate-x-1 transition-transform duration-300">
+                  {audience.title}
+                </h3>
                 <p className="text-muted-foreground text-sm leading-relaxed mb-6">
                   {audience.description}
                 </p>
 
                 {/* Tags */}
                 <div className="flex flex-wrap gap-2">
-                  {audience.tags.map((tag) => (
-                    <span
+                  {audience.tags.map((tag, i) => (
+                    <motion.span
                       key={tag}
-                      className="px-3 py-1 text-xs bg-secondary text-muted-foreground rounded-full"
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: 0.4 + i * 0.05 }}
+                      className="px-3 py-1 text-xs bg-secondary text-muted-foreground rounded-full hover:bg-secondary/80 transition-colors"
                     >
                       {tag}
-                    </span>
+                    </motion.span>
                   ))}
                 </div>
               </div>
