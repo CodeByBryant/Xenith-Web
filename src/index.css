@@ -139,6 +139,10 @@
     @apply bg-clip-text text-transparent bg-gradient-to-r from-foreground via-muted-foreground to-foreground;
   }
   
+  .bg-gradient-radial {
+    background: radial-gradient(circle, var(--tw-gradient-stops));
+  }
+  
   .shimmer {
     background: linear-gradient(
       90deg,

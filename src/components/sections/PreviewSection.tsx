@@ -1,11 +1,24 @@
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { useRef } from "react";
 import { XenithDemo } from "../demo/XenithDemo";
 
 export const PreviewSection = () => {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"],
+  });
+
+  const phoneY = useTransform(scrollYProgress, [0, 1], [100, -50]);
+  const glowOpacity = useTransform(scrollYProgress, [0.2, 0.5], [0, 0.15]);
+
   return (
-    <section id="preview" className="py-32 md:py-48 px-6 relative overflow-hidden">
-      {/* Dramatic radial glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-gradient-radial from-foreground/5 via-transparent to-transparent rounded-full" />
+    <section ref={sectionRef} id="preview" className="py-32 md:py-48 px-6 relative overflow-hidden">
+      {/* Animated radial glow */}
+      <motion.div
+        style={{ opacity: glowOpacity }}
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-gradient-radial from-foreground via-transparent to-transparent rounded-full"
+      />
       
       {/* Subtle grid */}
       <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.02)_1px,transparent_1px)] dark:bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:60px_60px]" />
@@ -22,7 +35,13 @@ export const PreviewSection = () => {
           <span className="text-xs uppercase tracking-[0.4em] text-muted-foreground font-sans whitespace-nowrap">
             Live Demo
           </span>
-          <div className="h-px flex-1 bg-border" />
+          <motion.div
+            initial={{ scaleX: 0 }}
+            whileInView={{ scaleX: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1, delay: 0.3 }}
+            className="h-px flex-1 bg-border origin-left"
+          />
         </motion.div>
 
         <div className="grid lg:grid-cols-12 gap-16 items-center">
@@ -58,10 +77,15 @@ export const PreviewSection = () => {
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: 0.2 + index * 0.1 }}
-                  className="flex items-center gap-3"
+                  className="flex items-center gap-3 group"
                 >
-                  <div className="w-1.5 h-1.5 rounded-full bg-foreground" />
-                  <span className="text-sm text-muted-foreground">{item}</span>
+                  <motion.div
+                    whileHover={{ scale: 1.5 }}
+                    className="w-1.5 h-1.5 rounded-full bg-foreground"
+                  />
+                  <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors duration-200">
+                    {item}
+                  </span>
                 </motion.div>
               ))}
             </div>
@@ -75,11 +99,19 @@ export const PreviewSection = () => {
             transition={{ duration: 1, ease: [0.25, 0.46, 0.45, 0.94] }}
             className="lg:col-span-7 order-1 lg:order-2 flex justify-center"
           >
-            <div className="relative">
-              {/* Glow effect behind phone */}
-              <div className="absolute -inset-8 bg-gradient-radial from-foreground/10 to-transparent rounded-full blur-2xl" />
+            <motion.div style={{ y: phoneY }} className="relative">
+              {/* Glow effects behind phone */}
+              <motion.div
+                animate={{
+                  opacity: [0.05, 0.1, 0.05],
+                  scale: [1, 1.05, 1],
+                }}
+                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute -inset-12 bg-gradient-radial from-foreground to-transparent rounded-full blur-2xl"
+              />
+              <div className="absolute -inset-4 bg-gradient-to-b from-foreground/5 to-transparent rounded-[3rem] blur-xl" />
               <XenithDemo />
-            </div>
+            </motion.div>
           </motion.div>
         </div>
 

@@ -1,50 +1,73 @@
 import { motion } from "framer-motion";
-import { Target, Compass, Timer, BookOpen, Flag, BarChart3 } from "lucide-react";
+import { Target, Compass, Timer, BookOpen, Flag, BarChart3, LucideIcon } from "lucide-react";
 
-const features = [
+interface Feature {
+  icon: LucideIcon;
+  title: string;
+  description: string;
+  accent: string;
+}
+
+const features: Feature[] = [
   {
     icon: Target,
     title: "Daily Intentions",
     description: "Purpose-driven planning. Not just another todo list.",
-    accent: "bg-blue-500",
+    accent: "from-blue-500 to-blue-600",
   },
   {
     icon: Compass,
     title: "Life Dimensions",
     description: "Track 8 areas of life. See where you're thriving and slipping.",
-    accent: "bg-purple-500",
+    accent: "from-purple-500 to-purple-600",
   },
   {
     icon: Timer,
     title: "Focus Studio",
     description: "Deep work sessions with energy tracking. No distractions.",
-    accent: "bg-green-500",
+    accent: "from-green-500 to-green-600",
   },
   {
     icon: BookOpen,
     title: "Reflection",
     description: "Daily and weekly reviews that actually matter.",
-    accent: "bg-orange-500",
+    accent: "from-orange-500 to-orange-600",
   },
   {
     icon: Flag,
     title: "Growth Path",
     description: "Build core skills: Discipline, Focus, Endurance, Resolve.",
-    accent: "bg-red-500",
+    accent: "from-red-500 to-red-600",
   },
   {
     icon: BarChart3,
     title: "Insights",
     description: "Understand your patterns. Optimize ruthlessly.",
-    accent: "bg-cyan-500",
+    accent: "from-cyan-500 to-cyan-600",
   },
 ];
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1, delayChildren: 0.2 },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+};
 
 export const FeaturesSection = () => {
   return (
     <section id="features" className="py-32 md:py-48 px-6 bg-foreground text-background relative overflow-hidden">
       {/* Subtle grid overlay */}
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:60px_60px]" />
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:60px_60px]" />
+      
+      {/* Ambient glow */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-gradient-radial from-background/5 to-transparent rounded-full blur-3xl" />
       
       <div className="container mx-auto max-w-6xl relative">
         {/* Section header */}
@@ -58,7 +81,13 @@ export const FeaturesSection = () => {
           <span className="text-xs uppercase tracking-[0.4em] text-background/50 font-sans whitespace-nowrap">
             Features
           </span>
-          <div className="h-px flex-1 bg-background/10" />
+          <motion.div
+            initial={{ scaleX: 0 }}
+            whileInView={{ scaleX: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1, delay: 0.3 }}
+            className="h-px flex-1 bg-background/10 origin-left"
+          />
         </motion.div>
 
         <div className="grid lg:grid-cols-2 gap-16 items-start mb-20">
@@ -89,30 +118,43 @@ export const FeaturesSection = () => {
         </div>
 
         {/* Feature grid - 3x2 */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-px bg-background/10 rounded-2xl overflow-hidden">
-          {features.map((feature, index) => (
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          className="grid md:grid-cols-2 lg:grid-cols-3 gap-px bg-background/10 rounded-2xl overflow-hidden"
+        >
+          {features.map((feature) => (
             <motion.div
               key={feature.title}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="bg-foreground p-8 md:p-10 group hover:bg-background/5 transition-colors duration-300 relative"
+              variants={itemVariants}
+              className="bg-foreground p-8 md:p-10 group hover:bg-background/[0.03] transition-all duration-500 relative overflow-hidden"
             >
-              {/* Accent bar */}
-              <div className={`absolute top-0 left-0 w-full h-0.5 ${feature.accent} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
+              {/* Gradient accent bar on hover */}
+              <div className={`absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r ${feature.accent} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
               
-              <div className="w-12 h-12 rounded-xl bg-background/10 flex items-center justify-center mb-6 group-hover:bg-background/20 transition-colors duration-300">
-                <feature.icon className="w-6 h-6 text-background" />
+              {/* Icon glow effect */}
+              <div className="relative mb-6">
+                <motion.div
+                  whileHover={{ scale: 1.1 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                  className="w-12 h-12 rounded-xl bg-background/10 flex items-center justify-center group-hover:bg-background/20 transition-colors duration-300 relative z-10"
+                >
+                  <feature.icon className="w-6 h-6 text-background" />
+                </motion.div>
+                <div className={`absolute inset-0 w-12 h-12 rounded-xl bg-gradient-to-br ${feature.accent} opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-500`} />
               </div>
               
-              <h3 className="text-xl font-serif font-medium mb-3">{feature.title}</h3>
-              <p className="text-background/50 text-sm leading-relaxed">
+              <h3 className="text-xl font-serif font-medium mb-3 group-hover:translate-x-1 transition-transform duration-300">
+                {feature.title}
+              </h3>
+              <p className="text-background/50 text-sm leading-relaxed group-hover:text-background/60 transition-colors duration-300">
                 {feature.description}
               </p>
             </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );
