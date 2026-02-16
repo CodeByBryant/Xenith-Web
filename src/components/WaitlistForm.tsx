@@ -1,6 +1,29 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, Check, Loader2 } from "lucide-react";
+import { supabase, isSupabaseConfigured } from "@/lib/supabase";
+
+/** Extract UTM params from the current URL query string. */
+const getUtmParams = () => {
+  const params = new URLSearchParams(window.location.search);
+  return {
+    utm_source: params.get("utm_source") || null,
+    utm_medium: params.get("utm_medium") || null,
+    utm_campaign: params.get("utm_campaign") || null,
+    referred_by: params.get("ref") || null,
+  };
+};
+
+/** Read & clear the plan the user picked on the pricing section. */
+const getSelectedPlan = (): string | null => {
+  try {
+    const plan = sessionStorage.getItem("xenith_selected_plan");
+    if (plan) sessionStorage.removeItem("xenith_selected_plan");
+    return plan;
+  } catch {
+    return null;
+  }
+};
 
 interface WaitlistFormProps {
   variant?: "hero" | "footer";
@@ -8,7 +31,9 @@ interface WaitlistFormProps {
 
 export const WaitlistForm = ({ variant = "hero" }: WaitlistFormProps) => {
   const [email, setEmail] = useState("");
-  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [status, setStatus] = useState<
+    "idle" | "loading" | "success" | "error"
+  >("idle");
   const [errorMessage, setErrorMessage] = useState("");
 
   const validateEmail = (email: string) => {
@@ -27,18 +52,45 @@ export const WaitlistForm = ({ variant = "hero" }: WaitlistFormProps) => {
 
     setStatus("loading");
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    try {
+      const utm = getUtmParams();
+      const plan = getSelectedPlan();
+      const source = plan ? `${variant}:${plan}` : variant;
 
-    // Store in localStorage for demo
-    const existingEmails = JSON.parse(localStorage.getItem("xenith_waitlist") || "[]");
-    if (!existingEmails.includes(email)) {
-      existingEmails.push(email);
-      localStorage.setItem("xenith_waitlist", JSON.stringify(existingEmails));
+      if (isSupabaseConfigured && supabase) {
+        // ─── Supabase path ───────────────────────────────────
+        const { error } = await supabase.from("waitlist").upsert(
+          {
+            email: email.toLowerCase().trim(),
+            source,
+            referred_by: utm.referred_by,
+            utm_source: utm.utm_source,
+            utm_medium: utm.utm_medium,
+            utm_campaign: utm.utm_campaign,
+          },
+          { onConflict: "email" },
+        );
+
+        if (error) throw error;
+      } else {
+        // ─── localStorage fallback (dev without Supabase) ────
+        await new Promise((resolve) => setTimeout(resolve, 800));
+        const existing: { email: string; source: string }[] = JSON.parse(
+          localStorage.getItem("xenith_waitlist") || "[]",
+        );
+        if (!existing.some((e) => e.email === email)) {
+          existing.push({ email, source });
+          localStorage.setItem("xenith_waitlist", JSON.stringify(existing));
+        }
+      }
+
+      setStatus("success");
+      setEmail("");
+    } catch (err) {
+      console.error("[Waitlist]", err);
+      setStatus("error");
+      setErrorMessage("Something went wrong — try again");
     }
-
-    setStatus("success");
-    setEmail("");
   };
 
   const isFooter = variant === "footer";

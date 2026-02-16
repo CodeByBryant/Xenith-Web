@@ -12,7 +12,12 @@ interface Task {
 }
 
 const initialTasks: Task[] = [
-  { id: 1, text: "Complete Physics assignment", completed: false, tag: "Academic" },
+  {
+    id: 1,
+    text: "Complete Physics assignment",
+    completed: false,
+    tag: "Academic",
+  },
   { id: 2, text: "30 min focused reading", completed: false, tag: "Learning" },
   { id: 3, text: "Morning workout", completed: true, tag: "Health" },
   { id: 4, text: "Review weekly goals", completed: false, tag: "Growth" },
@@ -21,9 +26,9 @@ const initialTasks: Task[] = [
 const dimensions: Dimension[] = [
   { name: "Health", value: 8, color: "#22c55e" },
   { name: "Mind", value: 7, color: "#8b5cf6" },
-  { name: "Relations", value: 6, color: "#ec4899" },
+  { name: "Relationships", value: 6, color: "#ec4899" },
   { name: "Work", value: 7, color: "#3b82f6" },
-  { name: "Finance", value: 5, color: "#eab308" },
+  { name: "Finances", value: 5, color: "#eab308" },
   { name: "Learning", value: 8, color: "#06b6d4" },
   { name: "Rest", value: 4, color: "#6366f1" },
   { name: "Purpose", value: 7, color: "#f97316" },
@@ -52,11 +57,15 @@ export const DashboardScreen = ({ onNavigate }: DashboardScreenProps) => {
   };
 
   const toggleTask = (id: number) => {
-    setTasks(tasks.map(t => t.id === id ? { ...t, completed: !t.completed } : t));
+    setTasks(
+      tasks.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t)),
+    );
   };
 
-  const completedCount = tasks.filter(t => t.completed).length;
-  const averageBalance = Math.round(dimensions.reduce((acc, d) => acc + d.value, 0) / dimensions.length * 10);
+  const completedCount = tasks.filter((t) => t.completed).length;
+  const averageBalance = Math.round(
+    (dimensions.reduce((acc, d) => acc + d.value, 0) / dimensions.length) * 10,
+  );
 
   return (
     <div className="h-full bg-[#0a0a0a] pt-14 pb-24 px-5 overflow-y-auto">
@@ -70,7 +79,9 @@ export const DashboardScreen = ({ onNavigate }: DashboardScreenProps) => {
           <span className="font-chomsky text-2xl text-[#fafafa]">X</span>
           <Calendar className="w-5 h-5 text-[#6a6a6a]" />
         </div>
-        <h1 className="text-xl font-serif text-[#fafafa]">{getGreeting()}, John</h1>
+        <h1 className="text-xl font-serif text-[#fafafa]">
+          {getGreeting()}, John
+        </h1>
         <p className="text-sm text-[#6a6a6a]">{getDate()}</p>
       </motion.div>
 
@@ -82,10 +93,14 @@ export const DashboardScreen = ({ onNavigate }: DashboardScreenProps) => {
         className="mb-6"
       >
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-sm font-medium text-[#fafafa] uppercase tracking-wider">Today's Intentions</h2>
-          <span className="text-xs text-[#6a6a6a]">{completedCount} of {tasks.length} complete</span>
+          <h2 className="text-sm font-medium text-[#fafafa] uppercase tracking-wider">
+            Today's Intentions
+          </h2>
+          <span className="text-xs text-[#6a6a6a]">
+            {completedCount} of {tasks.length} complete
+          </span>
         </div>
-        
+
         <div className="space-y-2">
           {tasks.map((task, i) => (
             <motion.div
@@ -111,7 +126,9 @@ export const DashboardScreen = ({ onNavigate }: DashboardScreenProps) => {
               </div>
               <span
                 className={`flex-1 text-sm ${
-                  task.completed ? "line-through text-[#6a6a6a]" : "text-[#fafafa]"
+                  task.completed
+                    ? "line-through text-[#6a6a6a]"
+                    : "text-[#fafafa]"
                 }`}
               >
                 {task.text}
@@ -138,7 +155,9 @@ export const DashboardScreen = ({ onNavigate }: DashboardScreenProps) => {
         className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-2xl p-4 mb-6 cursor-pointer active:border-[#4a4a4a] transition-all"
       >
         <div className="flex items-center justify-between mb-2">
-          <h2 className="text-sm font-medium text-[#fafafa] uppercase tracking-wider">Life Balance</h2>
+          <h2 className="text-sm font-medium text-[#fafafa] uppercase tracking-wider">
+            Life Balance
+          </h2>
           <span className="text-xs text-[#6a6a6a]">{averageBalance}%</span>
         </div>
         <div className="flex justify-center py-2">
@@ -156,7 +175,9 @@ export const DashboardScreen = ({ onNavigate }: DashboardScreenProps) => {
       >
         <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-3 text-center">
           <Zap className="w-4 h-4 text-[#fafafa] mx-auto mb-1" />
-          <div className="text-lg font-serif font-bold text-[#fafafa]">4h 32m</div>
+          <div className="text-lg font-serif font-bold text-[#fafafa]">
+            4h 32m
+          </div>
           <div className="text-[10px] text-[#6a6a6a]">Focus today</div>
         </div>
         <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-3 text-center">

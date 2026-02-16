@@ -1,5 +1,13 @@
 import { motion } from "framer-motion";
-import { Target, Compass, Timer, BookOpen, Flag, BarChart3, LucideIcon } from "lucide-react";
+import {
+  Target,
+  Compass,
+  Timer,
+  BookOpen,
+  Flag,
+  BarChart3,
+  LucideIcon,
+} from "lucide-react";
 
 interface Feature {
   icon: LucideIcon;
@@ -18,7 +26,8 @@ const features: Feature[] = [
   {
     icon: Compass,
     title: "Life Dimensions",
-    description: "Track 8 areas of life. See where you're thriving and slipping.",
+    description:
+      "Track 8 areas of life. See where you're thriving and slipping.",
     accent: "from-purple-500 to-purple-600",
   },
   {
@@ -36,7 +45,8 @@ const features: Feature[] = [
   {
     icon: Flag,
     title: "Growth Path",
-    description: "Build core skills: Discipline, Focus, Endurance, Resolve.",
+    description:
+      "Build core skills: Discipline, Focus, Consistency, Endurance, Insight, Resolve.",
     accent: "from-red-500 to-red-600",
   },
   {
@@ -62,13 +72,16 @@ const itemVariants = {
 
 export const FeaturesSection = () => {
   return (
-    <section id="features" className="py-32 md:py-48 px-6 bg-foreground text-background relative overflow-hidden">
+    <section
+      id="features"
+      className="py-32 md:py-48 px-6 bg-foreground text-background relative overflow-hidden"
+    >
       {/* Subtle grid overlay */}
       <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:60px_60px]" />
-      
+
       {/* Ambient glow */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-gradient-radial from-background/5 to-transparent rounded-full blur-3xl" />
-      
+
       <div className="container mx-auto max-w-6xl relative">
         {/* Section header */}
         <motion.div
@@ -103,7 +116,7 @@ export const FeaturesSection = () => {
               <span className="text-background/50">you need.</span>
             </h2>
           </motion.div>
-          
+
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -112,7 +125,8 @@ export const FeaturesSection = () => {
             className="lg:pt-4"
           >
             <p className="text-xl text-background/60 leading-relaxed">
-              Six core tools. No bloat. Each one designed to compound with the others into a system that actually works.
+              Six core tools. No bloat. Each one designed to compound with the
+              others into a system that actually works.
             </p>
           </motion.div>
         </div>
@@ -132,8 +146,10 @@ export const FeaturesSection = () => {
               className="bg-foreground p-8 md:p-10 group hover:bg-background/[0.03] transition-all duration-500 relative overflow-hidden"
             >
               {/* Gradient accent bar on hover */}
-              <div className={`absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r ${feature.accent} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
-              
+              <div
+                className={`absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r ${feature.accent} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
+              />
+
               {/* Icon glow effect */}
               <div className="relative mb-6">
                 <motion.div
@@ -143,9 +159,11 @@ export const FeaturesSection = () => {
                 >
                   <feature.icon className="w-6 h-6 text-background" />
                 </motion.div>
-                <div className={`absolute inset-0 w-12 h-12 rounded-xl bg-gradient-to-br ${feature.accent} opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-500`} />
+                <div
+                  className={`absolute inset-0 w-12 h-12 rounded-xl bg-gradient-to-br ${feature.accent} opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-500`}
+                />
               </div>
-              
+
               <h3 className="text-xl font-serif font-medium mb-3 group-hover:translate-x-1 transition-transform duration-300">
                 {feature.title}
               </h3>

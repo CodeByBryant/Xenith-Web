@@ -1,0 +1,13 @@
+// Main SCSS entry point
+// Organized by layer: variables → base → components → utilities → animations
+
+// All @use rules must come first
+@use './variables';
+@use './base';
+@use './utilities';
+@use './animations';
+
+// Tailwind CSS directives
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

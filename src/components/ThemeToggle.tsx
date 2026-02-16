@@ -2,21 +2,25 @@ import { Moon, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
+/** Read initial theme synchronously to avoid flash */
+const getInitialDark = () => {
+  if (typeof window === "undefined") return false;
+  // Check for a persisted preference first, then system preference
+  const stored = localStorage.getItem("xenith-theme");
+  if (stored) return stored === "dark";
+  return window.matchMedia("(prefers-color-scheme: dark)").matches;
+};
+
 export const ThemeToggle = () => {
-  const [isDark, setIsDark] = useState(false);
+  const [isDark, setIsDark] = useState(getInitialDark);
 
+  // Apply class on mount and whenever isDark changes
   useEffect(() => {
-    const isDarkMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    setIsDark(isDarkMode);
-    if (isDarkMode) {
-      document.documentElement.classList.add("dark");
-    }
-  }, []);
+    document.documentElement.classList.toggle("dark", isDark);
+    localStorage.setItem("xenith-theme", isDark ? "dark" : "light");
+  }, [isDark]);
 
-  const toggleTheme = () => {
-    setIsDark(!isDark);
-    document.documentElement.classList.toggle("dark");
-  };
+  const toggleTheme = () => setIsDark((prev) => !prev);
 
   return (
     <motion.button

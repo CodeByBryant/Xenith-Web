@@ -2,8 +2,11 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import { WaitlistForm } from "../WaitlistForm";
 import { ArrowUpRight } from "lucide-react";
+import { useWaitlistCount } from "@/hooks/use-waitlist-count";
 
 export const CTASection = () => {
+  const { count, loading } = useWaitlistCount();
+  const displayCount = count !== null ? count.toLocaleString() : "—";
   const sectionRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -14,7 +17,11 @@ export const CTASection = () => {
   const xOpacity = useTransform(scrollYProgress, [0, 0.3], [0, 0.03]);
 
   return (
-    <section ref={sectionRef} id="waitlist" className="py-32 md:py-48 px-6 bg-foreground text-background relative overflow-hidden">
+    <section
+      ref={sectionRef}
+      id="waitlist"
+      className="py-32 md:py-48 px-6 bg-foreground text-background relative overflow-hidden"
+    >
       {/* Dramatic X watermark with parallax */}
       <motion.div
         style={{ scale: xScale, opacity: xOpacity }}
@@ -71,7 +78,7 @@ export const CTASection = () => {
               drifting?
             </motion.span>
           </h2>
-          
+
           <motion.p
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
@@ -79,8 +86,8 @@ export const CTASection = () => {
             transition={{ delay: 0.5 }}
             className="text-lg md:text-xl text-background/60 max-w-xl mx-auto mb-12"
           >
-            Join the waitlist. Get early access. Lock in 50% off Pro forever.
-            No spam. Just updates on launch.
+            Join the waitlist. Get early access. Lock in 50% off Pro forever. No
+            spam. Just updates on launch.
           </motion.p>
 
           <motion.div
@@ -105,7 +112,9 @@ export const CTASection = () => {
               className="flex items-center gap-2"
             >
               <ArrowUpRight className="w-4 h-4" />
-              <span>2,847 on the list</span>
+              <span className="tabular-nums">
+                {loading ? "…" : displayCount} on the list
+              </span>
             </motion.div>
             <div className="w-1 h-1 rounded-full bg-background/20" />
             <span>Free during beta</span>

@@ -1,27 +1,58 @@
-import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { lazy, Suspense } from "react";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
 
-const queryClient = new QueryClient();
+// Lazy-load dev panel — only fetched when route is hit, never bundled in prod
+const Dev = lazy(() => import("./pages/Dev"));
+const OgImage = lazy(() => import("./pages/OgImage"));
+
+const router = createBrowserRouter([
+  { path: "/", element: <Index /> },
+  { path: "/privacy", element: <Privacy /> },
+  { path: "/terms", element: <Terms /> },
+  // Dev panel: only accessible in development
+  ...(import.meta.env.DEV
+    ? [
+        {
+          path: "/dev",
+          element: (
+            <Suspense
+              fallback={
+                <div className="min-h-screen bg-[#0f0f1a] flex items-center justify-center text-white/40 text-sm">
+                  Loading dev panel…
+                </div>
+              }
+            >
+              <Dev />
+            </Suspense>
+          ),
+        },
+        {
+          path: "/og",
+          element: (
+            <Suspense fallback={null}>
+              <OgImage />
+            </Suspense>
+          ),
+        },
+      ]
+    : []),
+  { path: "*", element: <NotFound /> },
+]);
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
+  <ErrorBoundary>
     <TooltipProvider>
-      <Toaster />
       <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
+      <RouterProvider router={router} />
     </TooltipProvider>
-  </QueryClientProvider>
+  </ErrorBoundary>
 );
 
 export default App;
