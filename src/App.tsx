@@ -3,6 +3,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { lazy, Suspense } from "react";
+import { Analytics } from "@vercel/analytics/react";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Privacy from "./pages/Privacy";
@@ -51,6 +52,7 @@ const App = () => (
     <TooltipProvider>
       <Sonner />
       <RouterProvider router={router} />
+      <Analytics />
     </TooltipProvider>
   </ErrorBoundary>
 );
