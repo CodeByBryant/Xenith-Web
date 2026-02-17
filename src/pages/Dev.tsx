@@ -61,7 +61,7 @@ const getTheme = () => {
 
 const getSupabaseStatus = (): DevInfo["supabaseStatus"] => {
   const url = import.meta.env.VITE_SUPABASE_URL;
-  const key = import.meta.env.VITE_SUPABASE_ANON_KEY;
+  const key = import.meta.env.VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY;
   if (!url || !key) return "no-config";
   return "connected";
 };
@@ -451,7 +451,7 @@ const DevPage = () => {
               </code>{" "}
               and{" "}
               <code className="bg-white/10 px-1.5 py-0.5 rounded text-[10px]">
-                VITE_SUPABASE_ANON_KEY
+                VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY
               </code>{" "}
               in{" "}
               <code className="bg-white/10 px-1.5 py-0.5 rounded text-[10px]">
