@@ -1,7 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string | undefined;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY as
+const supabasePublishableKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY as
   | string
   | undefined;
 
@@ -11,9 +11,9 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY as
  */
 export const isSupabaseConfigured =
   !!supabaseUrl &&
-  !!supabaseAnonKey &&
+  !!supabasePublishableKey &&
   supabaseUrl.startsWith("https://") &&
-  supabaseAnonKey.length > 20;
+  supabasePublishableKey.length > 20;
 
 /**
  * Supabase client instance.
@@ -22,7 +22,7 @@ export const isSupabaseConfigured =
  * `supabase` is null and the waitlist form falls back to localStorage.
  */
 export const supabase = isSupabaseConfigured
-  ? createClient(supabaseUrl!, supabaseAnonKey!, {
+  ? createClient(supabaseUrl!, supabasePublishableKey!, {
       auth: {
         persistSession: false,
         autoRefreshToken: false,
