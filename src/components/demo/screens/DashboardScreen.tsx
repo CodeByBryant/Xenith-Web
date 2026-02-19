@@ -68,7 +68,7 @@ export const DashboardScreen = ({ onNavigate }: DashboardScreenProps) => {
   );
 
   return (
-    <div className="h-full bg-[#0a0a0a] pt-14 pb-24 px-5 overflow-y-auto">
+    <div className="h-full bg-[#0a0a0a] pt-14 pb-24 px-5 overflow-y-auto no-scrollbar">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -10 }}

@@ -32,8 +32,12 @@ export const Header = () => {
         <div className="mx-4 mt-4">
           <motion.div
             animate={{
-              backgroundColor: scrolled ? "hsl(var(--background) / 0.95)" : "hsl(var(--background) / 0.8)",
-              boxShadow: scrolled ? "0 4px 30px hsl(var(--foreground) / 0.08)" : "0 0 0 transparent",
+              backgroundColor: scrolled
+                ? "hsl(var(--background) / 0.95)"
+                : "hsl(var(--background) / 0.8)",
+              boxShadow: scrolled
+                ? "0 4px 30px hsl(var(--foreground) / 0.08)"
+                : "0 0 0 transparent",
             }}
             transition={{ duration: 0.3 }}
             className="backdrop-blur-xl border border-border rounded-2xl"
@@ -45,8 +49,12 @@ export const Header = () => {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
-                <span className="font-chomsky text-3xl text-foreground leading-none">X</span>
-                <span className="font-chomsky text-lg text-foreground hidden sm:block">Xenith</span>
+                <span className="font-chomsky text-3xl text-foreground leading-none">
+                  X
+                </span>
+                <span className="font-serif text-lg text-foreground hidden sm:block">
+                  Xenith
+                </span>
               </motion.a>
 
               <nav className="hidden md:flex items-center gap-1">

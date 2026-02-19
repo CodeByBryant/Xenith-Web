@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Signal, Wifi, Battery } from "lucide-react";
 
@@ -7,6 +7,26 @@ interface PhoneMockupProps {
 }
 
 export const PhoneMockup = ({ children }: PhoneMockupProps) => {
+  const bodyOverflowRef = useRef<string | null>(null);
+
+  const setBodyScrollDisabled = (disabled: boolean) => {
+    if (typeof document === "undefined") return;
+    if (disabled) {
+      bodyOverflowRef.current = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = bodyOverflowRef.current ?? "";
+      bodyOverflowRef.current = null;
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      if (typeof document !== "undefined") {
+        document.body.style.overflow = bodyOverflowRef.current ?? "";
+      }
+    };
+  }, []);
   const getCurrentTime = () => {
     return new Date().toLocaleTimeString("en-US", {
       hour: "numeric",
@@ -28,7 +48,7 @@ export const PhoneMockup = ({ children }: PhoneMockupProps) => {
       <div className="relative rounded-[55px] bg-[#1a1a1a] p-[12px] shadow-2xl">
         {/* Titanium outer ring */}
         <div className="absolute inset-0 rounded-[55px] bg-gradient-to-b from-[#3a3a3a] via-[#2a2a2a] to-[#1a1a1a]" />
-        
+
         {/* Inner bezel */}
         <div className="relative rounded-[45px] bg-[#0a0a0a] overflow-hidden">
           {/* Dynamic Island */}
@@ -38,7 +58,7 @@ export const PhoneMockup = ({ children }: PhoneMockupProps) => {
               <div className="w-2.5 h-2.5 rounded-full bg-[#0d3b66]" />
             </div>
           </div>
-          
+
           {/* Status Bar */}
           <div className="absolute top-0 left-0 right-0 z-40 px-8 py-3 flex items-center justify-between text-white text-xs font-medium">
             <span className="w-16">{getCurrentTime()}</span>
@@ -49,12 +69,20 @@ export const PhoneMockup = ({ children }: PhoneMockupProps) => {
               <Battery className="w-5 h-5" />
             </div>
           </div>
-          
+
           {/* Screen Content */}
-          <div className="relative h-[750px] overflow-hidden">
+          <div
+            className="relative h-[750px] overflow-hidden"
+            onPointerDown={() => setBodyScrollDisabled(true)}
+            onPointerUp={() => setBodyScrollDisabled(false)}
+            onPointerCancel={() => setBodyScrollDisabled(false)}
+            onPointerLeave={() => setBodyScrollDisabled(false)}
+            onTouchStart={() => setBodyScrollDisabled(true)}
+            onTouchEnd={() => setBodyScrollDisabled(false)}
+          >
             {children}
           </div>
-          
+
           {/* Home Indicator */}
           <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-32 h-1 bg-white/40 rounded-full" />
         </div>

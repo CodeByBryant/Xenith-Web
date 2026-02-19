@@ -70,7 +70,7 @@ export const InsightsScreen = ({ onNavigate }: InsightsScreenProps) => {
         </div>
       </motion.div>
 
-      <div className="flex-1 px-5 overflow-y-auto space-y-4">
+      <div className="flex-1 px-5 overflow-y-auto space-y-4 no-scrollbar">
         {/* Weekly Summary */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}

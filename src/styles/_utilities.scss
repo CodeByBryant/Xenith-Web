@@ -34,7 +34,7 @@
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  
+
   @media (prefers-color-scheme: dark) {
     background: rgba(0, 0, 0, 0.2);
     border-color: rgba(255, 255, 255, 0.1);
@@ -43,17 +43,21 @@
 
 // Gradient backgrounds
 .bg-gradient-radial {
-  background: radial-gradient(circle at 50% 50%, var(--glow-primary) 0%, transparent 70%);
+  background: radial-gradient(
+    circle at 50% 50%,
+    var(--glow-primary) 0%,
+    transparent 70%
+  );
 }
 
 // Shimmer animation utility
 .shimmer {
   animation: shimmer-animation 2s infinite;
-  
+
   &-slow {
     animation-duration: 3s;
   }
-  
+
   &-fast {
     animation-duration: 1s;
   }
@@ -61,8 +65,10 @@
 
 // Hover lift effect
 .hover-lift {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+
   &:hover {
     transform: translateY(-4px);
     box-shadow: 0 12px 24px var(--glow-primary);
@@ -78,4 +84,13 @@
 .surface-subtle {
   background-color: hsl(var(--surface-subtle));
   border: 1px solid hsl(var(--divider));
+}
+
+// Hide scrollbars for custom scroll containers (cross-browser)
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
 }

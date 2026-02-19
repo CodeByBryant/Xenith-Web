@@ -13,13 +13,17 @@ export const PreviewSection = () => {
   const glowOpacity = useTransform(scrollYProgress, [0.2, 0.5], [0, 0.15]);
 
   return (
-    <section ref={sectionRef} id="preview" className="py-32 md:py-48 px-6 relative overflow-hidden">
+    <section
+      ref={sectionRef}
+      id="preview"
+      className="py-32 md:py-48 px-6 relative overflow-hidden"
+    >
       {/* Animated radial glow */}
       <motion.div
         style={{ opacity: glowOpacity }}
         className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-gradient-radial from-foreground via-transparent to-transparent rounded-full"
       />
-      
+
       {/* Subtle grid */}
       <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.02)_1px,transparent_1px)] dark:bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:60px_60px]" />
 
@@ -58,10 +62,10 @@ export const PreviewSection = () => {
               <br />
               <span className="text-muted-foreground">Try it.</span>
             </h2>
-            
+
             <p className="text-lg text-muted-foreground leading-relaxed mb-8">
-              This isn't a mockup. It's a fully functional prototype. Navigate through screens, 
-              check off tasks, start focus sessions. Experience the app before it launches.
+              Navigate through screens, check off tasks, start focus sessions.
+              Experience the app before it launches.
             </p>
 
             <div className="space-y-4">
@@ -106,7 +110,11 @@ export const PreviewSection = () => {
                   opacity: [0.05, 0.1, 0.05],
                   scale: [1, 1.05, 1],
                 }}
-                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                transition={{
+                  duration: 4,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
                 className="absolute -inset-12 bg-gradient-radial from-foreground to-transparent rounded-full blur-2xl"
               />
               <div className="absolute -inset-4 bg-gradient-to-b from-foreground/5 to-transparent rounded-[3rem] blur-xl" />

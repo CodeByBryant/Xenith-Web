@@ -3,12 +3,29 @@ import { useState } from "react";
 import { ChevronLeft, BookOpen, ArrowRight } from "lucide-react";
 import { ScreenId } from "../BottomNav";
 
-const quickPrompts = ["Wins today", "Struggles", "Lessons learned", "Tomorrow's focus"];
+const quickPrompts = [
+  "Wins today",
+  "Struggles",
+  "Lessons learned",
+  "Tomorrow's focus",
+];
 
 const pastEntries = [
-  { date: "Jan 21", preview: "Made solid progress on the physics project...", words: 156 },
-  { date: "Jan 20", preview: "Struggled with focus in the afternoon but recovered...", words: 203 },
-  { date: "Jan 19", preview: "Great day overall. Hit all my intentions...", words: 178 },
+  {
+    date: "Jan 21",
+    preview: "Made solid progress on the physics project...",
+    words: 156,
+  },
+  {
+    date: "Jan 20",
+    preview: "Struggled with focus in the afternoon but recovered...",
+    words: 203,
+  },
+  {
+    date: "Jan 19",
+    preview: "Great day overall. Hit all my intentions...",
+    words: 178,
+  },
 ];
 
 interface ReflectionScreenProps {
@@ -28,7 +45,10 @@ export const ReflectionScreen = ({ onNavigate }: ReflectionScreenProps) => {
         className="px-5 pb-4 shrink-0"
       >
         <div className="flex items-center justify-between mb-1">
-          <button onClick={() => onNavigate("dashboard")} className="text-[#6a6a6a]">
+          <button
+            onClick={() => onNavigate("dashboard")}
+            className="text-[#6a6a6a]"
+          >
             <ChevronLeft className="w-6 h-6" />
           </button>
           <h1 className="text-lg font-serif text-[#fafafa]">Reflection</h1>
@@ -36,7 +56,7 @@ export const ReflectionScreen = ({ onNavigate }: ReflectionScreenProps) => {
         </div>
       </motion.div>
 
-      <div className="flex-1 px-5 overflow-y-auto space-y-4">
+      <div className="flex-1 px-5 overflow-y-auto space-y-4 no-scrollbar">
         {/* Featured Prompt */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
@@ -44,8 +64,12 @@ export const ReflectionScreen = ({ onNavigate }: ReflectionScreenProps) => {
           transition={{ delay: 0.1 }}
           className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-4"
         >
-          <p className="text-xs text-[#6a6a6a] uppercase tracking-wider mb-2">Daily Reflection</p>
-          <p className="text-sm text-[#fafafa] mb-4">What's one thing you're grateful for today?</p>
+          <p className="text-xs text-[#6a6a6a] uppercase tracking-wider mb-2">
+            Daily Reflection
+          </p>
+          <p className="text-sm text-[#fafafa] mb-4">
+            What's one thing you're grateful for today?
+          </p>
           <textarea
             value={journalText}
             onChange={(e) => setJournalText(e.target.value)}
@@ -68,7 +92,9 @@ export const ReflectionScreen = ({ onNavigate }: ReflectionScreenProps) => {
             {quickPrompts.map((prompt) => (
               <button
                 key={prompt}
-                onClick={() => setActivePrompt(activePrompt === prompt ? null : prompt)}
+                onClick={() =>
+                  setActivePrompt(activePrompt === prompt ? null : prompt)
+                }
                 className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
                   activePrompt === prompt
                     ? "bg-[#fafafa] text-[#0a0a0a]"
@@ -99,9 +125,13 @@ export const ReflectionScreen = ({ onNavigate }: ReflectionScreenProps) => {
               >
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-xs text-[#6a6a6a]">{entry.date}</span>
-                  <span className="text-xs text-[#4a4a4a]">{entry.words} words</span>
+                  <span className="text-xs text-[#4a4a4a]">
+                    {entry.words} words
+                  </span>
                 </div>
-                <p className="text-sm text-[#fafafa] line-clamp-2">{entry.preview}</p>
+                <p className="text-sm text-[#fafafa] line-clamp-2">
+                  {entry.preview}
+                </p>
               </motion.div>
             ))}
           </div>
@@ -116,7 +146,9 @@ export const ReflectionScreen = ({ onNavigate }: ReflectionScreenProps) => {
         >
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-[#fafafa] font-medium">Weekly review available</p>
+              <p className="text-sm text-[#fafafa] font-medium">
+                Weekly review available
+              </p>
               <p className="text-xs text-[#6a6a6a]">Reflect on your progress</p>
             </div>
             <button className="bg-[#fafafa] text-[#0a0a0a] px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-1">

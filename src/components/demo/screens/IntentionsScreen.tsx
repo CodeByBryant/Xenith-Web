@@ -11,7 +11,12 @@ interface Task {
 }
 
 const initialTasks: Task[] = [
-  { id: 1, text: "Complete Physics assignment", completed: false, tag: "Academic" },
+  {
+    id: 1,
+    text: "Complete Physics assignment",
+    completed: false,
+    tag: "Academic",
+  },
   { id: 2, text: "30 min focused reading", completed: false, tag: "Learning" },
   { id: 3, text: "Morning workout", completed: true, tag: "Health" },
   { id: 4, text: "Review weekly goals", completed: false, tag: "Growth" },
@@ -20,7 +25,16 @@ const initialTasks: Task[] = [
   { id: 7, text: "Budget review", completed: false, tag: "Finance" },
 ];
 
-const tags = ["All", "Academic", "Health", "Work", "Learning", "Growth", "Relations", "Finance"];
+const tags = [
+  "All",
+  "Academic",
+  "Health",
+  "Work",
+  "Learning",
+  "Growth",
+  "Relations",
+  "Finance",
+];
 
 interface IntentionsScreenProps {
   onNavigate: (screen: ScreenId) => void;
@@ -33,31 +47,35 @@ export const IntentionsScreen = ({ onNavigate }: IntentionsScreenProps) => {
   const [showInput, setShowInput] = useState(false);
 
   const toggleTask = (id: number) => {
-    setTasks(tasks.map(t => t.id === id ? { ...t, completed: !t.completed } : t));
+    setTasks(
+      tasks.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t)),
+    );
   };
 
   const deleteTask = (id: number) => {
-    setTasks(tasks.filter(t => t.id !== id));
+    setTasks(tasks.filter((t) => t.id !== id));
   };
 
   const addTask = () => {
     if (newTaskText.trim()) {
-      setTasks([...tasks, {
-        id: Date.now(),
-        text: newTaskText,
-        completed: false,
-        tag: activeTag === "All" ? "Work" : activeTag
-      }]);
+      setTasks([
+        ...tasks,
+        {
+          id: Date.now(),
+          text: newTaskText,
+          completed: false,
+          tag: activeTag === "All" ? "Work" : activeTag,
+        },
+      ]);
       setNewTaskText("");
       setShowInput(false);
     }
   };
 
-  const filteredTasks = activeTag === "All" 
-    ? tasks 
-    : tasks.filter(t => t.tag === activeTag);
+  const filteredTasks =
+    activeTag === "All" ? tasks : tasks.filter((t) => t.tag === activeTag);
 
-  const completedCount = tasks.filter(t => t.completed).length;
+  const completedCount = tasks.filter((t) => t.completed).length;
 
   return (
     <div className="h-full bg-[#0a0a0a] pt-14 pb-24 flex flex-col">
@@ -68,13 +86,18 @@ export const IntentionsScreen = ({ onNavigate }: IntentionsScreenProps) => {
         className="px-5 pb-4"
       >
         <div className="flex items-center justify-between mb-1">
-          <button onClick={() => onNavigate("dashboard")} className="text-[#6a6a6a]">
+          <button
+            onClick={() => onNavigate("dashboard")}
+            className="text-[#6a6a6a]"
+          >
             <ChevronLeft className="w-6 h-6" />
           </button>
           <h1 className="text-lg font-serif text-[#fafafa]">Intentions</h1>
           <div className="w-6" />
         </div>
-        <p className="text-center text-xs text-[#6a6a6a]">{completedCount} of {tasks.length} complete</p>
+        <p className="text-center text-xs text-[#6a6a6a]">
+          {completedCount} of {tasks.length} complete
+        </p>
       </motion.div>
 
       {/* Tag Filter */}
@@ -97,7 +120,7 @@ export const IntentionsScreen = ({ onNavigate }: IntentionsScreenProps) => {
       </div>
 
       {/* Tasks List */}
-      <div className="flex-1 px-5 overflow-y-auto space-y-2">
+      <div className="flex-1 px-5 overflow-y-auto space-y-2 no-scrollbar">
         {filteredTasks.map((task, i) => (
           <motion.div
             key={task.id}
@@ -122,7 +145,9 @@ export const IntentionsScreen = ({ onNavigate }: IntentionsScreenProps) => {
             </div>
             <span
               className={`flex-1 text-sm ${
-                task.completed ? "line-through text-[#6a6a6a]" : "text-[#fafafa]"
+                task.completed
+                  ? "line-through text-[#6a6a6a]"
+                  : "text-[#fafafa]"
               }`}
             >
               {task.text}

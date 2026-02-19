@@ -34,7 +34,7 @@ export const Footer = () => {
               X
             </span>
             <div>
-              <span className="font-chomsky text-xl text-foreground block">
+              <span className="font-serif text-xl text-foreground block">
                 Xenith
               </span>
               <span className="text-xs text-muted-foreground tracking-widest uppercase">

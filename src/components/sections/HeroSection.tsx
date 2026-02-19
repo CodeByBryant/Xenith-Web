@@ -73,14 +73,8 @@ export const HeroSection = () => {
             >
               <div className="flex items-center gap-4 mb-6">
                 <motion.div
-                  initial={{ scale: 0, rotate: -180 }}
-                  animate={{ scale: 1, rotate: 0 }}
-                  transition={{
-                    duration: 0.8,
-                    delay: 0.2,
-                    type: "spring",
-                    stiffness: 100,
-                  }}
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
                   className="font-chomsky text-7xl md:text-9xl text-foreground leading-none"
                 >
                   X
