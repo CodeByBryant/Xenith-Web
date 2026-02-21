@@ -153,23 +153,23 @@ export const HeroSection = () => {
                 type: "spring",
                 stiffness: 80,
               }}
-              className="relative"
+              className="relative overflow-hidden"
             >
               {/* Animated decorative border frame */}
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.7, duration: 0.6 }}
-                className="absolute -inset-4 border border-foreground/10 rounded-3xl"
+                className="absolute -inset-4 border border-foreground/10 rounded-3xl hidden sm:block"
               />
               <motion.div
                 initial={{ opacity: 0, scale: 0.85 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.8, duration: 0.6 }}
-                className="absolute -inset-8 border border-foreground/5 rounded-3xl"
+                className="absolute -inset-8 border border-foreground/5 rounded-3xl hidden sm:block"
               />
 
-              <div className="bg-card/60 backdrop-blur-md border border-border/80 rounded-2xl p-8 relative shadow-2xl shadow-foreground/5">
+              <div className="bg-card/60 backdrop-blur-md border border-border/80 rounded-2xl p-8 relative shadow-2xl shadow-foreground/5 max-w-sm mx-auto w-full">
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
