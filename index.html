@@ -3,6 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; connect-src 'self' https:; img-src 'self' data: https:; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com data:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; upgrade-insecure-requests; block-all-mixed-content;"
+    />
     <title>Xenith - Discipline | Intention | Execution</title>
     <meta
       name="description"
@@ -22,11 +26,40 @@
     <meta property="og:image" content="/og-image.png" />
 
     <meta property="og:url" content="https://xenith-nu.vercel.app" />
-    <meta property="og:site_name" content="Xenith - Discipline | Intention | Execution" />'
-    '
+    <meta
+      property="og:site_name"
+      content="Xenith - Discipline | Intention | Execution"
+    />
 
-    <meta property="twitter:title" content="Xenith — Intentional living. Meaningful progress." />
-    <meta property="twitter:description" content="A minimalist productivity platform for students and young professionals." />
+    <link rel="canonical" href="https://xenith-nu.vercel.app/" />
+    <link rel="alternate" href="https://xenith-nu.vercel.app/" hreflang="en" />
+    <meta name="robots" content="index, follow" />
+    <meta
+      name="keywords"
+      content="productivity, routines, habits, intentions, students, goal tracking, minimal app"
+    />
+
+    <meta
+      property="twitter:title"
+      content="Xenith — Intentional living. Meaningful progress."
+    />
+    <meta
+      property="twitter:description"
+      content="A minimalist productivity platform for students and young professionals."
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@xenith_app" />
+    <meta property="twitter:creator" content="@xenith_app" />
+    <meta name="twitter:image" content="/og-image.png" />
+
+    <meta
+      property="twitter:title"
+      content="Xenith — Intentional living. Meaningful progress."
+    />
+    <meta
+      property="twitter:description"
+      content="A minimalist productivity platform for students and young professionals."
+    />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@xenith_app" />
     <meta name="twitter:image" content="/og-image.png" />
@@ -43,6 +76,27 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <meta name="apple-mobile-web-app-title" content="Xenith" />
     <link rel="manifest" href="/site.webmanifest" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Organization",
+            "name": "Xenith",
+            "url": "https://xenith-nu.vercel.app/",
+            "logo": "https://xenith-nu.vercel.app/favicon-96x96.png",
+            "sameAs": ["https://twitter.com/xenith_app"]
+          },
+          {
+            "@type": "WebSite",
+            "url": "https://xenith-nu.vercel.app/",
+            "name": "Xenith - Discipline | Intention | Execution",
+            "description": "A minimalist productivity platform for students and young professionals. Track intentions, build sustainable routines, and grow across all dimensions of life.",
+            "inLanguage": "en"
+          }
+        ]
+      }
+    </script>
   </head>
 
   <body>
