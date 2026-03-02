@@ -1,3 +1,4 @@
+import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
@@ -5,6 +6,12 @@ import { ArrowLeft } from "lucide-react";
 const Terms = () => {
   return (
     <div className="min-h-screen bg-background text-foreground">
+      <Helmet>
+        <title>Terms of Service — Xenith</title>
+        <meta name="description" content="Read the terms and conditions for using the Xenith platform." />
+        <link rel="canonical" href="https://xenith-nu.vercel.app/terms" />
+        <meta name="robots" content="noindex, follow" />
+      </Helmet>
       {/* Header */}
       <header className="border-b border-border">
         <div className="container mx-auto max-w-4xl px-6 py-6 flex items-center gap-4">
