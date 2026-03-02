@@ -3,6 +3,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, Check, Loader2 } from "lucide-react";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 
+const COOLDOWN_MS = 60_000; // 60 seconds between submissions
+const LAST_SUBMIT_KEY = "xenith_waitlist_last_submit";
+
 /** Extract UTM params from the current URL query string. */
 const getUtmParams = () => {
   const params = new URLSearchParams(window.location.search);
@@ -37,7 +40,8 @@ export const WaitlistForm = ({ variant = "hero" }: WaitlistFormProps) => {
   const [errorMessage, setErrorMessage] = useState("");
 
   const validateEmail = (email: string) => {
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (email.length > 254) return false;
+    const regex = /^[a-zA-Z0-9_%+\-]+(\.[a-zA-Z0-9_%+\-]+)*@[a-zA-Z0-9\-]+(\.[a-zA-Z0-9\-]+)*\.[a-zA-Z]{2,}$/;
     return regex.test(email);
   };
 
@@ -48,6 +52,18 @@ export const WaitlistForm = ({ variant = "hero" }: WaitlistFormProps) => {
       setStatus("error");
       setErrorMessage("Enter a valid email");
       return;
+    }
+
+    // Client-side cooldown to prevent submission spam
+    try {
+      const lastSubmit = localStorage.getItem(LAST_SUBMIT_KEY);
+      if (lastSubmit && Date.now() - Number(lastSubmit) < COOLDOWN_MS) {
+        setStatus("error");
+        setErrorMessage("Too many attempts — please wait before trying again");
+        return;
+      }
+    } catch {
+      // Storage unavailable; proceed without rate-limit check
     }
 
     setStatus("loading");
@@ -86,8 +102,15 @@ export const WaitlistForm = ({ variant = "hero" }: WaitlistFormProps) => {
 
       setStatus("success");
       setEmail("");
+      try {
+        localStorage.setItem(LAST_SUBMIT_KEY, String(Date.now()));
+      } catch {
+        // Storage unavailable; skip
+      }
     } catch (err) {
-      console.error("[Waitlist]", err);
+      if (import.meta.env.DEV) {
+        console.error("[Waitlist]", err);
+      }
       setStatus("error");
       setErrorMessage("Something went wrong — try again");
     }
@@ -107,6 +130,7 @@ export const WaitlistForm = ({ variant = "hero" }: WaitlistFormProps) => {
               if (status === "error") setStatus("idle");
             }}
             placeholder="your@email.com"
+            maxLength={254}
             disabled={status === "loading" || status === "success"}
             className={`w-full px-5 py-4 rounded-xl text-sm font-medium transition-all duration-200 disabled:opacity-50 focus:outline-none focus:ring-2 ${
               isFooter

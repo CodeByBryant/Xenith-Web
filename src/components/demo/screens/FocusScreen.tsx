@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { ChevronLeft, Play, Pause, RotateCcw, Settings, Volume2 } from "lucide-react";
 import { ScreenId } from "../BottomNav";
+import { DEMO_COLORS } from "../tokens";
 
 const durations = [15, 25, 45, 90];
 const sounds = ["Silence", "Lo-fi", "Rain", "White Noise"];
@@ -59,18 +60,18 @@ export const FocusScreen = ({ onNavigate }: FocusScreenProps) => {
 
   if (sessionComplete) {
     return (
-      <div className="h-full bg-[#0a0a0a] pt-14 pb-24 flex flex-col items-center justify-center px-5">
+      <div className="h-full bg-demo-bg pt-14 pb-24 flex flex-col items-center justify-center px-5">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           className="text-center"
         >
-          <div className="font-chomsky text-6xl text-[#fafafa] mb-4">✓</div>
-          <h2 className="text-xl font-serif text-[#fafafa] mb-2">Session Complete!</h2>
-          <p className="text-sm text-[#6a6a6a] mb-8">{selectedDuration} minutes of deep work</p>
+          <div className="font-chomsky text-6xl text-demo-fg mb-4">✓</div>
+          <h2 className="text-xl font-serif text-demo-fg mb-2">Session Complete!</h2>
+          <p className="text-sm text-demo-subtle mb-8">{selectedDuration} minutes of deep work</p>
 
-          <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-4 mb-6 w-full max-w-xs">
-            <p className="text-xs text-[#6a6a6a] mb-3">How's your energy now?</p>
+          <div className="bg-demo-surface border border-demo-border rounded-xl p-4 mb-6 w-full max-w-xs">
+            <p className="text-xs text-demo-subtle mb-3">How's your energy now?</p>
             <div className="flex items-center justify-between mb-2">
               {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(n => (
                 <button
@@ -78,8 +79,8 @@ export const FocusScreen = ({ onNavigate }: FocusScreenProps) => {
                   onClick={() => setEnergyRating(n)}
                   className={`w-6 h-6 rounded-full text-xs font-medium transition-all ${
                     energyRating === n
-                      ? "bg-[#fafafa] text-[#0a0a0a]"
-                      : "bg-[#2a2a2a] text-[#6a6a6a] hover:bg-[#3a3a3a]"
+                      ? "bg-demo-fg text-demo-bg"
+                      : "bg-demo-border text-demo-subtle hover:bg-demo-elevated"
                   }`}
                 >
                   {n}
@@ -88,18 +89,18 @@ export const FocusScreen = ({ onNavigate }: FocusScreenProps) => {
             </div>
           </div>
 
-          <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-4 mb-6 w-full max-w-xs">
-            <p className="text-xs text-[#6a6a6a] mb-2">Add a note (optional)</p>
+          <div className="bg-demo-surface border border-demo-border rounded-xl p-4 mb-6 w-full max-w-xs">
+            <p className="text-xs text-demo-subtle mb-2">Add a note (optional)</p>
             <input
               type="text"
               placeholder="How did it go?"
-              className="w-full bg-[#0a0a0a] border border-[#3a3a3a] rounded-lg px-3 py-2 text-sm text-[#fafafa] placeholder-[#4a4a4a] focus:outline-none focus:border-[#fafafa]"
+              className="w-full bg-demo-bg border border-demo-elevated rounded-lg px-3 py-2 text-sm text-demo-fg placeholder-demo-muted focus:outline-none focus:border-demo-fg"
             />
           </div>
 
           <button
             onClick={resetTimer}
-            className="w-full max-w-xs bg-[#fafafa] text-[#0a0a0a] py-3 rounded-xl font-medium"
+            className="w-full max-w-xs bg-demo-fg text-demo-bg py-3 rounded-xl font-medium"
           >
             Done
           </button>
@@ -109,7 +110,7 @@ export const FocusScreen = ({ onNavigate }: FocusScreenProps) => {
   }
 
   return (
-    <div className="h-full bg-[#0a0a0a] pt-14 pb-24 flex flex-col">
+    <div className="h-full bg-demo-bg pt-14 pb-24 flex flex-col">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -10 }}
@@ -117,11 +118,11 @@ export const FocusScreen = ({ onNavigate }: FocusScreenProps) => {
         className="px-5 pb-4 shrink-0"
       >
         <div className="flex items-center justify-between mb-1">
-          <button onClick={() => onNavigate("dashboard")} className="text-[#6a6a6a]">
+          <button onClick={() => onNavigate("dashboard")} className="text-demo-subtle">
             <ChevronLeft className="w-6 h-6" />
           </button>
-          <h1 className="text-lg font-serif text-[#fafafa]">Focus Studio</h1>
-          <Settings className="w-5 h-5 text-[#6a6a6a]" />
+          <h1 className="text-lg font-serif text-demo-fg">Focus Studio</h1>
+          <Settings className="w-5 h-5 text-demo-subtle" />
         </div>
       </motion.div>
 
@@ -138,7 +139,7 @@ export const FocusScreen = ({ onNavigate }: FocusScreenProps) => {
               cx="120"
               cy="120"
               r="110"
-              stroke="#2a2a2a"
+              stroke={DEMO_COLORS.border}
               strokeWidth="4"
               fill="none"
             />
@@ -146,7 +147,7 @@ export const FocusScreen = ({ onNavigate }: FocusScreenProps) => {
               cx="120"
               cy="120"
               r="110"
-              stroke="#fafafa"
+              stroke={DEMO_COLORS.fg}
               strokeWidth="4"
               fill="none"
               strokeLinecap="round"
@@ -157,10 +158,10 @@ export const FocusScreen = ({ onNavigate }: FocusScreenProps) => {
             />
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="text-5xl font-mono font-bold text-[#fafafa]">
+            <span className="text-5xl font-mono font-bold text-demo-fg">
               {formatTime(timeLeft)}
             </span>
-            <span className="text-sm text-[#6a6a6a] mt-1">
+            <span className="text-sm text-demo-subtle mt-1">
               {isRunning ? "Deep Work" : "Ready"}
             </span>
           </div>
@@ -170,7 +171,7 @@ export const FocusScreen = ({ onNavigate }: FocusScreenProps) => {
         <div className="flex items-center gap-4 mb-8">
           <button
             onClick={() => setIsRunning(!isRunning)}
-            className="w-16 h-16 bg-[#fafafa] rounded-full flex items-center justify-center text-[#0a0a0a] active:scale-95 transition-transform"
+            className="w-16 h-16 bg-demo-fg rounded-full flex items-center justify-center text-demo-bg active:scale-95 transition-transform"
           >
             {isRunning ? (
               <Pause className="w-7 h-7" />
@@ -180,7 +181,7 @@ export const FocusScreen = ({ onNavigate }: FocusScreenProps) => {
           </button>
           <button
             onClick={resetTimer}
-            className="w-12 h-12 bg-[#2a2a2a] rounded-full flex items-center justify-center text-[#fafafa] active:scale-95 transition-transform"
+            className="w-12 h-12 bg-demo-border rounded-full flex items-center justify-center text-demo-fg active:scale-95 transition-transform"
           >
             <RotateCcw className="w-5 h-5" />
           </button>
@@ -194,8 +195,8 @@ export const FocusScreen = ({ onNavigate }: FocusScreenProps) => {
               onClick={() => selectDuration(mins)}
               className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
                 selectedDuration === mins
-                  ? "bg-[#fafafa] text-[#0a0a0a]"
-                  : "bg-[#1a1a1a] text-[#6a6a6a] border border-[#2a2a2a]"
+                  ? "bg-demo-fg text-demo-bg"
+                  : "bg-demo-surface text-demo-subtle border border-demo-border"
               }`}
             >
               {mins}m
@@ -205,7 +206,7 @@ export const FocusScreen = ({ onNavigate }: FocusScreenProps) => {
 
         {/* Sound Selector */}
         <div className="flex items-center gap-2">
-          <Volume2 className="w-4 h-4 text-[#6a6a6a]" />
+          <Volume2 className="w-4 h-4 text-demo-subtle" />
           <div className="flex gap-1">
             {sounds.map(sound => (
               <button
@@ -213,8 +214,8 @@ export const FocusScreen = ({ onNavigate }: FocusScreenProps) => {
                 onClick={() => setSelectedSound(sound)}
                 className={`px-3 py-1 rounded-lg text-xs transition-all ${
                   selectedSound === sound
-                    ? "bg-[#3a3a3a] text-[#fafafa]"
-                    : "text-[#6a6a6a] hover:text-[#fafafa]"
+                    ? "bg-demo-elevated text-demo-fg"
+                    : "text-demo-subtle hover:text-demo-fg"
                 }`}
               >
                 {sound}
@@ -231,8 +232,8 @@ export const FocusScreen = ({ onNavigate }: FocusScreenProps) => {
         transition={{ delay: 0.3 }}
         className="px-5 pb-4"
       >
-        <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-4">
-          <div className="flex items-center justify-between text-xs text-[#6a6a6a]">
+        <div className="bg-demo-surface border border-demo-border rounded-xl p-4">
+          <div className="flex items-center justify-between text-xs text-demo-subtle">
             <span>2 sessions today</span>
             <span>1h 15m total focus</span>
             <span>Energy: 7→8</span>

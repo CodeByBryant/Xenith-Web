@@ -45,17 +45,17 @@ export const PhoneMockup = ({ children }: PhoneMockupProps) => {
       style={{ width: "375px" }}
     >
       {/* iPhone 15 Pro Frame */}
-      <div className="relative rounded-[55px] bg-[#1a1a1a] p-[12px] shadow-2xl">
+      <div className="relative rounded-[55px] bg-demo-surface p-[12px] shadow-2xl">
         {/* Titanium outer ring */}
-        <div className="absolute inset-0 rounded-[55px] bg-gradient-to-b from-[#3a3a3a] via-[#2a2a2a] to-[#1a1a1a]" />
+        <div className="absolute inset-0 rounded-[55px] bg-gradient-to-b from-demo-elevated via-demo-border to-demo-surface" />
 
         {/* Inner bezel */}
-        <div className="relative rounded-[45px] bg-[#0a0a0a] overflow-hidden">
+        <div className="relative rounded-[45px] bg-demo-bg overflow-hidden">
           {/* Dynamic Island */}
           <div className="absolute top-3 left-1/2 -translate-x-1/2 z-50">
             <div className="w-[120px] h-[35px] bg-black rounded-full flex items-center justify-center">
-              <div className="w-3 h-3 rounded-full bg-[#1a1a1a] mr-2" />
-              <div className="w-2.5 h-2.5 rounded-full bg-[#0d3b66]" />
+              <div className="w-3 h-3 rounded-full bg-demo-surface mr-2" />
+              <div className="w-2.5 h-2.5 rounded-full bg-demo-camera" />
             </div>
           </div>
 
