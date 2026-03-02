@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { DEMO_COLORS } from "./tokens";
 
 export interface Dimension {
   name: string;
@@ -56,7 +57,7 @@ export const RadarChart = ({ dimensions, size = 200, onDimensionClick }: RadarCh
           cy={center}
           r={(value / 10) * radius}
           fill="none"
-          stroke="#2a2a2a"
+          stroke={DEMO_COLORS.border}
           strokeWidth="1"
         />
       ))}
@@ -71,7 +72,7 @@ export const RadarChart = ({ dimensions, size = 200, onDimensionClick }: RadarCh
             y1={center}
             x2={point.x}
             y2={point.y}
-            stroke="#2a2a2a"
+            stroke={DEMO_COLORS.border}
             strokeWidth="1"
           />
         );
@@ -80,8 +81,8 @@ export const RadarChart = ({ dimensions, size = 200, onDimensionClick }: RadarCh
       {/* Filled area */}
       <motion.polygon
         points={polygonPoints}
-        fill="rgba(250, 250, 250, 0.1)"
-        stroke="#fafafa"
+        fill={DEMO_COLORS.fgAlpha10}
+        stroke={DEMO_COLORS.fg}
         strokeWidth="2"
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -98,7 +99,7 @@ export const RadarChart = ({ dimensions, size = 200, onDimensionClick }: RadarCh
             cy={point.y}
             r="6"
             fill={dim.color}
-            stroke="#0a0a0a"
+            stroke={DEMO_COLORS.bg}
             strokeWidth="2"
             className="cursor-pointer"
             onClick={() => onDimensionClick?.(i)}
@@ -120,7 +121,7 @@ export const RadarChart = ({ dimensions, size = 200, onDimensionClick }: RadarCh
             y={labelPoint.y}
             textAnchor="middle"
             dominantBaseline="middle"
-            className="text-[10px] fill-[#a0a0a0] font-medium cursor-pointer"
+            className="text-[10px] fill-demo-tertiary font-medium cursor-pointer"
             onClick={() => onDimensionClick?.(i)}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

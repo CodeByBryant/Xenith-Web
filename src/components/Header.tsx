@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { ThemeToggle } from "./ThemeToggle";
 import { Menu, X } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 const navLinks = [
   { label: "Features", href: "#features" },
@@ -12,13 +12,23 @@ const navLinks = [
 export const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const rafId = useRef<number | null>(null);
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
+      if (rafId.current !== null) return;
+      rafId.current = requestAnimationFrame(() => {
+        setScrolled(window.scrollY > 50);
+        rafId.current = null;
+      });
     };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      if (rafId.current !== null) {
+        cancelAnimationFrame(rafId.current);
+      }
+    };
   }, []);
 
   return (

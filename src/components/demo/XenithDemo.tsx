@@ -1,15 +1,16 @@
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { PhoneMockup } from "./PhoneMockup";
 import { BottomNav, ScreenId } from "./BottomNav";
-import { SplashScreen } from "./screens/SplashScreen";
-import { DashboardScreen } from "./screens/DashboardScreen";
-import { IntentionsScreen } from "./screens/IntentionsScreen";
-import { DimensionsScreen } from "./screens/DimensionsScreen";
-import { GrowthScreen } from "./screens/GrowthScreen";
-import { FocusScreen } from "./screens/FocusScreen";
-import { ReflectionScreen } from "./screens/ReflectionScreen";
-import { InsightsScreen } from "./screens/InsightsScreen";
+
+const SplashScreen = lazy(() => import("./screens/SplashScreen").then((m) => ({ default: m.SplashScreen })));
+const DashboardScreen = lazy(() => import("./screens/DashboardScreen").then((m) => ({ default: m.DashboardScreen })));
+const IntentionsScreen = lazy(() => import("./screens/IntentionsScreen").then((m) => ({ default: m.IntentionsScreen })));
+const DimensionsScreen = lazy(() => import("./screens/DimensionsScreen").then((m) => ({ default: m.DimensionsScreen })));
+const GrowthScreen = lazy(() => import("./screens/GrowthScreen").then((m) => ({ default: m.GrowthScreen })));
+const FocusScreen = lazy(() => import("./screens/FocusScreen").then((m) => ({ default: m.FocusScreen })));
+const ReflectionScreen = lazy(() => import("./screens/ReflectionScreen").then((m) => ({ default: m.ReflectionScreen })));
+const InsightsScreen = lazy(() => import("./screens/InsightsScreen").then((m) => ({ default: m.InsightsScreen })));
 
 export const XenithDemo = () => {
   const [activeScreen, setActiveScreen] = useState<ScreenId>("splash");
@@ -30,14 +31,16 @@ export const XenithDemo = () => {
             transition={{ duration: 0.2, ease: "easeInOut" }}
             className="h-full"
           >
-            {activeScreen === "splash" && <SplashScreen onNavigate={handleNavigate} />}
-            {activeScreen === "dashboard" && <DashboardScreen onNavigate={handleNavigate} />}
-            {activeScreen === "intentions" && <IntentionsScreen onNavigate={handleNavigate} />}
-            {activeScreen === "dimensions" && <DimensionsScreen onNavigate={handleNavigate} />}
-            {activeScreen === "growth" && <GrowthScreen onNavigate={handleNavigate} />}
-            {activeScreen === "focus" && <FocusScreen onNavigate={handleNavigate} />}
-            {activeScreen === "reflection" && <ReflectionScreen onNavigate={handleNavigate} />}
-            {activeScreen === "insights" && <InsightsScreen onNavigate={handleNavigate} />}
+            <Suspense fallback={<div className="h-full" />}>
+              {activeScreen === "splash" && <SplashScreen onNavigate={handleNavigate} />}
+              {activeScreen === "dashboard" && <DashboardScreen onNavigate={handleNavigate} />}
+              {activeScreen === "intentions" && <IntentionsScreen onNavigate={handleNavigate} />}
+              {activeScreen === "dimensions" && <DimensionsScreen onNavigate={handleNavigate} />}
+              {activeScreen === "growth" && <GrowthScreen onNavigate={handleNavigate} />}
+              {activeScreen === "focus" && <FocusScreen onNavigate={handleNavigate} />}
+              {activeScreen === "reflection" && <ReflectionScreen onNavigate={handleNavigate} />}
+              {activeScreen === "insights" && <InsightsScreen onNavigate={handleNavigate} />}
+            </Suspense>
           </motion.div>
         </AnimatePresence>
 
