@@ -1,8 +1,12 @@
 User-agent: Googlebot
 Allow: /
+Disallow: /dev
+Disallow: /og
 
 User-agent: Bingbot
 Allow: /
+Disallow: /dev
+Disallow: /og
 
 User-agent: Twitterbot
 Allow: /
@@ -12,6 +16,8 @@ Allow: /
 
 User-agent: *
 Allow: /
+Disallow: /dev
+Disallow: /og
 
 Sitemap: https://xenith-nu.vercel.app/sitemap.xml
 
