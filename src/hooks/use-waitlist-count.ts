@@ -3,6 +3,8 @@ import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 
 /**
  * Fetches the live waitlist count from Supabase.
+ * Uses the `get_waitlist_count` RPC so the anon role never needs direct
+ * SELECT access on the waitlist table (which would expose user emails).
  * Falls back to localStorage count when Supabase is not configured.
  * Refreshes every 30 seconds.
  */
@@ -16,12 +18,12 @@ export function useWaitlistCount() {
     const fetchCount = async () => {
       try {
         if (isSupabaseConfigured && supabase) {
-          const { count: total, error } = await supabase
-            .from("waitlist")
-            .select("*", { count: "exact", head: true });
+          const { data: total, error } = await supabase.rpc(
+            "get_waitlist_count",
+          );
 
           if (!error && total !== null && !cancelled) {
-            setCount(total);
+            setCount(Number(total));
           }
         } else {
           // localStorage fallback for dev
