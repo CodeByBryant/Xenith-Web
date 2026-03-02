@@ -35,11 +35,19 @@ export const XenithDemo = () => {
             {activeScreen === "intentions" && <IntentionsScreen onNavigate={handleNavigate} />}
             {activeScreen === "dimensions" && <DimensionsScreen onNavigate={handleNavigate} />}
             {activeScreen === "growth" && <GrowthScreen onNavigate={handleNavigate} />}
-            {activeScreen === "focus" && <FocusScreen onNavigate={handleNavigate} />}
             {activeScreen === "reflection" && <ReflectionScreen onNavigate={handleNavigate} />}
             {activeScreen === "insights" && <InsightsScreen onNavigate={handleNavigate} />}
           </motion.div>
         </AnimatePresence>
+
+        {/* FocusScreen is always mounted to persist timer state across navigation */}
+        <div
+          className="absolute inset-0 h-full"
+          style={{ display: activeScreen === "focus" ? "block" : "none" }}
+          aria-hidden={activeScreen !== "focus"}
+        >
+          <FocusScreen onNavigate={handleNavigate} />
+        </div>
 
         <BottomNav activeScreen={activeScreen} onNavigate={handleNavigate} />
       </div>
