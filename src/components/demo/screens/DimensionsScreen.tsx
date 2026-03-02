@@ -9,16 +9,17 @@ import {
 } from "lucide-react";
 import { RadarChart, Dimension } from "../RadarChart";
 import { ScreenId } from "../BottomNav";
+import { DIMENSION_COLORS } from "../tokens";
 
 const initialDimensions: (Dimension & { trend: "up" | "down" | "stable" })[] = [
-  { name: "Health", value: 8, color: "#22c55e", trend: "up" },
-  { name: "Mind", value: 7, color: "#8b5cf6", trend: "stable" },
-  { name: "Relationships", value: 6, color: "#ec4899", trend: "down" },
-  { name: "Work", value: 7, color: "#3b82f6", trend: "up" },
-  { name: "Finances", value: 5, color: "#eab308", trend: "stable" },
-  { name: "Learning", value: 8, color: "#06b6d4", trend: "up" },
-  { name: "Rest", value: 4, color: "#6366f1", trend: "down" },
-  { name: "Purpose", value: 7, color: "#f97316", trend: "up" },
+  { name: "Health", value: 8, color: DIMENSION_COLORS.health, trend: "up" },
+  { name: "Mind", value: 7, color: DIMENSION_COLORS.mind, trend: "stable" },
+  { name: "Relationships", value: 6, color: DIMENSION_COLORS.relationships, trend: "down" },
+  { name: "Work", value: 7, color: DIMENSION_COLORS.work, trend: "up" },
+  { name: "Finances", value: 5, color: DIMENSION_COLORS.finances, trend: "stable" },
+  { name: "Learning", value: 8, color: DIMENSION_COLORS.learning, trend: "up" },
+  { name: "Rest", value: 4, color: DIMENSION_COLORS.rest, trend: "down" },
+  { name: "Purpose", value: 7, color: DIMENSION_COLORS.purpose, trend: "up" },
 ];
 
 interface DimensionsScreenProps {
@@ -47,14 +48,14 @@ export const DimensionsScreen = ({ onNavigate }: DimensionsScreenProps) => {
 
   const TrendIcon = ({ trend }: { trend: "up" | "down" | "stable" }) => {
     if (trend === "up")
-      return <TrendingUp className="w-3 h-3 text-[#22c55e]" />;
+      return <TrendingUp className="w-3 h-3 text-demo-dim-health" />;
     if (trend === "down")
-      return <TrendingDown className="w-3 h-3 text-[#ef4444]" />;
-    return <Minus className="w-3 h-3 text-[#6a6a6a]" />;
+      return <TrendingDown className="w-3 h-3 text-demo-dim-danger" />;
+    return <Minus className="w-3 h-3 text-demo-subtle" />;
   };
 
   return (
-    <div className="h-full bg-[#0a0a0a] pt-14 pb-24 flex flex-col overflow-hidden">
+    <div className="h-full bg-demo-bg pt-14 pb-24 flex flex-col overflow-hidden">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -10 }}
@@ -64,14 +65,14 @@ export const DimensionsScreen = ({ onNavigate }: DimensionsScreenProps) => {
         <div className="flex items-center justify-between mb-1">
           <button
             onClick={() => onNavigate("dashboard")}
-            className="text-[#6a6a6a]"
+            className="text-demo-subtle"
           >
             <ChevronLeft className="w-6 h-6" />
           </button>
-          <h1 className="text-lg font-serif text-[#fafafa]">Life Balance</h1>
+          <h1 className="text-lg font-serif text-demo-fg">Life Balance</h1>
           <div className="w-6" />
         </div>
-        <p className="text-center text-sm text-[#6a6a6a]">
+        <p className="text-center text-sm text-demo-subtle">
           Overall: {averageBalance}%
         </p>
       </motion.div>
@@ -103,8 +104,8 @@ export const DimensionsScreen = ({ onNavigate }: DimensionsScreenProps) => {
             onClick={() =>
               setSelectedDimension(selectedDimension === i ? null : i)
             }
-            className={`bg-[#1a1a1a] border rounded-xl p-3 cursor-pointer transition-all ${
-              selectedDimension === i ? "border-[#fafafa]" : "border-[#2a2a2a]"
+            className={`bg-demo-surface border rounded-xl p-3 cursor-pointer transition-all ${
+              selectedDimension === i ? "border-demo-fg" : "border-demo-border"
             }`}
           >
             <div className="flex items-center gap-3">
@@ -116,22 +117,22 @@ export const DimensionsScreen = ({ onNavigate }: DimensionsScreenProps) => {
 
               <div className="flex-1">
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm font-medium text-[#fafafa]">
+                  <span className="text-sm font-medium text-demo-fg">
                     {dim.name}
                   </span>
                   <div className="flex items-center gap-2">
                     <TrendIcon trend={dim.trend} />
-                    <span className="text-sm text-[#6a6a6a]">
+                    <span className="text-sm text-demo-subtle">
                       {dim.value}/10
                     </span>
                     <ChevronRight
-                      className={`w-4 h-4 text-[#4a4a4a] transition-transform ${selectedDimension === i ? "rotate-90" : ""}`}
+                      className={`w-4 h-4 text-demo-muted transition-transform ${selectedDimension === i ? "rotate-90" : ""}`}
                     />
                   </div>
                 </div>
 
                 {/* Progress bar */}
-                <div className="h-1.5 bg-[#2a2a2a] rounded-full overflow-hidden">
+                <div className="h-1.5 bg-demo-border rounded-full overflow-hidden">
                   <motion.div
                     className="h-full rounded-full"
                     style={{ backgroundColor: dim.color }}
@@ -149,20 +150,20 @@ export const DimensionsScreen = ({ onNavigate }: DimensionsScreenProps) => {
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
-                className="mt-3 pt-3 border-t border-[#2a2a2a] flex items-center justify-between"
+                className="mt-3 pt-3 border-t border-demo-border flex items-center justify-between"
               >
-                <span className="text-xs text-[#6a6a6a]">Adjust rating</span>
+                <span className="text-xs text-demo-subtle">Adjust rating</span>
                 <div className="flex items-center gap-3">
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       updateDimension(i, -1);
                     }}
-                    className="w-8 h-8 rounded-lg bg-[#2a2a2a] text-[#fafafa] flex items-center justify-center hover:bg-[#3a3a3a]"
+                    className="w-8 h-8 rounded-lg bg-demo-border text-demo-fg flex items-center justify-center hover:bg-demo-elevated"
                   >
                     -
                   </button>
-                  <span className="text-lg font-bold text-[#fafafa] w-8 text-center">
+                  <span className="text-lg font-bold text-demo-fg w-8 text-center">
                     {dim.value}
                   </span>
                   <button
@@ -170,7 +171,7 @@ export const DimensionsScreen = ({ onNavigate }: DimensionsScreenProps) => {
                       e.stopPropagation();
                       updateDimension(i, 1);
                     }}
-                    className="w-8 h-8 rounded-lg bg-[#2a2a2a] text-[#fafafa] flex items-center justify-center hover:bg-[#3a3a3a]"
+                    className="w-8 h-8 rounded-lg bg-demo-border text-demo-fg flex items-center justify-center hover:bg-demo-elevated"
                   >
                     +
                   </button>
@@ -185,12 +186,12 @@ export const DimensionsScreen = ({ onNavigate }: DimensionsScreenProps) => {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="bg-gradient-to-r from-[#1a1a1a] to-[#2a2a2a] border border-[#3a3a3a] rounded-xl p-4 mt-4"
+          className="bg-gradient-to-r from-demo-surface to-demo-border border border-demo-elevated rounded-xl p-4 mt-4"
         >
-          <p className="text-xs text-[#6a6a6a] mb-2">
+          <p className="text-xs text-demo-subtle mb-2">
             Time for your monthly check-in
           </p>
-          <button className="w-full bg-[#fafafa] text-[#0a0a0a] py-2 rounded-lg text-sm font-medium">
+          <button className="w-full bg-demo-fg text-demo-bg py-2 rounded-lg text-sm font-medium">
             Start Reflection
           </button>
         </motion.div>

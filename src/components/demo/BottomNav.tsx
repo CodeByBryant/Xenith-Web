@@ -20,15 +20,15 @@ export const BottomNav = ({ activeScreen, onNavigate }: BottomNavProps) => {
 
   return (
     <div className="absolute bottom-6 left-0 right-0 px-6 z-40">
-      <div className="bg-[#1a1a1a]/90 backdrop-blur-xl rounded-2xl p-2 flex items-center justify-around border border-[#2a2a2a]">
+      <div className="bg-demo-surface/90 backdrop-blur-xl rounded-2xl p-2 flex items-center justify-around border border-demo-border">
         {navItems.map(({ id, icon: Icon }) => (
           <button
             key={id}
             onClick={() => onNavigate(id)}
             className={`p-3 rounded-xl transition-all duration-200 ${
               activeScreen === id
-                ? "bg-[#fafafa] text-[#0a0a0a]"
-                : "text-[#6a6a6a] hover:text-[#fafafa]"
+                ? "bg-demo-fg text-demo-bg"
+                : "text-demo-subtle hover:text-demo-fg"
             }`}
           >
             <Icon className="w-5 h-5" strokeWidth={1.5} />

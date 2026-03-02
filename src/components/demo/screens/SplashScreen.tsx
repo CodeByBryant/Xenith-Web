@@ -15,7 +15,7 @@ export const SplashScreen = ({ onNavigate }: SplashScreenProps) => {
   }, [onNavigate]);
 
   return (
-    <div className="h-full bg-[#0a0a0a] flex flex-col items-center justify-center">
+    <div className="h-full bg-demo-bg flex flex-col items-center justify-center">
       <motion.div
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -27,7 +27,7 @@ export const SplashScreen = ({ onNavigate }: SplashScreenProps) => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="font-chomsky text-[120px] leading-none text-[#fafafa] mb-2"
+          className="font-chomsky text-[120px] leading-none text-demo-fg mb-2"
         >
           X
         </motion.div>
@@ -37,7 +37,7 @@ export const SplashScreen = ({ onNavigate }: SplashScreenProps) => {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.5 }}
-          className="text-[#fafafa] text-lg tracking-[0.4em] font-medium mb-8"
+          className="text-demo-fg text-lg tracking-[0.4em] font-medium mb-8"
         >
           XENITH
         </motion.div>
@@ -47,7 +47,7 @@ export const SplashScreen = ({ onNavigate }: SplashScreenProps) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.8 }}
-          className="text-[#6a6a6a] text-xs tracking-[0.2em] uppercase"
+          className="text-demo-subtle text-xs tracking-[0.2em] uppercase"
         >
           Discipline | Intention | Execution
         </motion.div>
@@ -61,10 +61,10 @@ export const SplashScreen = ({ onNavigate }: SplashScreenProps) => {
         className="absolute bottom-20"
       >
         <motion.div
-          className="w-8 h-0.5 bg-[#3a3a3a] rounded-full overflow-hidden"
+          className="w-8 h-0.5 bg-demo-elevated rounded-full overflow-hidden"
         >
           <motion.div
-            className="h-full bg-[#fafafa]"
+            className="h-full bg-demo-fg"
             initial={{ width: "0%" }}
             animate={{ width: "100%" }}
             transition={{ duration: 1.5, delay: 1 }}
