@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 
 interface WaitlistCountContextValue {
@@ -17,7 +17,7 @@ const WaitlistCountContext = createContext<WaitlistCountContextValue | undefined
 export function WaitlistCountProvider({
   children,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   const [count, setCount] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
@@ -28,12 +28,12 @@ export function WaitlistCountProvider({
     const fetchCount = async () => {
       try {
         if (isSupabaseConfigured && supabase) {
-          const { count: total, error } = await supabase
-            .from("waitlist")
-            .select("*", { count: "exact", head: true });
+          const { data: total, error } = await supabase.rpc(
+            "get_waitlist_count",
+          );
 
           if (!error && total !== null && !cancelled) {
-            setCount(total);
+            setCount(Number(total));
           }
         } else {
           // localStorage fallback for dev
@@ -68,7 +68,7 @@ export function useWaitlistCountContext(): WaitlistCountContextValue {
   const ctx = useContext(WaitlistCountContext);
   if (!ctx) {
     throw new Error(
-      "useWaitlistCount must be used within a WaitlistCountProvider",
+      "useWaitlistCountContext (or useWaitlistCount) must be used within a WaitlistCountProvider",
     );
   }
   return ctx;
