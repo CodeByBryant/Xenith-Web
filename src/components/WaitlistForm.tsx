@@ -107,7 +107,9 @@ export const WaitlistForm = ({ variant = "hero" }: WaitlistFormProps) => {
         // Storage unavailable; skip
       }
     } catch (err) {
-      console.error("[Waitlist]", err);
+      if (import.meta.env.DEV) {
+        console.error("[Waitlist]", err);
+      }
       setStatus("error");
       setErrorMessage("Something went wrong — try again");
     }
