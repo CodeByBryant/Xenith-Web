@@ -40,7 +40,8 @@ export const WaitlistForm = ({ variant = "hero" }: WaitlistFormProps) => {
   const [errorMessage, setErrorMessage] = useState("");
 
   const validateEmail = (email: string) => {
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (email.length > 254) return false;
+    const regex = /^[a-zA-Z0-9_%+\-]+(\.[a-zA-Z0-9_%+\-]+)*@[a-zA-Z0-9\-]+(\.[a-zA-Z0-9\-]+)*\.[a-zA-Z]{2,}$/;
     return regex.test(email);
   };
 
@@ -129,6 +130,7 @@ export const WaitlistForm = ({ variant = "hero" }: WaitlistFormProps) => {
               if (status === "error") setStatus("idle");
             }}
             placeholder="your@email.com"
+            maxLength={254}
             disabled={status === "loading" || status === "success"}
             className={`w-full px-5 py-4 rounded-xl text-sm font-medium transition-all duration-200 disabled:opacity-50 focus:outline-none focus:ring-2 ${
               isFooter

@@ -32,6 +32,40 @@ describe("WaitlistForm", () => {
     });
   });
 
+  it("rejects an email exceeding 254 characters", async () => {
+    render(<WaitlistForm />);
+    const input = screen.getByPlaceholderText("your@email.com");
+    const longEmail = "a".repeat(243) + "@example.com"; // 255 chars — just over the 254 limit
+    fireEvent.change(input, { target: { value: longEmail } });
+    fireEvent.submit(input.closest("form")!);
+
+    await waitFor(() => {
+      expect(screen.getByText("Enter a valid email")).toBeInTheDocument();
+    });
+  });
+
+  it("rejects emails that pass the old regex but are invalid (e.g. XSS-like local part)", async () => {
+    render(<WaitlistForm />);
+    const input = screen.getByPlaceholderText("your@email.com");
+    fireEvent.change(input, { target: { value: "<script>@example.com" } });
+    fireEvent.submit(input.closest("form")!);
+
+    await waitFor(() => {
+      expect(screen.getByText("Enter a valid email")).toBeInTheDocument();
+    });
+  });
+
+  it("rejects an email with a single-character TLD", async () => {
+    render(<WaitlistForm />);
+    const input = screen.getByPlaceholderText("your@email.com");
+    fireEvent.change(input, { target: { value: "user@example.c" } });
+    fireEvent.submit(input.closest("form")!);
+
+    await waitFor(() => {
+      expect(screen.getByText("Enter a valid email")).toBeInTheDocument();
+    });
+  });
+
   it("falls back to localStorage when Supabase is unconfigured", async () => {
     render(<WaitlistForm variant="hero" />);
 
