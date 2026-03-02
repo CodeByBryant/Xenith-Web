@@ -1,8 +1,9 @@
 import { motion } from "framer-motion";
 import { Check, Plus, Play, TrendingUp, Zap, Calendar } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { RadarChart, Dimension } from "../RadarChart";
 import { ScreenId } from "../BottomNav";
+import { DIMENSION_COLORS } from "../tokens";
 
 interface Task {
   id: number;
@@ -24,14 +25,14 @@ const initialTasks: Task[] = [
 ];
 
 const dimensions: Dimension[] = [
-  { name: "Health", value: 8, color: "#22c55e" },
-  { name: "Mind", value: 7, color: "#8b5cf6" },
-  { name: "Relationships", value: 6, color: "#ec4899" },
-  { name: "Work", value: 7, color: "#3b82f6" },
-  { name: "Finances", value: 5, color: "#eab308" },
-  { name: "Learning", value: 8, color: "#06b6d4" },
-  { name: "Rest", value: 4, color: "#6366f1" },
-  { name: "Purpose", value: 7, color: "#f97316" },
+  { name: "Health", value: 8, color: DIMENSION_COLORS.health },
+  { name: "Mind", value: 7, color: DIMENSION_COLORS.mind },
+  { name: "Relationships", value: 6, color: DIMENSION_COLORS.relationships },
+  { name: "Work", value: 7, color: DIMENSION_COLORS.work },
+  { name: "Finances", value: 5, color: DIMENSION_COLORS.finances },
+  { name: "Learning", value: 8, color: DIMENSION_COLORS.learning },
+  { name: "Rest", value: 4, color: DIMENSION_COLORS.rest },
+  { name: "Purpose", value: 7, color: DIMENSION_COLORS.purpose },
 ];
 
 interface DashboardScreenProps {
@@ -41,20 +42,22 @@ interface DashboardScreenProps {
 export const DashboardScreen = ({ onNavigate }: DashboardScreenProps) => {
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
 
-  const getGreeting = () => {
+  const greeting = useMemo(() => {
     const hour = new Date().getHours();
     if (hour < 12) return "Good morning";
     if (hour < 18) return "Good afternoon";
     return "Good evening";
-  };
+  }, []);
 
-  const getDate = () => {
-    return new Date().toLocaleDateString("en-US", {
-      weekday: "long",
-      month: "long",
-      day: "numeric",
-    });
-  };
+  const formattedDate = useMemo(
+    () =>
+      new Date().toLocaleDateString("en-US", {
+        weekday: "long",
+        month: "long",
+        day: "numeric",
+      }),
+    [],
+  );
 
   const toggleTask = (id: number) => {
     setTasks(
@@ -68,7 +71,7 @@ export const DashboardScreen = ({ onNavigate }: DashboardScreenProps) => {
   );
 
   return (
-    <div className="h-full bg-[#0a0a0a] pt-14 pb-24 px-5 overflow-y-auto no-scrollbar">
+    <div className="h-full bg-demo-bg pt-14 pb-24 px-5 overflow-y-auto no-scrollbar">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -10 }}
@@ -76,13 +79,13 @@ export const DashboardScreen = ({ onNavigate }: DashboardScreenProps) => {
         className="mb-6"
       >
         <div className="flex items-center justify-between mb-1">
-          <span className="font-chomsky text-2xl text-[#fafafa]">X</span>
-          <Calendar className="w-5 h-5 text-[#6a6a6a]" />
+          <span className="font-chomsky text-2xl text-demo-fg">X</span>
+          <Calendar className="w-5 h-5 text-demo-subtle" />
         </div>
-        <h1 className="text-xl font-serif text-[#fafafa]">
-          {getGreeting()}, John
+        <h1 className="text-xl font-serif text-demo-fg">
+          {greeting}, John
         </h1>
-        <p className="text-sm text-[#6a6a6a]">{getDate()}</p>
+        <p className="text-sm text-demo-subtle">{getDate()}</p>
       </motion.div>
 
       {/* Today's Intentions */}
@@ -93,10 +96,10 @@ export const DashboardScreen = ({ onNavigate }: DashboardScreenProps) => {
         className="mb-6"
       >
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-sm font-medium text-[#fafafa] uppercase tracking-wider">
+          <h2 className="text-sm font-medium text-demo-fg uppercase tracking-wider">
             Today's Intentions
           </h2>
-          <span className="text-xs text-[#6a6a6a]">
+          <span className="text-xs text-demo-subtle">
             {completedCount} of {tasks.length} complete
           </span>
         </div>
@@ -111,36 +114,36 @@ export const DashboardScreen = ({ onNavigate }: DashboardScreenProps) => {
               onClick={() => toggleTask(task.id)}
               className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
                 task.completed
-                  ? "bg-[#1a1a1a]/50 border-[#2a2a2a]"
-                  : "bg-[#1a1a1a] border-[#2a2a2a] active:border-[#4a4a4a]"
+                  ? "bg-demo-surface/50 border-demo-border"
+                  : "bg-demo-surface border-demo-border active:border-demo-muted"
               }`}
             >
               <div
                 className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all ${
                   task.completed
-                    ? "bg-[#fafafa] border-[#fafafa]"
-                    : "border-[#4a4a4a]"
+                    ? "bg-demo-fg border-demo-fg"
+                    : "border-demo-muted"
                 }`}
               >
-                {task.completed && <Check className="w-3 h-3 text-[#0a0a0a]" />}
+                {task.completed && <Check className="w-3 h-3 text-demo-bg" />}
               </div>
               <span
                 className={`flex-1 text-sm ${
                   task.completed
-                    ? "line-through text-[#6a6a6a]"
-                    : "text-[#fafafa]"
+                    ? "line-through text-demo-subtle"
+                    : "text-demo-fg"
                 }`}
               >
                 {task.text}
               </span>
-              <span className="text-[10px] text-[#6a6a6a] bg-[#2a2a2a] px-2 py-0.5 rounded">
+              <span className="text-[10px] text-demo-subtle bg-demo-border px-2 py-0.5 rounded">
                 {task.tag}
               </span>
             </motion.div>
           ))}
         </div>
 
-        <button className="flex items-center gap-2 mt-3 text-sm text-[#6a6a6a] hover:text-[#fafafa] transition-colors">
+        <button className="flex items-center gap-2 mt-3 text-sm text-demo-subtle hover:text-demo-fg transition-colors">
           <Plus className="w-4 h-4" />
           Add intention
         </button>
@@ -152,18 +155,18 @@ export const DashboardScreen = ({ onNavigate }: DashboardScreenProps) => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
         onClick={() => onNavigate("dimensions")}
-        className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-2xl p-4 mb-6 cursor-pointer active:border-[#4a4a4a] transition-all"
+        className="bg-demo-surface border border-demo-border rounded-2xl p-4 mb-6 cursor-pointer active:border-demo-muted transition-all"
       >
         <div className="flex items-center justify-between mb-2">
-          <h2 className="text-sm font-medium text-[#fafafa] uppercase tracking-wider">
+          <h2 className="text-sm font-medium text-demo-fg uppercase tracking-wider">
             Life Balance
           </h2>
-          <span className="text-xs text-[#6a6a6a]">{averageBalance}%</span>
+          <span className="text-xs text-demo-subtle">{averageBalance}%</span>
         </div>
         <div className="flex justify-center py-2">
           <RadarChart dimensions={dimensions} size={160} />
         </div>
-        <p className="text-center text-xs text-[#6a6a6a]">Tap to expand</p>
+        <p className="text-center text-xs text-demo-subtle">Tap to expand</p>
       </motion.div>
 
       {/* Quick Stats */}
@@ -173,22 +176,22 @@ export const DashboardScreen = ({ onNavigate }: DashboardScreenProps) => {
         transition={{ delay: 0.3 }}
         className="grid grid-cols-3 gap-3 mb-6"
       >
-        <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-3 text-center">
-          <Zap className="w-4 h-4 text-[#fafafa] mx-auto mb-1" />
-          <div className="text-lg font-serif font-bold text-[#fafafa]">
+        <div className="bg-demo-surface border border-demo-border rounded-xl p-3 text-center">
+          <Zap className="w-4 h-4 text-demo-fg mx-auto mb-1" />
+          <div className="text-lg font-serif font-bold text-demo-fg">
             4h 32m
           </div>
-          <div className="text-[10px] text-[#6a6a6a]">Focus today</div>
+          <div className="text-[10px] text-demo-subtle">Focus today</div>
         </div>
-        <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-3 text-center">
-          <Calendar className="w-4 h-4 text-[#fafafa] mx-auto mb-1" />
-          <div className="text-lg font-serif font-bold text-[#fafafa]">6/7</div>
-          <div className="text-[10px] text-[#6a6a6a]">Days active</div>
+        <div className="bg-demo-surface border border-demo-border rounded-xl p-3 text-center">
+          <Calendar className="w-4 h-4 text-demo-fg mx-auto mb-1" />
+          <div className="text-lg font-serif font-bold text-demo-fg">6/7</div>
+          <div className="text-[10px] text-demo-subtle">Days active</div>
         </div>
-        <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-3 text-center">
-          <TrendingUp className="w-4 h-4 text-[#fafafa] mx-auto mb-1" />
-          <div className="text-lg font-serif font-bold text-[#fafafa]">12</div>
-          <div className="text-[10px] text-[#6a6a6a]">Completed</div>
+        <div className="bg-demo-surface border border-demo-border rounded-xl p-3 text-center">
+          <TrendingUp className="w-4 h-4 text-demo-fg mx-auto mb-1" />
+          <div className="text-lg font-serif font-bold text-demo-fg">12</div>
+          <div className="text-[10px] text-demo-subtle">Completed</div>
         </div>
       </motion.div>
 
@@ -198,14 +201,14 @@ export const DashboardScreen = ({ onNavigate }: DashboardScreenProps) => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
         onClick={() => onNavigate("focus")}
-        className="bg-[#fafafa] rounded-2xl p-4 flex items-center justify-between cursor-pointer active:opacity-90 transition-opacity"
+        className="bg-demo-fg rounded-2xl p-4 flex items-center justify-between cursor-pointer active:opacity-90 transition-opacity"
       >
         <div>
-          <h3 className="text-[#0a0a0a] font-medium">Start Focus Session</h3>
-          <p className="text-[#6a6a6a] text-sm">Deep work • 25 min</p>
+          <h3 className="text-demo-bg font-medium">Start Focus Session</h3>
+          <p className="text-demo-subtle text-sm">Deep work • 25 min</p>
         </div>
-        <div className="w-12 h-12 bg-[#0a0a0a] rounded-full flex items-center justify-center">
-          <Play className="w-5 h-5 text-[#fafafa] ml-0.5" />
+        <div className="w-12 h-12 bg-demo-bg rounded-full flex items-center justify-center">
+          <Play className="w-5 h-5 text-demo-fg ml-0.5" />
         </div>
       </motion.div>
     </div>

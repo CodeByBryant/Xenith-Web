@@ -78,7 +78,7 @@ export const IntentionsScreen = ({ onNavigate }: IntentionsScreenProps) => {
   const completedCount = tasks.filter((t) => t.completed).length;
 
   return (
-    <div className="h-full bg-[#0a0a0a] pt-14 pb-24 flex flex-col">
+    <div className="h-full bg-demo-bg pt-14 pb-24 flex flex-col">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -10 }}
@@ -88,14 +88,14 @@ export const IntentionsScreen = ({ onNavigate }: IntentionsScreenProps) => {
         <div className="flex items-center justify-between mb-1">
           <button
             onClick={() => onNavigate("dashboard")}
-            className="text-[#6a6a6a]"
+            className="text-demo-subtle"
           >
             <ChevronLeft className="w-6 h-6" />
           </button>
-          <h1 className="text-lg font-serif text-[#fafafa]">Intentions</h1>
+          <h1 className="text-lg font-serif text-demo-fg">Intentions</h1>
           <div className="w-6" />
         </div>
-        <p className="text-center text-xs text-[#6a6a6a]">
+        <p className="text-center text-xs text-demo-subtle">
           {completedCount} of {tasks.length} complete
         </p>
       </motion.div>
@@ -109,8 +109,8 @@ export const IntentionsScreen = ({ onNavigate }: IntentionsScreenProps) => {
               onClick={() => setActiveTag(tag)}
               className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
                 activeTag === tag
-                  ? "bg-[#fafafa] text-[#0a0a0a]"
-                  : "bg-[#1a1a1a] text-[#6a6a6a] border border-[#2a2a2a]"
+                  ? "bg-demo-fg text-demo-bg"
+                  : "bg-demo-surface text-demo-subtle border border-demo-border"
               }`}
             >
               {tag}
@@ -129,35 +129,35 @@ export const IntentionsScreen = ({ onNavigate }: IntentionsScreenProps) => {
             transition={{ delay: i * 0.03 }}
             className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${
               task.completed
-                ? "bg-[#1a1a1a]/50 border-[#2a2a2a]"
-                : "bg-[#1a1a1a] border-[#2a2a2a]"
+                ? "bg-demo-surface/50 border-demo-border"
+                : "bg-demo-surface border-demo-border"
             }`}
           >
             <div
               onClick={() => toggleTask(task.id)}
               className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all cursor-pointer ${
                 task.completed
-                  ? "bg-[#fafafa] border-[#fafafa]"
-                  : "border-[#4a4a4a] hover:border-[#fafafa]"
+                  ? "bg-demo-fg border-demo-fg"
+                  : "border-demo-muted hover:border-demo-fg"
               }`}
             >
-              {task.completed && <Check className="w-3 h-3 text-[#0a0a0a]" />}
+              {task.completed && <Check className="w-3 h-3 text-demo-bg" />}
             </div>
             <span
               className={`flex-1 text-sm ${
                 task.completed
-                  ? "line-through text-[#6a6a6a]"
-                  : "text-[#fafafa]"
+                  ? "line-through text-demo-subtle"
+                  : "text-demo-fg"
               }`}
             >
               {task.text}
             </span>
-            <span className="text-[10px] text-[#6a6a6a] bg-[#2a2a2a] px-2 py-0.5 rounded">
+            <span className="text-[10px] text-demo-subtle bg-demo-border px-2 py-0.5 rounded">
               {task.tag}
             </span>
             <button
               onClick={() => deleteTask(task.id)}
-              className="text-[#4a4a4a] hover:text-[#ef4444] transition-colors"
+              className="text-demo-muted hover:text-demo-dim-danger transition-colors"
             >
               <Trash2 className="w-4 h-4" />
             </button>
@@ -178,11 +178,11 @@ export const IntentionsScreen = ({ onNavigate }: IntentionsScreenProps) => {
               onKeyDown={(e) => e.key === "Enter" && addTask()}
               placeholder="New intention..."
               autoFocus
-              className="flex-1 bg-[#1a1a1a] border border-[#3a3a3a] rounded-xl px-4 py-3 text-sm text-[#fafafa] placeholder-[#6a6a6a] focus:outline-none focus:border-[#fafafa]"
+              className="flex-1 bg-demo-surface border border-demo-elevated rounded-xl px-4 py-3 text-sm text-demo-fg placeholder-demo-subtle focus:outline-none focus:border-demo-fg"
             />
             <button
               onClick={addTask}
-              className="bg-[#fafafa] text-[#0a0a0a] p-3 rounded-xl"
+              className="bg-demo-fg text-demo-bg p-3 rounded-xl"
             >
               <Check className="w-5 h-5" />
             </button>
@@ -190,7 +190,7 @@ export const IntentionsScreen = ({ onNavigate }: IntentionsScreenProps) => {
         ) : (
           <button
             onClick={() => setShowInput(true)}
-            className="flex items-center gap-2 w-full p-3 text-sm text-[#6a6a6a] hover:text-[#fafafa] transition-colors"
+            className="flex items-center gap-2 w-full p-3 text-sm text-demo-subtle hover:text-demo-fg transition-colors"
           >
             <Plus className="w-5 h-5" />
             Add intention
