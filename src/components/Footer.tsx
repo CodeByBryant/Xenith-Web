@@ -9,9 +9,9 @@ const footerLinks = [
 ];
 
 const socialLinks = [
-  { label: "X", href: "https://x.com/xenithapp", external: true },
-  { label: "IG", href: "https://instagram.com/xenithapp", external: true },
-  { label: "TT", href: "https://tiktok.com/@xenithapp", external: true },
+  { label: "X", ariaLabel: "X (Twitter)", href: "https://x.com/xenithapp", external: true },
+  { label: "IG", ariaLabel: "Instagram", href: "https://instagram.com/xenithapp", external: true },
+  { label: "TT", ariaLabel: "TikTok", href: "https://tiktok.com/@xenithapp", external: true },
 ];
 
 export const Footer = () => {
@@ -60,19 +60,20 @@ export const Footer = () => {
 
           {/* Social */}
           <div className="flex justify-center md:justify-end gap-2">
-            {/*{socialLinks.map((link) => (
+            {socialLinks.map((link) => (
               <motion.a
                 key={link.label}
                 href={link.href}
                 target={link.external ? "_blank" : undefined}
                 rel={link.external ? "noopener noreferrer" : undefined}
+                aria-label={link.ariaLabel}
                 className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center text-xs font-medium hover:bg-foreground hover:text-background transition-all duration-200"
                 whileHover={{ y: -2, scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
                 {link.label}
               </motion.a>
-            ))}*/}
+            ))}
           </div>
         </div>
 
