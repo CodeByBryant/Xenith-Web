@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { ThemeToggle } from "./ThemeToggle";
 import { Menu, X } from "lucide-react";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 
 const navLinks = [
   { label: "Features", href: "#features" },
@@ -12,6 +12,8 @@ const navLinks = [
 export const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const firstMenuLinkRef = useRef<HTMLAnchorElement>(null);
   const rafId = useRef<number | null>(null);
 
   useEffect(() => {
@@ -30,6 +32,29 @@ export const Header = () => {
       }
     };
   }, []);
+
+  // Close menu on Escape and return focus to toggle button
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key === "Escape" && mobileMenuOpen) {
+        setMobileMenuOpen(false);
+        menuButtonRef.current?.focus();
+      }
+    },
+    [mobileMenuOpen],
+  );
+
+  useEffect(() => {
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [handleKeyDown]);
+
+  // Move focus to first menu link when menu opens
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      firstMenuLinkRef.current?.focus();
+    }
+  }, [mobileMenuOpen]);
 
   return (
     <>
@@ -92,9 +117,13 @@ export const Header = () => {
                   Join Waitlist
                 </motion.a>
                 <motion.button
+                  ref={menuButtonRef}
                   onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                   className="md:hidden p-2 hover:bg-secondary rounded-lg transition-colors"
                   whileTap={{ scale: 0.95 }}
+                  aria-expanded={mobileMenuOpen}
+                  aria-controls="mobile-menu"
+                  aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
                 >
                   <AnimatePresence mode="wait">
                     {mobileMenuOpen ? (
@@ -104,6 +133,7 @@ export const Header = () => {
                         animate={{ rotate: 0, opacity: 1 }}
                         exit={{ rotate: 90, opacity: 0 }}
                         transition={{ duration: 0.2 }}
+                        aria-hidden="true"
                       >
                         <X className="w-5 h-5" />
                       </motion.div>
@@ -114,6 +144,7 @@ export const Header = () => {
                         animate={{ rotate: 0, opacity: 1 }}
                         exit={{ rotate: -90, opacity: 0 }}
                         transition={{ duration: 0.2 }}
+                        aria-hidden="true"
                       >
                         <Menu className="w-5 h-5" />
                       </motion.div>
@@ -129,6 +160,7 @@ export const Header = () => {
         <AnimatePresence>
           {mobileMenuOpen && (
             <motion.div
+              id="mobile-menu"
               initial={{ opacity: 0, y: -10, height: 0 }}
               animate={{ opacity: 1, y: 0, height: "auto" }}
               exit={{ opacity: 0, y: -10, height: 0 }}
@@ -136,11 +168,12 @@ export const Header = () => {
               className="md:hidden mx-4 mt-2 overflow-hidden"
             >
               <div className="bg-background/95 backdrop-blur-xl border border-border rounded-2xl p-4">
-                <nav className="flex flex-col gap-1">
+                <nav className="flex flex-col gap-1" aria-label="Mobile navigation">
                   {navLinks.map((link, index) => (
                     <motion.a
                       key={link.label}
                       href={link.href}
+                      ref={index === 0 ? firstMenuLinkRef : null}
                       onClick={() => setMobileMenuOpen(false)}
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
