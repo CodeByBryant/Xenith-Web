@@ -3,6 +3,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, Check, Loader2 } from "lucide-react";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 
+const COOLDOWN_MS = 60_000; // 60 seconds between submissions
+const LAST_SUBMIT_KEY = "xenith_waitlist_last_submit";
+
 /** Extract UTM params from the current URL query string. */
 const getUtmParams = () => {
   const params = new URLSearchParams(window.location.search);
@@ -50,6 +53,18 @@ export const WaitlistForm = ({ variant = "hero" }: WaitlistFormProps) => {
       return;
     }
 
+    // Client-side cooldown to prevent submission spam
+    try {
+      const lastSubmit = localStorage.getItem(LAST_SUBMIT_KEY);
+      if (lastSubmit && Date.now() - Number(lastSubmit) < COOLDOWN_MS) {
+        setStatus("error");
+        setErrorMessage("Too many attempts — please wait before trying again");
+        return;
+      }
+    } catch {
+      // Storage unavailable; proceed without rate-limit check
+    }
+
     setStatus("loading");
 
     try {
@@ -86,6 +101,11 @@ export const WaitlistForm = ({ variant = "hero" }: WaitlistFormProps) => {
 
       setStatus("success");
       setEmail("");
+      try {
+        localStorage.setItem(LAST_SUBMIT_KEY, String(Date.now()));
+      } catch {
+        // Storage unavailable; skip
+      }
     } catch (err) {
       console.error("[Waitlist]", err);
       setStatus("error");

@@ -68,6 +68,9 @@ describe("WaitlistForm", () => {
     });
     unmount();
 
+    // Clear the cooldown so the second render can submit
+    localStorage.removeItem("xenith_waitlist_last_submit");
+
     // Submit the same email again
     render(<WaitlistForm />);
     const input2 = screen.getByPlaceholderText("your@email.com");
@@ -110,5 +113,45 @@ describe("WaitlistForm", () => {
 
     // sessionStorage key should have been consumed
     expect(sessionStorage.getItem("xenith_selected_plan")).toBeNull();
+  });
+
+  it("blocks resubmission within the cooldown window", async () => {
+    // Simulate a submission that happened 10 seconds ago (within the 60 s window)
+    localStorage.setItem(
+      "xenith_waitlist_last_submit",
+      String(Date.now() - 10_000),
+    );
+
+    render(<WaitlistForm />);
+    const input = screen.getByPlaceholderText("your@email.com");
+    fireEvent.change(input, { target: { value: "rate@example.com" } });
+    fireEvent.submit(input.closest("form")!);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          "Too many attempts — please wait before trying again",
+        ),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("allows resubmission after the cooldown window has elapsed", async () => {
+    // Simulate a submission that happened 90 seconds ago (outside the 60 s window)
+    localStorage.setItem(
+      "xenith_waitlist_last_submit",
+      String(Date.now() - 90_000),
+    );
+
+    render(<WaitlistForm />);
+    const input = screen.getByPlaceholderText("your@email.com");
+    fireEvent.change(input, { target: { value: "allowed@example.com" } });
+    fireEvent.submit(input.closest("form")!);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("We'll notify you when Xenith launches."),
+      ).toBeInTheDocument();
+    });
   });
 });
