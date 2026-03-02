@@ -44,6 +44,15 @@ export const XenithDemo = () => {
           </motion.div>
         </AnimatePresence>
 
+        {/* FocusScreen is always mounted to persist timer state across navigation */}
+        <div
+          className="absolute inset-0 h-full"
+          style={{ display: activeScreen === "focus" ? "block" : "none" }}
+          aria-hidden={activeScreen !== "focus"}
+        >
+          <FocusScreen onNavigate={handleNavigate} />
+        </div>
+
         <BottomNav activeScreen={activeScreen} onNavigate={handleNavigate} />
       </div>
     </PhoneMockup>
