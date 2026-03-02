@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Check, Plus, Play, TrendingUp, Zap, Calendar } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { RadarChart, Dimension } from "../RadarChart";
 import { ScreenId } from "../BottomNav";
 
@@ -41,20 +41,22 @@ interface DashboardScreenProps {
 export const DashboardScreen = ({ onNavigate }: DashboardScreenProps) => {
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
 
-  const getGreeting = () => {
+  const greeting = useMemo(() => {
     const hour = new Date().getHours();
     if (hour < 12) return "Good morning";
     if (hour < 18) return "Good afternoon";
     return "Good evening";
-  };
+  }, []);
 
-  const getDate = () => {
-    return new Date().toLocaleDateString("en-US", {
-      weekday: "long",
-      month: "long",
-      day: "numeric",
-    });
-  };
+  const formattedDate = useMemo(
+    () =>
+      new Date().toLocaleDateString("en-US", {
+        weekday: "long",
+        month: "long",
+        day: "numeric",
+      }),
+    [],
+  );
 
   const toggleTask = (id: number) => {
     setTasks(
@@ -80,9 +82,9 @@ export const DashboardScreen = ({ onNavigate }: DashboardScreenProps) => {
           <Calendar className="w-5 h-5 text-[#6a6a6a]" />
         </div>
         <h1 className="text-xl font-serif text-[#fafafa]">
-          {getGreeting()}, John
+          {greeting}, John
         </h1>
-        <p className="text-sm text-[#6a6a6a]">{getDate()}</p>
+        <p className="text-sm text-[#6a6a6a]">{formattedDate}</p>
       </motion.div>
 
       {/* Today's Intentions */}
