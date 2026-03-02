@@ -4,24 +4,27 @@ import { useRef } from "react";
 const audiences = [
   {
     title: "Students",
-    stat: "4.0",
-    statLabel: "avg GPA lift",
-    description: "Balance academics, fitness, social life, and side projects. Stop choosing between success and wellbeing.",
-    tags: ["Time-blocked studying", "Energy management", "Life balance tracking"],
+    stat: "Your edge.",
+    statLabel: "academic & personal",
+    description:
+      "Balance coursework, fitness, and side projects without sacrificing one for another. Build the habits now that carry you through everything after.",
+    tags: ["Daily intentions", "Focus sessions", "Life balance", "Academic momentum"],
   },
   {
     title: "Young Professionals",
-    stat: "47%",
-    statLabel: "more focused hours",
-    description: "Climb the ladder without burning the candle. Build habits that compound over a 40-year career.",
-    tags: ["Deep work sessions", "Career growth tracking", "Sustainable pace"],
+    stat: "Your pace.",
+    statLabel: "career & wellbeing",
+    description:
+      "Climb without burning out. Build sustainable work habits, track what actually matters, and grow across your career without losing yourself in the process.",
+    tags: ["Deep work", "Career growth", "Sustainable habits", "No burnout"],
   },
   {
     title: "Builders & Creators",
-    stat: "3x",
-    statLabel: "project completion",
-    description: "Stop starting. Start finishing. Turn scattered ideas into shipped work with systematic execution.",
-    tags: ["Project milestones", "Creative momentum", "Shipping discipline"],
+    stat: "Your output.",
+    statLabel: "ideas & execution",
+    description:
+      "Stop starting, start finishing. Turn scattered ideas into shipped work with a system built around intention and follow-through — not motivation.",
+    tags: ["Ship faster", "Creative momentum", "Execution discipline", "Finish what you start"],
   },
 ];
 
