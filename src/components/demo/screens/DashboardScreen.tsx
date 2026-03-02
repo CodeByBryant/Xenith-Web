@@ -85,7 +85,7 @@ export const DashboardScreen = ({ onNavigate }: DashboardScreenProps) => {
         <h1 className="text-xl font-serif text-demo-fg">
           {greeting}, John
         </h1>
-        <p className="text-sm text-demo-subtle">{getDate()}</p>
+        <p className="text-sm text-demo-subtle">{formattedDate}</p>
       </motion.div>
 
       {/* Today's Intentions */}
