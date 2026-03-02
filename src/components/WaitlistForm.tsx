@@ -87,7 +87,9 @@ export const WaitlistForm = ({ variant = "hero" }: WaitlistFormProps) => {
       setStatus("success");
       setEmail("");
     } catch (err) {
-      console.error("[Waitlist]", err);
+      if (import.meta.env.DEV) {
+        console.error("[Waitlist]", err);
+      }
       setStatus("error");
       setErrorMessage("Something went wrong — try again");
     }
