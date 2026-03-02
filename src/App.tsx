@@ -6,6 +6,7 @@ import { lazy, Suspense } from "react";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 import { HelmetProvider } from "react-helmet-async";
+import { WaitlistCountProvider } from "@/context/WaitlistCountContext";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Privacy from "./pages/Privacy";
@@ -52,12 +53,14 @@ const router = createBrowserRouter([
 const App = () => (
   <HelmetProvider>
     <ErrorBoundary>
-      <TooltipProvider>
-        <Sonner />
-        <RouterProvider router={router} />
-        <Analytics />
-        <SpeedInsights />
-      </TooltipProvider>
+      <WaitlistCountProvider>
+        <TooltipProvider>
+          <Sonner />
+          <RouterProvider router={router} />
+          <Analytics />
+          <SpeedInsights />
+        </TooltipProvider>
+      </WaitlistCountProvider>
     </ErrorBoundary>
   </HelmetProvider>
 );
