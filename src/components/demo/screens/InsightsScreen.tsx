@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { ScreenId } from "../BottomNav";
 import { RadarChart, Dimension } from "../RadarChart";
+import { DIMENSION_COLORS } from "../tokens";
 
 const weeklyData = [
   { day: "Mon", value: 3 },
@@ -31,14 +32,14 @@ const focusData = [
 ];
 
 const dimensions: Dimension[] = [
-  { name: "Health", value: 8, color: "#22c55e" },
-  { name: "Mind", value: 7, color: "#8b5cf6" },
-  { name: "Relationships", value: 6, color: "#ec4899" },
-  { name: "Work", value: 7, color: "#3b82f6" },
-  { name: "Finances", value: 5, color: "#eab308" },
-  { name: "Learning", value: 8, color: "#06b6d4" },
-  { name: "Rest", value: 4, color: "#6366f1" },
-  { name: "Purpose", value: 7, color: "#f97316" },
+  { name: "Health", value: 8, color: DIMENSION_COLORS.health },
+  { name: "Mind", value: 7, color: DIMENSION_COLORS.mind },
+  { name: "Relationships", value: 6, color: DIMENSION_COLORS.relationships },
+  { name: "Work", value: 7, color: DIMENSION_COLORS.work },
+  { name: "Finances", value: 5, color: DIMENSION_COLORS.finances },
+  { name: "Learning", value: 8, color: DIMENSION_COLORS.learning },
+  { name: "Rest", value: 4, color: DIMENSION_COLORS.rest },
+  { name: "Purpose", value: 7, color: DIMENSION_COLORS.purpose },
 ];
 
 interface InsightsScreenProps {
@@ -51,7 +52,7 @@ export const InsightsScreen = ({ onNavigate }: InsightsScreenProps) => {
   const maxFocus = Math.max(...focusData.map((d) => d.hours));
 
   return (
-    <div className="h-full bg-[#0a0a0a] pt-14 pb-24 flex flex-col overflow-hidden">
+    <div className="h-full bg-demo-bg pt-14 pb-24 flex flex-col overflow-hidden">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -10 }}
@@ -61,11 +62,11 @@ export const InsightsScreen = ({ onNavigate }: InsightsScreenProps) => {
         <div className="flex items-center justify-between mb-1">
           <button
             onClick={() => onNavigate("dashboard")}
-            className="text-[#6a6a6a]"
+            className="text-demo-subtle"
           >
             <ChevronLeft className="w-6 h-6" />
           </button>
-          <h1 className="text-lg font-serif text-[#fafafa]">Insights</h1>
+          <h1 className="text-lg font-serif text-demo-fg">Insights</h1>
           <div className="w-6" />
         </div>
       </motion.div>
@@ -76,15 +77,15 @@ export const InsightsScreen = ({ onNavigate }: InsightsScreenProps) => {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-4"
+          className="bg-demo-surface border border-demo-border rounded-xl p-4"
         >
           <div className="flex items-center gap-2 mb-1">
-            <CheckCircle className="w-4 h-4 text-[#22c55e]" />
-            <span className="text-sm text-[#fafafa]">
+            <CheckCircle className="w-4 h-4 text-demo-dim-health" />
+            <span className="text-sm text-demo-fg">
               18 intentions completed this week
             </span>
           </div>
-          <div className="flex items-center gap-1 text-xs text-[#22c55e]">
+          <div className="flex items-center gap-1 text-xs text-demo-dim-health">
             <TrendingUp className="w-3 h-3" />
             <span>20% more than last week</span>
           </div>
@@ -94,12 +95,12 @@ export const InsightsScreen = ({ onNavigate }: InsightsScreenProps) => {
             {weeklyData.map((d, i) => (
               <div key={d.day} className="flex flex-col items-center flex-1">
                 <motion.div
-                  className="w-full bg-[#fafafa] rounded-t"
+                  className="w-full bg-demo-fg rounded-t"
                   initial={{ height: 0 }}
                   animate={{ height: `${(d.value / maxDaily) * 60}px` }}
                   transition={{ duration: 0.5, delay: i * 0.05 }}
                 />
-                <span className="text-[10px] text-[#6a6a6a] mt-1">{d.day}</span>
+                <span className="text-[10px] text-demo-subtle mt-1">{d.day}</span>
               </div>
             ))}
           </div>
@@ -110,11 +111,11 @@ export const InsightsScreen = ({ onNavigate }: InsightsScreenProps) => {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-4"
+          className="bg-demo-surface border border-demo-border rounded-xl p-4"
         >
           <div className="flex items-center gap-2 mb-1">
-            <Clock className="w-4 h-4 text-[#fafafa]" />
-            <span className="text-sm text-[#fafafa]">
+            <Clock className="w-4 h-4 text-demo-fg" />
+            <span className="text-sm text-demo-fg">
               {totalFocus.toFixed(1)}h focused this week
             </span>
           </div>
@@ -124,12 +125,12 @@ export const InsightsScreen = ({ onNavigate }: InsightsScreenProps) => {
             {focusData.map((d, i) => (
               <div key={d.day} className="flex flex-col items-center flex-1">
                 <motion.div
-                  className="w-full bg-gradient-to-t from-[#3a3a3a] to-[#fafafa] rounded-t"
+                  className="w-full bg-gradient-to-t from-demo-elevated to-demo-fg rounded-t"
                   initial={{ height: 0 }}
                   animate={{ height: `${(d.hours / maxFocus) * 48}px` }}
                   transition={{ duration: 0.5, delay: 0.2 + i * 0.05 }}
                 />
-                <span className="text-[10px] text-[#6a6a6a] mt-1">{d.day}</span>
+                <span className="text-[10px] text-demo-subtle mt-1">{d.day}</span>
               </div>
             ))}
           </div>
@@ -142,23 +143,23 @@ export const InsightsScreen = ({ onNavigate }: InsightsScreenProps) => {
           transition={{ delay: 0.3 }}
           className="space-y-2"
         >
-          <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-3 flex items-center gap-3">
-            <TrendingUp className="w-5 h-5 text-[#22c55e]" />
-            <p className="text-sm text-[#fafafa]">
+          <div className="bg-demo-surface border border-demo-border rounded-xl p-3 flex items-center gap-3">
+            <TrendingUp className="w-5 h-5 text-demo-dim-health" />
+            <p className="text-sm text-demo-fg">
               You're most productive on{" "}
               <span className="font-medium">Thursdays</span>
             </p>
           </div>
-          <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-3 flex items-center gap-3">
-            <Clock className="w-5 h-5 text-[#3b82f6]" />
-            <p className="text-sm text-[#fafafa]">
+          <div className="bg-demo-surface border border-demo-border rounded-xl p-3 flex items-center gap-3">
+            <Clock className="w-5 h-5 text-demo-dim-work" />
+            <p className="text-sm text-demo-fg">
               Your focus peaks between{" "}
               <span className="font-medium">9-11 AM</span>
             </p>
           </div>
-          <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-3 flex items-center gap-3">
-            <AlertTriangle className="w-5 h-5 text-[#eab308]" />
-            <p className="text-sm text-[#fafafa]">
+          <div className="bg-demo-surface border border-demo-border rounded-xl p-3 flex items-center gap-3">
+            <AlertTriangle className="w-5 h-5 text-demo-dim-finances" />
+            <p className="text-sm text-demo-fg">
               <span className="font-medium">Rest</span> dimension needs
               attention (-15%)
             </p>
@@ -170,13 +171,13 @@ export const InsightsScreen = ({ onNavigate }: InsightsScreenProps) => {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-4"
+          className="bg-demo-surface border border-demo-border rounded-xl p-4"
         >
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-[#fafafa] font-medium">
+            <span className="text-sm text-demo-fg font-medium">
               Life Balance Trend
             </span>
-            <span className="text-xs text-[#6a6a6a]">vs. last month</span>
+            <span className="text-xs text-demo-subtle">vs. last month</span>
           </div>
           <div className="flex justify-center">
             <RadarChart dimensions={dimensions} size={160} />
