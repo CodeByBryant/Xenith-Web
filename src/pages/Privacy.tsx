@@ -1,3 +1,4 @@
+import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
@@ -5,6 +6,12 @@ import { ArrowLeft } from "lucide-react";
 const Privacy = () => {
   return (
     <div className="min-h-screen bg-background text-foreground">
+      <Helmet>
+        <title>Privacy Policy — Xenith</title>
+        <meta name="description" content="Learn how Xenith collects, uses, and protects your personal data." />
+        <link rel="canonical" href="https://xenith-nu.vercel.app/privacy" />
+        <meta name="robots" content="noindex, follow" />
+      </Helmet>
       {/* Header */}
       <header className="border-b border-border">
         <div className="container mx-auto max-w-4xl px-6 py-6 flex items-center gap-4">

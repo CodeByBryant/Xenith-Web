@@ -5,6 +5,7 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { lazy, Suspense } from "react";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
+import { HelmetProvider } from "react-helmet-async";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Privacy from "./pages/Privacy";
@@ -49,14 +50,16 @@ const router = createBrowserRouter([
 ]);
 
 const App = () => (
-  <ErrorBoundary>
-    <TooltipProvider>
-      <Sonner />
-      <RouterProvider router={router} />
-      <Analytics />
-      <SpeedInsights />
-    </TooltipProvider>
-  </ErrorBoundary>
+  <HelmetProvider>
+    <ErrorBoundary>
+      <TooltipProvider>
+        <Sonner />
+        <RouterProvider router={router} />
+        <Analytics />
+        <SpeedInsights />
+      </TooltipProvider>
+    </ErrorBoundary>
+  </HelmetProvider>
 );
 
 export default App;
