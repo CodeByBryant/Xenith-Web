@@ -139,15 +139,3 @@ export const LIFE_DIMENSIONS = [
 ] as const;
 
 export type LifeDimensionName = (typeof LIFE_DIMENSIONS)[number];
-
-// ─── Canonical growth skills ─────────────────────────────────────────
-export const GROWTH_SKILLS = [
-  "Discipline",
-  "Focus",
-  "Consistency",
-  "Endurance",
-  "Insight",
-  "Resolve",
-] as const;
-
-export type GrowthSkillName = (typeof GROWTH_SKILLS)[number];

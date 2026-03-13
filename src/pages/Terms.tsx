@@ -8,8 +8,11 @@ const Terms = () => {
     <div className="min-h-screen bg-background text-foreground">
       <Helmet>
         <title>Terms of Service — Xenith</title>
-        <meta name="description" content="Read the terms and conditions for using the Xenith platform." />
-        <link rel="canonical" href="https://xenith-nu.vercel.app/terms" />
+        <meta
+          name="description"
+          content="Read the terms and conditions for using the Xenith platform."
+        />
+        <link rel="canonical" href="https://xenith.life/terms" />
         <meta name="robots" content="noindex, follow" />
       </Helmet>
       {/* Header */}
@@ -23,7 +26,7 @@ const Terms = () => {
           </Link>
           <div className="flex items-center gap-3">
             <span className="font-chomsky text-3xl leading-none">X</span>
-            <span className="font-chomsky text-lg">Xenith</span>
+            <span className="font-serif text-lg">Xenith</span>
           </div>
         </div>
       </header>
@@ -244,10 +247,10 @@ const Terms = () => {
                 If you have any questions about these Terms of Service, please
                 contact us at{" "}
                 <a
-                  href="mailto:legal@xenith.app"
+                  href="mailto:legal@xenith.life"
                   className="text-foreground underline underline-offset-4 hover:text-foreground/80"
                 >
-                  legal@xenith.app
+                  legal@xenith.life
                 </a>
                 .
               </p>

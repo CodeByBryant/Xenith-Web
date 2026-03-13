@@ -19,5 +19,5 @@ Allow: /
 Disallow: /dev
 Disallow: /og
 
-Sitemap: https://xenith-nu.vercel.app/sitemap.xml
+Sitemap: https://xenith.life/sitemap.xml
 

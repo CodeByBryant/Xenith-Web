@@ -15,7 +15,7 @@ const Index = () => {
       <Helmet>
         <title>Xenith - Discipline | Intention | Execution</title>
         <meta name="description" content="A minimalist productivity platform for students and young professionals. Track intentions, build sustainable routines, and grow across all dimensions of life." />
-        <link rel="canonical" href="https://xenith-nu.vercel.app/" />
+        <link rel="canonical" href="https://xenith.life/" />
       </Helmet>
       <Header />
       <main>

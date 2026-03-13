@@ -1,0 +1,140 @@
+import { motion, AnimatePresence } from "framer-motion";
+import { Play, Pause, RotateCcw, Check, Clock } from "lucide-react";
+import { toast } from "sonner";
+import { useFocusSessions } from "@/hooks/use-focus-sessions";
+import { useFocusTimer } from "@/context/FocusTimerContext";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+
+const PRESETS = [
+  { label: "25 min", minutes: 25 },
+  { label: "45 min", minutes: 45 },
+  { label: "90 min", minutes: 90 },
+];
+
+const ENERGY_LABELS: Record<number, string> = {
+  1: "Depleted", 2: "Low", 3: "Okay", 4: "Good", 5: "Peak",
+};
+
+function pad(n: number) { return String(n).padStart(2, "0"); }
+function fmtTime(secs: number) { return `${pad(Math.floor(secs / 60))}:${pad(secs % 60)}`; }
+function fmtDate(iso: string) {
+  return new Date(iso).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+}
+
+export default function Focus() {
+  const { sessions, start, complete, totalMinutesToday } = useFocusSessions();
+  const {
+    preset, setPreset, energy, setEnergy,
+    step, sessionId, remaining, paused, setPaused,
+    beginRun, markDone, resetTimer, totalDuration,
+  } = useFocusTimer();
+
+  const handleStart = async () => {
+    if (!energy) return toast.error("Select your energy level first.");
+    try {
+      const s = await start({ duration_minutes: preset, energy_before: energy });
+      beginRun(s.id);
+    } catch { toast.error("Could not start session."); }
+  };
+
+  const handleComplete = async () => {
+    if (sessionId) await complete(sessionId).catch(() => {});
+    markDone();
+    toast.success("Session complete. Great work.");
+  };
+
+  const pct = totalDuration > 0 ? 1 - remaining / totalDuration : 0;
+  const r = 88;
+  const circ = 2 * Math.PI * r;
+
+  return (
+    <div className="max-w-sm mx-auto">
+      <AnimatePresence mode="wait">
+        {step === "setup" && (
+          <motion.div key="setup" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-6">
+            <div>
+              <p className="text-xs text-muted-foreground mb-2">Duration</p>
+              <div className="flex gap-2">
+                {PRESETS.map(({ label, minutes }) => (
+                  <button key={minutes} onClick={() => setPreset(minutes)}
+                    className={cn("flex-1 py-2.5 rounded-xl text-sm font-medium border transition-all",
+                      preset === minutes
+                        ? "bg-foreground text-background border-foreground"
+                        : "border-border text-muted-foreground hover:text-foreground hover:border-foreground/30")}>
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground mb-2">Energy right now</p>
+              <div className="flex gap-1.5">
+                {[1, 2, 3, 4, 5].map((e) => (
+                  <button key={e} onClick={() => setEnergy(e)}
+                    className={cn("flex-1 py-2.5 rounded-xl text-xs font-medium border transition-all",
+                      energy === e
+                        ? "bg-foreground text-background border-foreground"
+                        : "border-border text-muted-foreground hover:border-foreground/30")}>
+                    {e}
+                  </button>
+                ))}
+              </div>
+              {energy && <p className="text-xs text-muted-foreground mt-1.5 text-center">{ENERGY_LABELS[energy]}</p>}
+            </div>
+            <Button onClick={handleStart} className="w-full" disabled={!energy}>
+              <Play className="w-4 h-4 mr-2" /> Start {preset}-minute session
+            </Button>
+            {totalMinutesToday > 0 && (
+              <p className="text-xs text-muted-foreground text-center">{totalMinutesToday} minutes focused today</p>
+            )}
+          </motion.div>
+        )}
+
+        {(step === "running" || step === "done") && (
+          <motion.div key="timer" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} className="flex flex-col items-center gap-6">
+            <div className="relative">
+              <svg width={200} height={200} className="-rotate-90">
+                <circle cx={100} cy={100} r={r} fill="none" stroke="hsl(var(--border))" strokeWidth={6} />
+                <circle cx={100} cy={100} r={r} fill="none" stroke="hsl(var(--foreground))" strokeWidth={6}
+                  strokeDasharray={circ} strokeDashoffset={circ * (1 - pct)} strokeLinecap="round"
+                  style={{ transition: "stroke-dashoffset 1s linear" }} />
+              </svg>
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <span className="text-3xl font-mono font-semibold text-foreground tabular-nums">{fmtTime(remaining)}</span>
+                <span className="text-xs text-muted-foreground mt-1">
+                  {step === "done" ? "Complete" : paused ? "Paused" : "Focusing"}
+                </span>
+              </div>
+            </div>
+
+            {step === "running" ? (
+              <div className="flex gap-3">
+                <Button variant="outline" size="icon" onClick={() => setPaused((p) => !p)}>
+                  {paused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
+                </Button>
+                <Button onClick={handleComplete}><Check className="w-4 h-4 mr-2" /> Done early</Button>
+                <Button variant="outline" size="icon" onClick={resetTimer}><RotateCcw className="w-4 h-4" /></Button>
+              </div>
+            ) : (
+              <Button onClick={resetTimer}>Start another session</Button>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {sessions.filter((s) => s.completed).length > 0 && (
+        <div className="mt-8 space-y-1.5">
+          <p className="text-xs text-muted-foreground mb-2">Recent sessions</p>
+          {sessions.filter((s) => s.completed).slice(0, 5).map((s) => (
+            <div key={s.id} className="flex items-center gap-3 px-3 py-2 rounded-xl border border-border">
+              <Clock className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+              <span className="text-sm flex-1">{s.duration_minutes} min</span>
+              <span className="text-xs text-muted-foreground">{fmtDate(s.started_at)}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}

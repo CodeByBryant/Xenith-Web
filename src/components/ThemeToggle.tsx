@@ -16,7 +16,9 @@ export const ThemeToggle = () => {
 
   // Apply class on mount and whenever isDark changes
   useEffect(() => {
-    document.documentElement.classList.toggle("dark", isDark);
+    const root = document.documentElement;
+    root.classList.toggle("dark", isDark);
+    root.classList.toggle("light", !isDark); // suppress system media-query when in light mode
     localStorage.setItem("xenith-theme", isDark ? "dark" : "light");
   }, [isDark]);
 

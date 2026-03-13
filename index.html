@@ -19,21 +19,21 @@
       content="A minimalist productivity platform for students and young professionals."
     />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://xenith-nu.vercel.app/og-image.png" />
-    <meta property="og:image:secure_url" content="https://xenith-nu.vercel.app/og-image.png" />
+    <meta property="og:image" content="https://xenith.life/og-image.png" />
+    <meta property="og:image:secure_url" content="https://xenith.life/og-image.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:type" content="image/png" />
     <meta property="og:image:alt" content="Xenith — Intentional living. Meaningful progress." />
 
-    <meta property="og:url" content="https://xenith-nu.vercel.app" />
+    <meta property="og:url" content="https://xenith.life" />
     <meta
       property="og:site_name"
       content="Xenith - Discipline | Intention | Execution"
     />
 
-    <link rel="canonical" href="https://xenith-nu.vercel.app/" />
-    <link rel="alternate" href="https://xenith-nu.vercel.app/" hreflang="en" />
+    <link rel="canonical" href="https://xenith.life/" />
+    <link rel="alternate" href="https://xenith.life/" hreflang="en" />
     <meta name="robots" content="index, follow" />
     <meta
       name="keywords"
@@ -45,13 +45,13 @@
     <meta name="twitter:creator" content="@xenithapp" />
     <meta
       name="twitter:title"
-      content="Xenith — Intentional living. Meaningful progress."
+      content="Xenith — Discipline | Intention | Execution"
     />
     <meta
       name="twitter:description"
       content="A minimalist productivity platform for students and young professionals."
     />
-    <meta name="twitter:image" content="https://xenith-nu.vercel.app/og-image.png" />
+    <meta name="twitter:image" content="https://xenith.life/og-image.png" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -69,8 +69,8 @@
       />
     </noscript>
 
-    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
-    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" href="/apple-touch-icon.png" sizes="96x96" />
+    <link rel="shortcut icon" href="/apple-touch-icon.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <meta name="apple-mobile-web-app-title" content="Xenith" />
     <link rel="manifest" href="/site.webmanifest" />
@@ -81,8 +81,8 @@
           {
             "@type": "Organization",
             "name": "Xenith",
-            "url": "https://xenith-nu.vercel.app/",
-            "logo": "https://xenith-nu.vercel.app/favicon-96x96.png",
+            "url": "https://xenith.life/",
+            "logo": "https://xenith.life/favicon-96x96.png",
             "sameAs": [
               "https://x.com/xenithapp",
               "https://instagram.com/xenithapp",
@@ -91,13 +91,23 @@
           },
           {
             "@type": "WebSite",
-            "url": "https://xenith-nu.vercel.app/",
+            "url": "https://xenith.life/",
             "name": "Xenith - Discipline | Intention | Execution",
             "description": "A minimalist productivity platform for students and young professionals. Track intentions, build sustainable routines, and grow across all dimensions of life.",
             "inLanguage": "en"
           }
         ]
       }
+    </script>
+    <!-- Blocking theme init — prevents flash and fixes system-dark-but-stored-light mismatch -->
+    <script>
+      (function(){
+        try {
+          var t = localStorage.getItem('xenith-theme');
+          var dark = t ? t === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+          document.documentElement.classList.add(dark ? 'dark' : 'light');
+        } catch(e){}
+      })();
     </script>
   </head>
 

@@ -11,9 +11,9 @@ A minimalist productivity platform for students and young professionals who are 
 [![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat&logo=vite&logoColor=white)](https://vitejs.dev/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=flat&logo=supabase&logoColor=white)](https://supabase.com/)
-[![Deployed on Vercel](https://img.shields.io/badge/Deployed_on-Vercel-000?style=flat&logo=vercel&logoColor=white)](https://xenith-nu.vercel.app/)
+[![Deployed on Vercel](https://img.shields.io/badge/Deployed_on-Vercel-000?style=flat&logo=vercel&logoColor=white)](https://xenith.life/)
 
-[Live Site](https://xenith-nu.vercel.app/) · [Join the Waitlist](https://xenith-nu.vercel.app/#waitlist) · [Follow @xenithapp](https://x.com/xenithapp)
+[Live Site](https://xenith.life/) · [Join the Waitlist](https://xenith.life/#waitlist) · [Follow @xenithapp](https://x.com/xenithapp)
 
 </div>
 
