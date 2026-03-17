@@ -42,7 +42,7 @@ export function useRoutines() {
       if (!supabase || !user) return [];
       const { data, error } = await supabase
         .from("routines")
-        .select("*, routine_items(*)")
+        .select("*, items:routine_items(*)")
         .eq("user_id", user.id)
         .eq("active", true)
         .order("position", { ascending: true });
