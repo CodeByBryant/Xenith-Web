@@ -215,7 +215,7 @@ function RoutineCard({
   setNewItemTitle: (v: string) => void;
   onAddItem: () => void;
 }) {
-  const items = routine.items ?? [];
+  const items = routine.routine_items ?? [];
   const doneCount = items.filter((i) => completedIds.includes(i.id)).length;
   const pct = items.length ? doneCount / items.length : 0;
 
