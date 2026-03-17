@@ -16,7 +16,7 @@ export interface Routine {
   time_of_day: "morning" | "afternoon" | "evening";
   active: boolean;
   position: number;
-  items?: RoutineItem[];
+  routine_items?: RoutineItem[];
 }
 
 export interface RoutineCompletion {
