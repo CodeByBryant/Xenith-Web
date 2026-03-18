@@ -27,7 +27,7 @@ import {
 import { useSkillTree } from "@/hooks/use-skill-tree";
 import { cn } from "@/lib/utils";
 import type { LucideIcon } from "lucide-react";
-import dagre from "dagre";
+import dagre from "@dagrejs/dagre";
 
 // ── Dimension config ────────────────────────────────────────────────
 interface DimCfg {
