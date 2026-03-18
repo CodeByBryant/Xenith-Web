@@ -214,16 +214,9 @@ function RoutineCard({
   newItemTitle: string;
   setNewItemTitle: (v: string) => void;
   onAddItem: () => void;
-}) {
-  console.log("--- DEBUGGING ROUTINE CARD ---");
-console.log("Routine Name:", routine.name);
-console.log("Raw routine object:", routine);
-console.log("Keys found in routine:", Object.keys(routine));
-console.log("routine_items content:", routine.routine_items);
-console.log("items content:", routine.items);
-console.log("------------------------------");
+}) {;
 
-  const items = routine.routine_items ?? [];
+  const items = routine.items ?? [];
   const doneCount = items.filter((i) => completedIds.includes(i.id)).length;
   const pct = items.length ? doneCount / items.length : 0;
 
