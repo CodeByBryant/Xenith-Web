@@ -213,13 +213,8 @@ export default function CalorieTracker() {
     searchTimeout.current = setTimeout(async () => {
       try {
         const items = await searchFood(query);
-        console.log("API returned:", items); // <--- Check your browser console!
-
-        // If the console shows { data: [...] }, you need to change this to:
-        // setResults(items.data || []);
         setResults(items || []);
       } catch (error) {
-        console.error("Search failed:", error);
         setResults([]); // Reset on error
       } finally {
         setSearching(false); // Always stop loading

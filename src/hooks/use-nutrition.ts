@@ -26,6 +26,16 @@ export interface FoodSearchResult {
   fat_per_100g: number;
 }
 
+interface OpenFoodFactsProduct {
+  product_name: string;
+  nutriments: {
+    "energy-kcal_100g": number;
+    proteins_100g: number;
+    carbohydrates_100g: number;
+    fat_100g: number;
+  };
+}
+
 function toDateStr(d = new Date()) {
   return d.toISOString().split("T")[0];
 }
@@ -132,19 +142,16 @@ export function useNutritionWeekStats() {
 export async function searchFood(query: string): Promise<FoodSearchResult[]> {
   if (!query.trim()) return [];
   try {
-    const url = `https://world.openfoodfacts.org/cgi/search.pl?action=process&search_terms=${encodeURIComponent(query)}&json=1&page_size=12&fields=product_name,nutriments`;
-    const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
+    const res = await fetch(`/api/food?query=${encodeURIComponent(query)}`);
     if (!res.ok) return [];
     const data = await res.json();
     return (
       (data.products ?? [])
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .filter(
-          (p: any) =>
+          (p: OpenFoodFactsProduct) =>
             p.product_name && p.nutriments?.["energy-kcal_100g"] != null,
         )
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .map((p: any) => ({
+        .map((p: OpenFoodFactsProduct) => ({
           name: String(p.product_name).trim(),
           calories_per_100g: Math.round(p.nutriments["energy-kcal_100g"] ?? 0),
           protein_per_100g: +(
