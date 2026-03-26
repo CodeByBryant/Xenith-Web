@@ -8,8 +8,11 @@ const Privacy = () => {
     <div className="min-h-screen bg-background text-foreground">
       <Helmet>
         <title>Privacy Policy — Xenith</title>
-        <meta name="description" content="Learn how Xenith collects, uses, and protects your personal data." />
-        <link rel="canonical" href="https://xenith-nu.vercel.app/privacy" />
+        <meta
+          name="description"
+          content="Learn how Xenith collects, uses, and protects your personal data."
+        />
+        <link rel="canonical" href="https://xenith.life/privacy" />
         <meta name="robots" content="noindex, follow" />
       </Helmet>
       {/* Header */}
@@ -130,10 +133,10 @@ const Privacy = () => {
               <p className="text-muted-foreground leading-relaxed mt-4">
                 To exercise any of these rights, contact us at{" "}
                 <a
-                  href="mailto:privacy@xenith.app"
+                  href="mailto:privacy@xenith.life"
                   className="text-foreground underline underline-offset-4 hover:text-foreground/80"
                 >
-                  privacy@xenith.app
+                  privacy@xenith.life
                 </a>
                 .
               </p>
@@ -220,10 +223,10 @@ const Privacy = () => {
                 If you have any questions about this privacy policy, please
                 contact us at{" "}
                 <a
-                  href="mailto:privacy@xenith.app"
+                  href="mailto:privacy@xenith.life"
                   className="text-foreground underline underline-offset-4 hover:text-foreground/80"
                 >
-                  privacy@xenith.app
+                  privacy@xenith.life
                 </a>
                 .
               </p>

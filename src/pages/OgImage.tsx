@@ -106,7 +106,7 @@ const OgImage = () => {
       {/* Bottom bar */}
       <div className="absolute bottom-0 inset-x-0 h-px bg-background/10" />
       <div className="absolute bottom-4 right-[80px] text-[12px] text-background/20 tracking-wider">
-        xenith.app
+        xenith.life
       </div>
     </div>
   );

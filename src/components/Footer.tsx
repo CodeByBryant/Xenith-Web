@@ -9,9 +9,24 @@ const footerLinks = [
 ];
 
 const socialLinks = [
-  { label: "X", ariaLabel: "X (Twitter)", href: "https://x.com/xenithapp", external: true },
-  { label: "IG", ariaLabel: "Instagram", href: "https://instagram.com/xenithapp", external: true },
-  { label: "TT", ariaLabel: "TikTok", href: "https://tiktok.com/@xenithapp", external: true },
+  {
+    label: "X",
+    ariaLabel: "X (Twitter)",
+    href: "https://x.com/xenithlife",
+    external: true,
+  },
+  {
+    label: "IG",
+    ariaLabel: "Instagram",
+    href: "https://instagram.com/xenith.life",
+    external: true,
+  },
+  {
+    label: "TT",
+    ariaLabel: "TikTok",
+    href: "https://tiktok.com/@xenith.life",
+    external: true,
+  },
 ];
 
 export const Footer = () => {
