@@ -93,19 +93,19 @@ export default function Insights() {
 
   const todayIntentions = useIntentions(new Date());
   const { currentScores } = useDimensionScores(1);
-  const { sessions } = useFocusSessions();
+  const { sessions } = useFocusSessions(7); // Get last 7 days
   const { routines, completions } = useRoutines();
 
   const weekSessions = useMemo(
     () =>
       sessions.filter(
-        (s) => s.completed && s.started_at >= week.start + "T00:00:00",
+        (s) => s.completed && s.started_at && s.started_at >= week.start + "T00:00:00",
       ),
     [sessions, week.start],
   );
 
   const totalFocusMin = weekSessions.reduce(
-    (a, s) => a + s.duration_minutes,
+    (a, s) => a + (s.duration_minutes ?? 0),
     0,
   );
   const focusHours = (totalFocusMin / 60).toFixed(1);

@@ -43,8 +43,8 @@ function SidebarContent({ onNavClick }: { onNavClick?: () => void }) {
 
       <Separator />
 
-      {/* Nav */}
-      <nav className="flex-1 overflow-y-auto py-3 px-2">
+      {/* Nav - Scrollable */}
+      <nav className="flex-1 overflow-y-auto py-3 px-2 min-h-0">
         {NAV_ITEMS.map(({ label, path, icon: Icon, exact }) => {
           const isActive = exact
             ? location.pathname === path

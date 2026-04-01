@@ -12,21 +12,32 @@ export interface FocusSession {
   intention_id: string | null;
 }
 
-export function useFocusSessions() {
+export function useFocusSessions(days?: number) {
   const { user } = useAuth();
   const qc = useQueryClient();
 
   const query = useQuery({
-    queryKey: ["focus_sessions", user?.id],
+    queryKey: ["focus_sessions", user?.id, days],
     enabled: !!user,
     queryFn: async () => {
       if (!supabase || !user) return [];
-      const { data, error } = await supabase
+      
+      let queryBuilder = supabase
         .from("focus_sessions")
         .select("*")
         .eq("user_id", user.id)
-        .order("started_at", { ascending: false })
-        .limit(50);
+        .order("started_at", { ascending: false });
+      
+      // If days specified, filter by date
+      if (days) {
+        const cutoffDate = new Date();
+        cutoffDate.setDate(cutoffDate.getDate() - days);
+        queryBuilder = queryBuilder.gte("started_at", cutoffDate.toISOString());
+      } else {
+        queryBuilder = queryBuilder.limit(50);
+      }
+      
+      const { data, error } = await queryBuilder;
       if (error) throw error;
       return (data ?? []) as FocusSession[];
     },

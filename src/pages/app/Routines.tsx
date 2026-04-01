@@ -39,6 +39,7 @@ export default function Routines() {
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const [addingItem, setAddingItem] = useState<string | null>(null);
   const [newItemTitle, setNewItemTitle] = useState("");
+  const [newItemDuration, setNewItemDuration] = useState("5");
 
   const handleAddRoutine = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,8 +59,14 @@ export default function Routines() {
   const handleAddItem = async (routineId: string) => {
     if (!newItemTitle.trim()) return;
     try {
-      await addItem({ routine_id: routineId, title: newItemTitle.trim() });
+      const duration = parseInt(newItemDuration) || 5;
+      await addItem({ 
+        routine_id: routineId, 
+        title: newItemTitle.trim(),
+        estimated_minutes: duration
+      });
       setNewItemTitle("");
+      setNewItemDuration("5");
       setAddingItem(null);
     } catch {
       toast.error("Failed to add step.");
@@ -173,10 +180,13 @@ export default function Routines() {
                   onStartAddItem={() => {
                     setAddingItem(routine.id);
                     setNewItemTitle("");
+                    setNewItemDuration("5");
                   }}
                   onCancelAddItem={() => setAddingItem(null)}
                   newItemTitle={newItemTitle}
                   setNewItemTitle={setNewItemTitle}
+                  newItemDuration={newItemDuration}
+                  setNewItemDuration={setNewItemDuration}
                   onAddItem={() => handleAddItem(routine.id)}
                 />
               ))}
@@ -200,6 +210,8 @@ function RoutineCard({
   onCancelAddItem,
   newItemTitle,
   setNewItemTitle,
+  newItemDuration,
+  setNewItemDuration,
   onAddItem,
 }: {
   routine: Routine;
@@ -213,6 +225,8 @@ function RoutineCard({
   onCancelAddItem: () => void;
   newItemTitle: string;
   setNewItemTitle: (v: string) => void;
+  newItemDuration: string;
+  setNewItemDuration: (v: string) => void;
   onAddItem: () => void;
 }) {;
 
@@ -308,6 +322,21 @@ function RoutineCard({
                     placeholder="Step title…"
                     className="flex-1 h-7 text-sm"
                   />
+                  <Input
+                    type="number"
+                    min="0"
+                    max="999"
+                    value={newItemDuration}
+                    onChange={(e) => setNewItemDuration(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") onAddItem();
+                      if (e.key === "Escape") onCancelAddItem();
+                    }}
+                    placeholder="5"
+                    className="w-16 h-7 text-sm text-center"
+                    title="Duration in minutes"
+                  />
+                  <span className="text-xs text-muted-foreground">min</span>
                   <Button
                     size="sm"
                     onClick={onAddItem}

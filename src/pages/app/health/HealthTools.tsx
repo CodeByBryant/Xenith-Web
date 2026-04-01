@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Utensils, Dumbbell, ChevronRight, ArrowLeft } from "lucide-react";
+import { Utensils, Dumbbell, Droplet, Calculator, ChevronRight, ArrowLeft } from "lucide-react";
 import { useNutritionWeekStats } from "@/hooks/use-nutrition";
 import { useWorkoutHistory } from "@/hooks/use-workouts";
 
@@ -98,6 +98,48 @@ export default function HealthTools() {
                   {workoutsThisWeek !== 1 ? "s" : ""} this week
                 </p>
               )}
+            </div>
+            <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition-all shrink-0" />
+          </Link>
+        </motion.div>
+
+        {/* Water & Supplements card */}
+        <motion.div variants={itemVariants}>
+          <Link
+            to="/app/dimensions/health/water"
+            className="group flex items-center gap-4 p-5 bg-card border border-border rounded-2xl hover:border-emerald-500/40 transition-all duration-200"
+          >
+            <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center shrink-0 group-hover:bg-blue-500/20 transition-colors">
+              <Droplet className="w-5 h-5 text-blue-500" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-foreground">
+                Water & Supplements
+              </p>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Track daily hydration and supplement intake
+              </p>
+            </div>
+            <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition-all shrink-0" />
+          </Link>
+        </motion.div>
+
+        {/* Biometric Wizard card */}
+        <motion.div variants={itemVariants}>
+          <Link
+            to="/app/dimensions/health/biometrics"
+            className="group flex items-center gap-4 p-5 bg-card border border-border rounded-2xl hover:border-emerald-500/40 transition-all duration-200"
+          >
+            <div className="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center shrink-0 group-hover:bg-purple-500/20 transition-colors">
+              <Calculator className="w-5 h-5 text-purple-500" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-foreground">
+                Biometric Wizard
+              </p>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Calculate personalized calorie and macro targets
+              </p>
             </div>
             <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition-all shrink-0" />
           </Link>

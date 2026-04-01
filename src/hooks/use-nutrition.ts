@@ -2,7 +2,16 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/hooks/use-auth";
 
-export type MealType = "breakfast" | "lunch" | "dinner" | "snack";
+export type MealType = 
+  | "breakfast" 
+  | "lunch" 
+  | "dinner" 
+  | "snack" 
+  | "uncategorized"
+  | "custom_1"
+  | "custom_2"
+  | "custom_3"
+  | "custom_4";
 
 export interface NutritionLog {
   id: string;
@@ -142,9 +151,26 @@ export function useNutritionWeekStats() {
 export async function searchFood(query: string): Promise<FoodSearchResult[]> {
   if (!query.trim()) return [];
   try {
-    const res = await fetch(`/api/food?query=${encodeURIComponent(query)}`);
-    if (!res.ok) return [];
+    // Try API endpoint first (works in production)
+    let res = await fetch(`/api/food?query=${encodeURIComponent(query)}`);
+    
+    // If API fails in dev, use Open Food Facts directly
+    if (!res.ok && import.meta.env.DEV) {
+      console.log('API endpoint not available, using Open Food Facts directly');
+      res = await fetch(
+        `https://world.openfoodfacts.org/cgi/search.pl?action=process&search_terms=${encodeURIComponent(query)}&json=1&page_size=12&fields=product_name,nutriments`
+      );
+    }
+    
+    if (!res.ok) {
+      console.error('Food API error:', res.status, res.statusText);
+      return [];
+    }
     const data = await res.json();
+    if (!data.products || data.products.length === 0) {
+      console.log('No products found for:', query);
+      return [];
+    }
     return (
       (data.products ?? [])
         .filter(
@@ -163,7 +189,8 @@ export async function searchFood(query: string): Promise<FoodSearchResult[]> {
           fat_per_100g: +((p.nutriments["fat_100g"] ?? 0) as number).toFixed(1),
         }))
     );
-  } catch {
+  } catch (err) {
+    console.error('Food search error:', err);
     return [];
   }
 }
@@ -175,10 +202,16 @@ export async function lookupBarcode(
   try {
     const url = `https://world.openfoodfacts.org/api/v0/product/${encodeURIComponent(barcode)}.json`;
     const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
-    if (!res.ok) return null;
+    if (!res.ok) {
+      console.error('Barcode lookup failed:', res.status);
+      return null;
+    }
     const data = await res.json();
     const p = data.product;
-    if (!p?.nutriments?.["energy-kcal_100g"]) return null;
+    if (!p?.nutriments?.["energy-kcal_100g"]) {
+      console.log('No nutrition data for barcode:', barcode);
+      return null;
+    }
     return {
       name: String(p.product_name ?? `Product ${barcode}`).trim(),
       calories_per_100g: Math.round(p.nutriments["energy-kcal_100g"] ?? 0),
@@ -190,7 +223,8 @@ export async function lookupBarcode(
       ).toFixed(1),
       fat_per_100g: +((p.nutriments["fat_100g"] ?? 0) as number).toFixed(1),
     };
-  } catch {
+  } catch (err) {
+    console.error('Barcode lookup error:', err);
     return null;
   }
 }

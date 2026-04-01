@@ -1,10 +1,12 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { Play, Pause, RotateCcw, Check, Clock } from "lucide-react";
+import { Play, Pause, RotateCcw, Check, Clock, Volume2, VolumeX } from "lucide-react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { useFocusSessions } from "@/hooks/use-focus-sessions";
 import { useFocusTimer } from "@/context/FocusTimerContext";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { focusAudioPlayer, type AudioType } from "@/lib/focus-audio";
 
 const PRESETS = [
   { label: "25 min", minutes: 25 },
@@ -15,6 +17,14 @@ const PRESETS = [
 const ENERGY_LABELS: Record<number, string> = {
   1: "Depleted", 2: "Low", 3: "Okay", 4: "Good", 5: "Peak",
 };
+
+const AUDIO_OPTIONS: { value: AudioType; label: string; emoji: string }[] = [
+  { value: "none", label: "None", emoji: "🔇" },
+  { value: "white-noise", label: "White Noise", emoji: "⚪" },
+  { value: "brown-noise", label: "Brown Noise", emoji: "🟤" },
+  { value: "rain", label: "Rain", emoji: "🌧️" },
+  { value: "lofi", label: "Lo-fi", emoji: "🎵" },
+];
 
 function pad(n: number) { return String(n).padStart(2, "0"); }
 function fmtTime(secs: number) { return `${pad(Math.floor(secs / 60))}:${pad(secs % 60)}`; }
@@ -29,20 +39,52 @@ export default function Focus() {
     step, sessionId, remaining, paused, setPaused,
     beginRun, markDone, resetTimer, totalDuration,
   } = useFocusTimer();
+  
+  const [audioType, setAudioType] = useState<AudioType>("none");
+  const [showAudioPicker, setShowAudioPicker] = useState(false);
 
   const handleStart = async () => {
     if (!energy) return toast.error("Select your energy level first.");
     try {
       const s = await start({ duration_minutes: preset, energy_before: energy });
       beginRun(s.id);
+      // Start audio if selected
+      if (audioType !== "none") {
+        focusAudioPlayer.play(audioType, 0.3);
+      }
     } catch { toast.error("Could not start session."); }
   };
 
   const handleComplete = async () => {
     if (sessionId) await complete(sessionId).catch(() => {});
     markDone();
+    focusAudioPlayer.stop();
     toast.success("Session complete. Great work.");
   };
+
+  const handleAudioChange = (type: AudioType) => {
+    setAudioType(type);
+    if (step === "running") {
+      if (type === "none") {
+        focusAudioPlayer.stop();
+      } else {
+        focusAudioPlayer.play(type, 0.3);
+      }
+    }
+    setShowAudioPicker(false);
+  };
+
+  const handleReset = () => {
+    focusAudioPlayer.stop();
+    resetTimer();
+  };
+
+  // Stop audio when component unmounts
+  useEffect(() => {
+    return () => {
+      focusAudioPlayer.stop();
+    };
+  }, []);
 
   const pct = totalDuration > 0 ? 1 - remaining / totalDuration : 0;
   const r = 88;
@@ -82,6 +124,49 @@ export default function Focus() {
               </div>
               {energy && <p className="text-xs text-muted-foreground mt-1.5 text-center">{ENERGY_LABELS[energy]}</p>}
             </div>
+            <div>
+              <p className="text-xs text-muted-foreground mb-2">Background Audio</p>
+              <div className="relative">
+                <button
+                  onClick={() => setShowAudioPicker(!showAudioPicker)}
+                  className="w-full flex items-center justify-between px-4 py-2.5 rounded-xl border border-border hover:border-foreground/30 transition-all"
+                >
+                  <span className="text-sm text-foreground flex items-center gap-2">
+                    {AUDIO_OPTIONS.find((a) => a.value === audioType)?.emoji}
+                    {AUDIO_OPTIONS.find((a) => a.value === audioType)?.label}
+                  </span>
+                  {audioType === "none" ? (
+                    <VolumeX className="w-4 h-4 text-muted-foreground" />
+                  ) : (
+                    <Volume2 className="w-4 h-4 text-muted-foreground" />
+                  )}
+                </button>
+                <AnimatePresence>
+                  {showAudioPicker && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className="absolute top-full left-0 right-0 mt-2 bg-card border border-border rounded-xl overflow-hidden shadow-lg z-10"
+                    >
+                      {AUDIO_OPTIONS.map((option) => (
+                        <button
+                          key={option.value}
+                          onClick={() => handleAudioChange(option.value)}
+                          className={cn(
+                            "w-full flex items-center gap-3 px-4 py-2.5 text-left hover:bg-secondary transition-colors",
+                            audioType === option.value && "bg-secondary"
+                          )}
+                        >
+                          <span className="text-lg">{option.emoji}</span>
+                          <span className="text-sm text-foreground">{option.label}</span>
+                        </button>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            </div>
             <Button onClick={handleStart} className="w-full" disabled={!energy}>
               <Play className="w-4 h-4 mr-2" /> Start {preset}-minute session
             </Button>
@@ -114,10 +199,35 @@ export default function Focus() {
                   {paused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
                 </Button>
                 <Button onClick={handleComplete}><Check className="w-4 h-4 mr-2" /> Done early</Button>
-                <Button variant="outline" size="icon" onClick={resetTimer}><RotateCcw className="w-4 h-4" /></Button>
+                <Button variant="outline" size="icon" onClick={handleReset}><RotateCcw className="w-4 h-4" /></Button>
               </div>
             ) : (
-              <Button onClick={resetTimer}>Start another session</Button>
+              <Button onClick={handleReset}>Start another session</Button>
+            )}
+
+            {/* Audio control during session */}
+            {step === "running" && (
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                {audioType !== "none" ? (
+                  <>
+                    <Volume2 className="w-3.5 h-3.5" />
+                    <span>Playing: {AUDIO_OPTIONS.find((a) => a.value === audioType)?.label}</span>
+                    <button
+                      onClick={() => handleAudioChange("none")}
+                      className="ml-2 text-foreground hover:text-muted-foreground underline"
+                    >
+                      Stop
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    onClick={() => setShowAudioPicker(true)}
+                    className="text-foreground hover:text-muted-foreground underline"
+                  >
+                    Add background audio
+                  </button>
+                )}
+              </div>
             )}
           </motion.div>
         )}

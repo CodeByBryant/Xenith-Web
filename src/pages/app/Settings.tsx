@@ -63,12 +63,26 @@ export default function Settings() {
   };
 
   const handleChangePassword = async () => {
-    if (!supabase || !user?.email) return;
-    const { error } = await supabase.auth.resetPasswordForEmail(user.email, {
-      redirectTo: `${window.location.origin}/auth/callback?type=recovery`,
-    });
-    if (error) toast.error(error.message);
-    else toast.success("Password reset email sent.");
+    if (!supabase || !user?.email) {
+      toast.error("Unable to send reset email. Please try again later.");
+      return;
+    }
+    
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(user.email, {
+        redirectTo: `${window.location.origin}/auth/callback?type=recovery`,
+      });
+      
+      if (error) {
+        console.error("Password reset error:", error);
+        toast.error(error.message);
+      } else {
+        toast.success("Password reset email sent. Check your inbox.");
+      }
+    } catch (err) {
+      console.error("Unexpected error:", err);
+      toast.error("Failed to send reset email. Please try again.");
+    }
   };
 
   const handleDeleteAccount = () => {
@@ -171,7 +185,7 @@ export default function Settings() {
             className="w-full"
             onClick={handleChangePassword}
           >
-            Send password reset email
+            Change password
           </Button>
           <Button
             variant="outline"

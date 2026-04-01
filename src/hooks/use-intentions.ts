@@ -83,11 +83,33 @@ export function useIntentions(date?: Date) {
     onSuccess: invalidate,
   });
 
+  const update = useMutation({
+    mutationFn: async ({
+      id,
+      updates,
+    }: {
+      id: string;
+      updates: Partial<Intention>;
+    }) => {
+      if (!supabase) throw new Error("Not authenticated");
+      const { data, error } = await supabase
+        .from("intentions")
+        .update(updates)
+        .eq("id", id)
+        .select()
+        .single();
+      if (error) throw error;
+      return data as Intention;
+    },
+    onSuccess: invalidate,
+  });
+
   return {
     intentions: query.data ?? [],
     isLoading: query.isLoading,
     add: add.mutateAsync,
     toggle: toggle.mutateAsync,
     remove: remove.mutateAsync,
+    update: update.mutateAsync,
   };
 }

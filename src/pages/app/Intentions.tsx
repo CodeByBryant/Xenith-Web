@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Check, Trash2, ChevronLeft, ChevronRight, Tag } from "lucide-react";
+import { Plus, Check, Trash2, ChevronLeft, ChevronRight, Tag, Bell, BellOff, Clock } from "lucide-react";
 import { toast } from "sonner";
 import { useIntentions } from "@/hooks/use-intentions";
-import { LIFE_DIMENSIONS } from "@/lib/types";
+import { LIFE_DIMENSIONS, type Intention } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -36,7 +36,7 @@ function formatDate(d: Date) {
 
 export default function Intentions() {
   const [date, setDate] = useState(new Date());
-  const { intentions, isLoading, add, toggle, remove } = useIntentions(date);
+  const { intentions, isLoading, add, toggle, remove, update } = useIntentions(date);
   const [newTitle, setNewTitle] = useState("");
   const [selectedDim, setSelectedDim] = useState<string | null>(null);
   const [showDimPicker, setShowDimPicker] = useState(false);
@@ -159,6 +159,9 @@ export default function Intentions() {
                   toggle({ id, completed: !done }).catch(() => toast.error("Failed."))
                 }
                 onRemove={(id) => remove(id).catch(() => toast.error("Failed."))}
+                onUpdate={(id, updates) =>
+                  update({ id, updates }).catch(() => toast.error("Failed."))
+                }
               />
             ))}
           </AnimatePresence>
@@ -177,6 +180,9 @@ export default function Intentions() {
                       toggle({ id, completed: !done }).catch(() => toast.error("Failed."))
                     }
                     onRemove={(id) => remove(id).catch(() => toast.error("Failed."))}
+                    onUpdate={(id, updates) =>
+                      update({ id, updates }).catch(() => toast.error("Failed."))
+                    }
                   />
                 ))}
               </AnimatePresence>
@@ -189,57 +195,147 @@ export default function Intentions() {
 }
 
 type IntentionRowProps = {
-  intention: {
-    id?: string;
-    title?: string | null;
-    completed_at?: string | null;
-    dimension?: string | null;
-  };
+  intention: Intention;
   onToggle: (id: string, done: boolean) => void;
   onRemove: (id: string) => void;
+  onUpdate: (id: string, updates: Partial<Intention>) => void;
 };
 
-function IntentionRow({ intention, onToggle, onRemove }: IntentionRowProps) {
+function IntentionRow({ intention, onToggle, onRemove, onUpdate }: IntentionRowProps) {
   const done = !!intention.completed_at;
+  const [showTimeInput, setShowTimeInput] = useState(false);
+  const [timeValue, setTimeValue] = useState(
+    intention.reminder_time?.slice(0, 5) || "09:00"
+  );
+
+  const handleToggleReminder = () => {
+    if (!intention.reminder_enabled) {
+      setShowTimeInput(true);
+    } else {
+      onUpdate(intention.id, { reminder_enabled: false });
+    }
+  };
+
+  const handleSetTime = () => {
+    onUpdate(intention.id, {
+      reminder_time: timeValue + ":00",
+      reminder_enabled: true,
+    });
+    setShowTimeInput(false);
+    toast.success(`Reminder set for ${timeValue}`);
+  };
+
   return (
     <motion.div
       layout
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, x: -10 }}
-      className="group flex items-center gap-3 px-3 py-2.5 rounded-xl border border-border bg-card hover:border-foreground/20 transition-all"
+      className="bg-card"
     >
-      <button
-        onClick={() => onToggle(intention.id!, done)}
-        className={cn(
-          "w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all",
-          done ? "bg-foreground border-foreground" : "border-border hover:border-foreground/50"
-        )}
-      >
-        {done && <Check className="w-3 h-3 text-background" />}
-      </button>
-
-      <span className={cn("flex-1 text-sm", done && "line-through text-muted-foreground")}>
-        {intention.title}
-      </span>
-
-      {intention.dimension && (
-        <span
+      <div className="group flex items-center gap-3 px-3 py-2.5 rounded-xl border border-border hover:border-foreground/20 transition-all">
+        <button
+          onClick={() => onToggle(intention.id!, done)}
           className={cn(
-            "text-[10px] px-2 py-0.5 rounded-full font-medium",
-            DIMENSION_COLORS[intention.dimension] ?? "bg-secondary text-muted-foreground"
+            "w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all",
+            done
+              ? "bg-foreground border-foreground"
+              : "border-border hover:border-foreground/50"
           )}
         >
-          {intention.dimension}
-        </span>
-      )}
+          {done && <Check className="w-3 h-3 text-background" />}
+        </button>
 
-      <button
-        onClick={() => onRemove(intention.id!)}
-        className="opacity-0 group-hover:opacity-100 p-1 rounded-lg text-muted-foreground hover:text-foreground transition-all shrink-0"
-      >
-        <Trash2 className="w-3.5 h-3.5" />
-      </button>
+        <span
+          className={cn(
+            "flex-1 text-sm",
+            done && "line-through text-muted-foreground"
+          )}
+        >
+          {intention.title}
+        </span>
+
+        {intention.dimension && (
+          <span
+            className={cn(
+              "text-[10px] px-2 py-0.5 rounded-full font-medium",
+              DIMENSION_COLORS[intention.dimension] ??
+                "bg-secondary text-muted-foreground"
+            )}
+          >
+            {intention.dimension}
+          </span>
+        )}
+
+        {/* Reminder indicator */}
+        {intention.reminder_enabled && intention.reminder_time && (
+          <span className="text-xs text-muted-foreground flex items-center gap-1">
+            <Bell className="w-3 h-3" />
+            {intention.reminder_time.slice(0, 5)}
+          </span>
+        )}
+
+        {/* Reminder toggle */}
+        <button
+          onClick={handleToggleReminder}
+          className={cn(
+            "p-1 rounded-lg transition-all shrink-0",
+            intention.reminder_enabled
+              ? "text-blue-500"
+              : "opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-foreground"
+          )}
+          title={
+            intention.reminder_enabled
+              ? "Disable reminder"
+              : "Set reminder"
+          }
+        >
+          {intention.reminder_enabled ? (
+            <Bell className="w-3.5 h-3.5" />
+          ) : (
+            <BellOff className="w-3.5 h-3.5" />
+          )}
+        </button>
+
+        <button
+          onClick={() => onRemove(intention.id!)}
+          className="opacity-0 group-hover:opacity-100 p-1 rounded-lg text-muted-foreground hover:text-foreground transition-all shrink-0"
+        >
+          <Trash2 className="w-3.5 h-3.5" />
+        </button>
+      </div>
+
+      {/* Time input */}
+      <AnimatePresence>
+        {showTimeInput && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="px-3 pb-3"
+          >
+            <div className="flex items-center gap-2 pt-2">
+              <Clock className="w-4 h-4 text-muted-foreground" />
+              <Input
+                type="time"
+                value={timeValue}
+                onChange={(e) => setTimeValue(e.target.value)}
+                className="flex-1 text-sm"
+              />
+              <Button size="sm" onClick={handleSetTime}>
+                Set
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setShowTimeInput(false)}
+              >
+                Cancel
+              </Button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }

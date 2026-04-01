@@ -20,7 +20,7 @@ export const HeroSection = () => {
   return (
     <section
       ref={containerRef}
-      className="min-h-[120vh] flex items-start pt-32 md:pt-0 md:items-center justify-center px-6 relative overflow-hidden"
+      className="min-h-[120vh] flex items-start pt-32 md:pt-0 md:items-center justify-center px-4 sm:px-6 relative overflow-hidden"
     >
       {/* Animated gradient orbs */}
       <motion.div
@@ -169,7 +169,7 @@ export const HeroSection = () => {
                 className="absolute -inset-8 border border-foreground/5 rounded-3xl hidden sm:block"
               />
 
-              <div className="bg-card/60 backdrop-blur-md border border-border/80 rounded-2xl p-8 relative shadow-2xl shadow-foreground/5 max-w-sm mx-auto w-full">
+              <div className="bg-card/60 backdrop-blur-md border border-border/80 rounded-2xl p-6 sm:p-8 relative shadow-2xl shadow-foreground/5 max-w-sm mx-auto w-full">
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -179,7 +179,7 @@ export const HeroSection = () => {
                   Early Access
                 </motion.div>
 
-                <h3 className="text-2xl md:text-3xl font-serif mb-4">
+                <h3 className="text-xl sm:text-2xl md:text-3xl font-serif mb-4">
                   Claim your spot.
                 </h3>
 

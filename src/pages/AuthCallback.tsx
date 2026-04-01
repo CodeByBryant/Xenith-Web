@@ -30,9 +30,11 @@ export default function AuthCallback() {
         }
 
         // Check if the user has completed onboarding
+        // Only redirect to onboarding for new users (SIGNED_UP event)
         // Falls back to localStorage if the profiles table doesn't exist yet
         let onboardingComplete =
           localStorage.getItem("xenith_onboarding_complete") === "1";
+        
         try {
           const { data: profile } = await client
             .from("profiles")
@@ -46,6 +48,7 @@ export default function AuthCallback() {
           // table/column doesn't exist yet — rely on localStorage flag
         }
 
+        // Only redirect new users to onboarding
         if (!onboardingComplete) {
           startTransition(() => navigate("/onboarding", { replace: true }));
         } else {
@@ -57,7 +60,8 @@ export default function AuthCallback() {
       }
     };
 
-    // Listen for auth state change as a fallback (magic-link fires SIGNED_IN)
+    // Listen for auth state change as a fallback
+    // SIGNED_IN fires for both sign-up and sign-in, so we check onboarding status
     const {
       data: { subscription },
     } = client.auth.onAuthStateChange((event, session) => {

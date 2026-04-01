@@ -14,6 +14,22 @@ export interface Profile {
   notification_time?: string | null; // time (HH:MM:SS)
   timezone?: string | null; // default 'America/New_York'
   data_sharing_consent?: boolean | null; // default false
+  custom_meal_1?: string | null;
+  custom_meal_2?: string | null;
+  custom_meal_3?: string | null;
+  custom_meal_4?: string | null;
+  age?: number | null;
+  gender?: string | null; // 'male' | 'female' | 'other'
+  height_cm?: number | null;
+  weight_kg?: number | null;
+  activity_level?: string | null; // 'sedentary' | 'lightly_active' | 'moderately_active' | 'very_active' | 'extremely_active'
+  goal?: string | null; // 'lose_weight' | 'maintain' | 'gain_muscle'
+  bmr?: number | null;
+  tdee?: number | null;
+  target_calories?: number | null;
+  target_protein?: number | null;
+  target_carbs?: number | null;
+  target_fat?: number | null;
   created_at?: string | null; // timestamptz
   updated_at?: string | null; // timestamptz
   last_active_at?: string | null; // timestamptz
@@ -47,6 +63,8 @@ export interface Intention {
   due_date?: string | null; // timestamptz
   scheduled_date?: string | null; // date (YYYY-MM-DD)
   estimated_minutes?: number | null;
+  reminder_time?: string | null; // time (HH:MM:SS)
+  reminder_enabled?: boolean | null; // default false
   completed_at?: string | null; // timestamptz
   archived_at?: string | null; // timestamptz
   position?: number | null; // default 0

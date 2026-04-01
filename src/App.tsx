@@ -2,6 +2,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { RouteError } from "@/components/RouteError";
 import { lazy, Suspense } from "react";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
@@ -32,6 +33,8 @@ const AppSettings = lazy(() => import("./pages/app/Settings"));
 const HealthTools = lazy(() => import("./pages/app/health/HealthTools"));
 const CalorieTracker = lazy(() => import("./pages/app/health/CalorieTracker"));
 const WorkoutTracker = lazy(() => import("./pages/app/health/WorkoutTracker"));
+const WaterSupplementsTracker = lazy(() => import("./pages/app/health/WaterSupplementsTracker"));
+const BiometricWizard = lazy(() => import("./pages/app/health/BiometricWizard"));
 
 // Lazy-load dev panel — only fetched when route is hit, never bundled in prod
 const Dev = lazy(() => import("./pages/Dev"));
@@ -52,15 +55,16 @@ const AppLoader = (
 );
 
 const router = createBrowserRouter([
-  { path: "/", element: <Index /> },
-  { path: "/privacy", element: <Privacy /> },
-  { path: "/terms", element: <Terms /> },
-  { path: "/signin", element: <SignIn /> },
-  { path: "/auth/callback", element: <AuthCallback /> },
+  { path: "/", element: <Index />, errorElement: <RouteError /> },
+  { path: "/privacy", element: <Privacy />, errorElement: <RouteError /> },
+  { path: "/terms", element: <Terms />, errorElement: <RouteError /> },
+  { path: "/signin", element: <SignIn />, errorElement: <RouteError /> },
+  { path: "/auth/callback", element: <AuthCallback />, errorElement: <RouteError /> },
 
   // ─── Protected: onboarding ───────────────────────────────────────
   {
     element: <ProtectedRoute />,
+    errorElement: <RouteError />,
     children: [
       {
         path: "/onboarding",
@@ -69,6 +73,7 @@ const router = createBrowserRouter([
             <Onboarding />
           </Suspense>
         ),
+        errorElement: <RouteError />,
       },
       {
         path: "/app",
@@ -77,6 +82,7 @@ const router = createBrowserRouter([
             <AppLayout />
           </Suspense>
         ),
+        errorElement: <RouteError />,
         children: [
           {
             index: true,
@@ -85,6 +91,7 @@ const router = createBrowserRouter([
                 <Dashboard />
               </Suspense>
             ),
+            errorElement: <RouteError />,
           },
           {
             path: "intentions",
@@ -93,6 +100,7 @@ const router = createBrowserRouter([
                 <Intentions />
               </Suspense>
             ),
+            errorElement: <RouteError />,
           },
           {
             path: "dimensions",
@@ -101,6 +109,7 @@ const router = createBrowserRouter([
                 <Dimensions />
               </Suspense>
             ),
+            errorElement: <RouteError />,
           },
           {
             path: "focus",
@@ -109,6 +118,7 @@ const router = createBrowserRouter([
                 <FocusPage />
               </Suspense>
             ),
+            errorElement: <RouteError />,
           },
           {
             path: "routines",
@@ -117,6 +127,7 @@ const router = createBrowserRouter([
                 <Routines />
               </Suspense>
             ),
+            errorElement: <RouteError />,
           },
           {
             path: "reflection",
@@ -125,6 +136,7 @@ const router = createBrowserRouter([
                 <Reflection />
               </Suspense>
             ),
+            errorElement: <RouteError />,
           },
           {
             path: "insights",
@@ -133,6 +145,7 @@ const router = createBrowserRouter([
                 <Insights />
               </Suspense>
             ),
+            errorElement: <RouteError />,
           },
           {
             path: "growth",
@@ -141,6 +154,7 @@ const router = createBrowserRouter([
                 <Growth />
               </Suspense>
             ),
+            errorElement: <RouteError />,
           },
           {
             path: "settings",
@@ -149,6 +163,7 @@ const router = createBrowserRouter([
                 <AppSettings />
               </Suspense>
             ),
+            errorElement: <RouteError />,
           },
           {
             path: "dimensions/health",
@@ -157,6 +172,7 @@ const router = createBrowserRouter([
                 <HealthTools />
               </Suspense>
             ),
+            errorElement: <RouteError />,
           },
           {
             path: "dimensions/health/calories",
@@ -165,6 +181,7 @@ const router = createBrowserRouter([
                 <CalorieTracker />
               </Suspense>
             ),
+            errorElement: <RouteError />,
           },
           {
             path: "dimensions/health/workouts",
@@ -173,6 +190,25 @@ const router = createBrowserRouter([
                 <WorkoutTracker />
               </Suspense>
             ),
+            errorElement: <RouteError />,
+          },
+          {
+            path: "dimensions/health/water",
+            element: (
+              <Suspense fallback={AppLoader}>
+                <WaterSupplementsTracker />
+              </Suspense>
+            ),
+            errorElement: <RouteError />,
+          },
+          {
+            path: "dimensions/health/biometrics",
+            element: (
+              <Suspense fallback={AppLoader}>
+                <BiometricWizard />
+              </Suspense>
+            ),
+            errorElement: <RouteError />,
           },
         ],
       },
@@ -195,6 +231,7 @@ const router = createBrowserRouter([
               <Dev />
             </Suspense>
           ),
+          errorElement: <RouteError />,
         },
         {
           path: "/og",
@@ -203,6 +240,7 @@ const router = createBrowserRouter([
               <OgImage />
             </Suspense>
           ),
+          errorElement: <RouteError />,
         },
       ]
     : []),

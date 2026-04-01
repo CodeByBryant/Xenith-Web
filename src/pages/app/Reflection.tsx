@@ -63,8 +63,30 @@ export default function Reflection() {
   const [mood, setMood] = useState<Mood | null>(
     (todayEntry?.mood as Mood) ?? null,
   );
+  
+  // Parse content - handle both JSON object and stringified JSON
+  const parseContent = (rawContent: unknown): Record<string, unknown> => {
+    if (!rawContent) return {};
+    if (typeof rawContent === 'object') return rawContent as Record<string, unknown>;
+    if (typeof rawContent === 'string') {
+      try {
+        return JSON.parse(rawContent);
+      } catch {
+        // If it's not valid JSON, wrap it as plain text
+        return {
+          type: 'doc',
+          content: [{
+            type: 'paragraph',
+            content: [{ type: 'text', text: rawContent }]
+          }]
+        };
+      }
+    }
+    return {};
+  };
+  
   const [content, setContent] = useState<Record<string, unknown>>(
-    (todayEntry?.content as Record<string, unknown>) ?? {},
+    parseContent(todayEntry?.content)
   );
   const [dirty, setDirty] = useState(false);
 
@@ -220,9 +242,7 @@ export default function Reflection() {
             </p>
           )}
           <RichTextEditor
-            content={
-              (selectedEntry.content as Record<string, unknown>) ?? undefined
-            }
+            content={parseContent(selectedEntry.content)}
             editable={false}
           />
         </div>

@@ -10,21 +10,34 @@ import {
   ChevronRight,
   Loader2,
   CameraOff,
+  Settings,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useNutrition, searchFood, lookupBarcode } from "@/hooks/use-nutrition";
+import { useProfile } from "@/hooks/use-profile";
 import type { FoodSearchResult, MealType } from "@/hooks/use-nutrition";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
-// ─── constants ──────────────────────────────────────────────────────────────
-const MEALS: { id: MealType; label: string }[] = [
-  { id: "breakfast", label: "Breakfast" },
-  { id: "lunch", label: "Lunch" },
-  { id: "dinner", label: "Dinner" },
-  { id: "snack", label: "Snack" },
-];
+// ─── helper to get all meal categories ─────────────────────────────────
+function getMealCategories(profile: any): { id: MealType; label: string }[] {
+  const base: { id: MealType; label: string }[] = [
+    { id: "breakfast", label: "Breakfast" },
+    { id: "lunch", label: "Lunch" },
+    { id: "dinner", label: "Dinner" },
+    { id: "snack", label: "Snacks" },
+    { id: "uncategorized", label: "Uncategorized" },
+  ];
+
+  const custom: { id: MealType; label: string }[] = [];
+  if (profile?.custom_meal_1) custom.push({ id: "custom_1", label: profile.custom_meal_1 });
+  if (profile?.custom_meal_2) custom.push({ id: "custom_2", label: profile.custom_meal_2 });
+  if (profile?.custom_meal_3) custom.push({ id: "custom_3", label: profile.custom_meal_3 });
+  if (profile?.custom_meal_4) custom.push({ id: "custom_4", label: profile.custom_meal_4 });
+
+  return [...base, ...custom];
+}
 
 const MACRO_COLORS = {
   protein: "bg-blue-500",
@@ -181,10 +194,132 @@ function MacroBar({
   );
 }
 
+// ─── CategorySettingsDialog ──────────────────────────────────────────────────
+function CategorySettingsDialog({
+  isOpen,
+  onClose,
+  profile,
+  updateProfile,
+  isUpdating,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  profile: any;
+  updateProfile: (updates: any) => Promise<any>;
+  isUpdating: boolean;
+}) {
+  const [custom1, setCustom1] = useState(profile?.custom_meal_1 || "");
+  const [custom2, setCustom2] = useState(profile?.custom_meal_2 || "");
+  const [custom3, setCustom3] = useState(profile?.custom_meal_3 || "");
+  const [custom4, setCustom4] = useState(profile?.custom_meal_4 || "");
+
+  const handleSave = async () => {
+    try {
+      await updateProfile({
+        custom_meal_1: custom1 || null,
+        custom_meal_2: custom2 || null,
+        custom_meal_3: custom3 || null,
+        custom_meal_4: custom4 || null,
+      });
+      toast.success("Meal categories updated");
+      onClose();
+    } catch {
+      toast.error("Failed to save categories");
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="bg-card border border-border rounded-2xl max-w-md w-full p-6 space-y-4"
+      >
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-semibold text-foreground">
+            Custom Meal Categories
+          </h3>
+          <button
+            onClick={onClose}
+            className="text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        <p className="text-sm text-muted-foreground">
+          Add up to 4 custom meal categories for tracking specific eating patterns.
+        </p>
+
+        <div className="space-y-3">
+          <div>
+            <label className="text-xs text-muted-foreground block mb-1">
+              Custom Category 1
+            </label>
+            <Input
+              value={custom1}
+              onChange={(e) => setCustom1(e.target.value)}
+              placeholder="e.g., Pre-Workout, Dessert"
+              className="text-sm"
+            />
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground block mb-1">
+              Custom Category 2
+            </label>
+            <Input
+              value={custom2}
+              onChange={(e) => setCustom2(e.target.value)}
+              placeholder="e.g., Post-Workout"
+              className="text-sm"
+            />
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground block mb-1">
+              Custom Category 3
+            </label>
+            <Input
+              value={custom3}
+              onChange={(e) => setCustom3(e.target.value)}
+              placeholder="e.g., Late Night"
+              className="text-sm"
+            />
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground block mb-1">
+              Custom Category 4
+            </label>
+            <Input
+              value={custom4}
+              onChange={(e) => setCustom4(e.target.value)}
+              placeholder="e.g., Meal Prep"
+              className="text-sm"
+            />
+          </div>
+        </div>
+
+        <div className="flex gap-2 pt-2">
+          <Button variant="outline" onClick={onClose} className="flex-1">
+            Cancel
+          </Button>
+          <Button onClick={handleSave} disabled={isUpdating} className="flex-1">
+            {isUpdating ? "Saving..." : "Save"}
+          </Button>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
 // ─── CalorieTracker ──────────────────────────────────────────────────────────
 export default function CalorieTracker() {
   const [date, setDate] = useState(new Date());
   const { logs, totals, isLoading, add, isAdding, remove } = useNutrition(date);
+  const { profile, updateProfile, isUpdating } = useProfile();
+  const [showCategorySettings, setShowCategorySettings] = useState(false);
+  const MEALS = getMealCategories(profile);
 
   // Search state
   const [query, setQuery] = useState("");
@@ -206,6 +341,7 @@ export default function CalorieTracker() {
 
     if (!query.trim()) {
       setResults([]);
+      setSearching(false);
       return;
     }
 
@@ -213,15 +349,27 @@ export default function CalorieTracker() {
     searchTimeout.current = setTimeout(async () => {
       try {
         const items = await searchFood(query);
-        setResults(items || []);
+        if (active) {
+          setResults(items || []);
+          if (items.length === 0) {
+            console.log('No results found for query:', query);
+          }
+        }
       } catch (error) {
-        setResults([]); // Reset on error
+        console.error('Food search error:', error);
+        if (active) {
+          setResults([]);
+          toast.error('Failed to search foods. Please try again.');
+        }
       } finally {
-        setSearching(false); // Always stop loading
+        if (active) {
+          setSearching(false);
+        }
       }
     }, 500);
+    
     return () => {
-      active = false; // Invalidate the previous API call if the query changes
+      active = false;
       if (searchTimeout.current) clearTimeout(searchTimeout.current);
     };
   }, [query]);
@@ -273,7 +421,7 @@ export default function CalorieTracker() {
 
   return (
     <div className="max-w-lg mx-auto space-y-6">
-      {/* Date nav */}
+      {/* Header with date nav and settings */}
       <div className="flex items-center justify-between">
         <button
           onClick={() => setDate((d) => offsetDate(d, -1))}
@@ -284,13 +432,22 @@ export default function CalorieTracker() {
         <span className="text-sm font-medium text-foreground">
           {formatDate(date)}
         </span>
-        <button
-          onClick={() => setDate((d) => offsetDate(d, 1))}
-          disabled={isToday}
-          className="p-2 rounded-xl hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors disabled:opacity-30"
-        >
-          <ChevronRight className="w-4 h-4" />
-        </button>
+        <div className="flex items-center gap-1">
+          <button
+            onClick={() => setDate((d) => offsetDate(d, 1))}
+            disabled={isToday}
+            className="p-2 rounded-xl hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors disabled:opacity-30"
+          >
+            <ChevronRight className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => setShowCategorySettings(true)}
+            className="p-2 rounded-xl hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
+            title="Manage meal categories"
+          >
+            <Settings className="w-4 h-4" />
+          </button>
+        </div>
       </div>
 
       {/* Calorie summary ring */}
@@ -566,6 +723,15 @@ export default function CalorieTracker() {
           onClose={() => setShowScanner(false)}
         />
       )}
+
+      {/* Category settings dialog */}
+      <CategorySettingsDialog
+        isOpen={showCategorySettings}
+        onClose={() => setShowCategorySettings(false)}
+        profile={profile}
+        updateProfile={updateProfile}
+        isUpdating={isUpdating}
+      />
     </div>
   );
 }
