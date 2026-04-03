@@ -3,6 +3,8 @@
 // Generates white/brown noise and plays ambient sounds
 // ═══════════════════════════════════════════════════════════════════════
 
+import { toast } from "sonner";
+
 export type AudioType = "none" | "white-noise" | "brown-noise" | "rain" | "lofi";
 
 class FocusAudioPlayer {
@@ -72,20 +74,75 @@ class FocusAudioPlayer {
   }
 
   private playAmbient(type: "rain" | "lofi", volume: number) {
-    const urls: Record<string, string> = {
-      rain: "https://cdn.pixabay.com/download/audio/2022/05/13/audio_257112e87f.mp3",
-      lofi: "https://cdn.pixabay.com/download/audio/2022/03/15/audio_4deaa55a5f.mp3",
-    };
+    // Use license-free audio from freesound or generate continuous noise
+    // For now, we'll just generate continuous noise for rain
+    if (type === "rain") {
+      // Generate rain-like noise (filtered white noise)
+      try {
+        this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+        const ctx = this.audioContext;
+        
+        const bufferSize = ctx.sampleRate * 2;
+        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const data = buffer.getChannelData(0);
 
-    const url = urls[type];
-    if (!url) return;
+        // Generate filtered white noise for rain effect
+        for (let i = 0; i < bufferSize; i++) {
+          data[i] = (Math.random() * 2 - 1) * 0.5;
+        }
 
-    this.htmlAudio = new Audio(url);
-    this.htmlAudio.loop = true;
-    this.htmlAudio.volume = volume;
-    this.htmlAudio.play().catch((error) => {
-      console.error("Failed to play ambient audio:", error);
-    });
+        this.noiseNode = ctx.createBufferSource();
+        this.noiseNode.buffer = buffer;
+        this.noiseNode.loop = true;
+
+        // Add low-pass filter for rain effect
+        const filter = ctx.createBiquadFilter();
+        filter.type = "lowpass";
+        filter.frequency.value = 2000;
+
+        this.gainNode = ctx.createGain();
+        this.gainNode.gain.value = volume * 0.6;
+
+        this.noiseNode.connect(filter);
+        filter.connect(this.gainNode);
+        this.gainNode.connect(ctx.destination);
+        this.noiseNode.start(0);
+      } catch (error) {
+        console.error("Failed to play rain audio:", error);
+        toast.error("Audio playback not supported");
+      }
+    } else if (type === "lofi") {
+      // For lofi, we'll generate a simple ambient tone
+      try {
+        this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+        const ctx = this.audioContext;
+        
+        // Create oscillators for ambient sound
+        const osc1 = ctx.createOscillator();
+        const osc2 = ctx.createOscillator();
+        
+        osc1.type = "sine";
+        osc2.type = "sine";
+        osc1.frequency.value = 220; // A3
+        osc2.frequency.value = 330; // E4
+        
+        this.gainNode = ctx.createGain();
+        this.gainNode.gain.value = volume * 0.1;
+        
+        osc1.connect(this.gainNode);
+        osc2.connect(this.gainNode);
+        this.gainNode.connect(ctx.destination);
+        
+        osc1.start(0);
+        osc2.start(0);
+        
+        // Store reference to stop later
+        (this as any).oscillators = [osc1, osc2];
+      } catch (error) {
+        console.error("Failed to play lofi audio:", error);
+        toast.error("Audio playback not supported");
+      }
+    }
   }
 
   stop() {
@@ -93,6 +150,14 @@ class FocusAudioPlayer {
       this.noiseNode.stop();
       this.noiseNode.disconnect();
       this.noiseNode = null;
+    }
+
+    if ((this as any).oscillators) {
+      (this as any).oscillators.forEach((osc: OscillatorNode) => {
+        osc.stop();
+        osc.disconnect();
+      });
+      (this as any).oscillators = null;
     }
 
     if (this.gainNode) {

@@ -1,39 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/hooks/use-auth";
-
-export type MealType = 
-  | "breakfast" 
-  | "lunch" 
-  | "dinner" 
-  | "snack" 
-  | "uncategorized"
-  | "custom_1"
-  | "custom_2"
-  | "custom_3"
-  | "custom_4";
-
-export interface NutritionLog {
-  id: string;
-  user_id: string;
-  date: string;
-  meal_type: MealType;
-  food_name: string;
-  calories: number;
-  protein: number;
-  carbs: number;
-  fat: number;
-  grams: number;
-  created_at: string;
-}
-
-export interface FoodSearchResult {
-  name: string;
-  calories_per_100g: number;
-  protein_per_100g: number;
-  carbs_per_100g: number;
-  fat_per_100g: number;
-}
+import type { MealType, NutritionLog, FoodSearchResult } from "@/lib/types";
 
 interface OpenFoodFactsProduct {
   product_name: string;
@@ -147,47 +115,82 @@ export function useNutritionWeekStats() {
   });
 }
 
-/** Search Open Food Facts by food name (debounce on the caller side) */
+interface USDAFood {
+  fdcId: number;
+  description: string;
+  foodNutrients: Array<{
+    nutrientId: number;
+    nutrientName: string;
+    value: number;
+  }>;
+}
+
+/** Search USDA FoodData Central by food name */
 export async function searchFood(query: string): Promise<FoodSearchResult[]> {
   if (!query.trim()) return [];
   try {
-    // Try API endpoint first (works in production)
-    let res = await fetch(`/api/food?query=${encodeURIComponent(query)}`);
-    
-    // If API fails in dev, use Open Food Facts directly
-    if (!res.ok && import.meta.env.DEV) {
-      console.log('API endpoint not available, using Open Food Facts directly');
-      res = await fetch(
-        `https://world.openfoodfacts.org/cgi/search.pl?action=process&search_terms=${encodeURIComponent(query)}&json=1&page_size=12&fields=product_name,nutriments`
-      );
-    }
+    // USDA FoodData Central API (free, no key required for search)
+    const res = await fetch(
+      `https://api.nal.usda.gov/fdc/v1/foods/search?query=${encodeURIComponent(query)}&pageSize=25&api_key=DEMO_KEY`
+    );
     
     if (!res.ok) {
-      console.error('Food API error:', res.status, res.statusText);
+      console.error('USDA API error:', res.status, res.statusText);
       return [];
     }
+    
     const data = await res.json();
-    if (!data.products || data.products.length === 0) {
-      console.log('No products found for:', query);
+    if (!data.foods || data.foods.length === 0) {
+      console.log('No foods found for:', query);
       return [];
     }
+
+    const queryLower = query.toLowerCase();
+    
     return (
-      (data.products ?? [])
+      (data.foods ?? [])
         .filter(
-          (p: OpenFoodFactsProduct) =>
-            p.product_name && p.nutriments?.["energy-kcal_100g"] != null,
+          (food: USDAFood) =>
+            food.description &&
+            food.description.length > 2 &&
+            food.description.length < 150 &&
+            food.foodNutrients &&
+            food.foodNutrients.length > 0
         )
-        .map((p: OpenFoodFactsProduct) => ({
-          name: String(p.product_name).trim(),
-          calories_per_100g: Math.round(p.nutriments["energy-kcal_100g"] ?? 0),
-          protein_per_100g: +(
-            (p.nutriments["proteins_100g"] ?? 0) as number
-          ).toFixed(1),
-          carbs_per_100g: +(
-            (p.nutriments["carbohydrates_100g"] ?? 0) as number
-          ).toFixed(1),
-          fat_per_100g: +((p.nutriments["fat_100g"] ?? 0) as number).toFixed(1),
-        }))
+        .map((food: USDAFood) => {
+          const name = food.description.trim();
+          const nameLower = name.toLowerCase();
+          
+          // Calculate relevance score
+          let relevance = 0;
+          if (nameLower === queryLower) relevance = 100;
+          else if (nameLower.startsWith(queryLower)) relevance = 80;
+          else if (nameLower.includes(queryLower)) relevance = 60;
+          else relevance = 30;
+          
+          // Extract nutrients (USDA uses nutrient IDs)
+          // 1008 = Energy (kcal), 1003 = Protein, 1005 = Carbs, 1004 = Fat
+          const nutrients = food.foodNutrients.reduce((acc, n) => {
+            if (n.nutrientId === 1008) acc.calories = n.value;
+            if (n.nutrientId === 1003) acc.protein = n.value;
+            if (n.nutrientId === 1005) acc.carbs = n.value;
+            if (n.nutrientId === 1004) acc.fat = n.value;
+            return acc;
+          }, { calories: 0, protein: 0, carbs: 0, fat: 0 });
+
+          return {
+            name,
+            calories_per_100g: Math.round(nutrients.calories),
+            protein_per_100g: +nutrients.protein.toFixed(1),
+            carbs_per_100g: +nutrients.carbs.toFixed(1),
+            fat_per_100g: +nutrients.fat.toFixed(1),
+            _relevance: relevance,
+          };
+        })
+        .filter((food: any) => food.calories_per_100g > 0) // Filter out items with no calorie data
+        .sort((a: any, b: any) => (b._relevance || 0) - (a._relevance || 0))
+        .slice(0, 12)
+        .map(({ _relevance, ...food }: any) => food)
     );
   } catch (err) {
     console.error('Food search error:', err);

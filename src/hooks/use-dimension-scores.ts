@@ -1,13 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/hooks/use-auth";
-import { LIFE_DIMENSIONS, type LifeDimensionName } from "@/lib/types";
-
-export interface DimensionScore {
-  dimension: LifeDimensionName;
-  score: number;
-  week_start: string;
-}
+import { LIFE_DIMENSIONS, type LifeDimensionName, type DimensionScore } from "@/lib/types";
 
 function weekStart(d = new Date()) {
   const day = d.getDay(); // 0=Sun

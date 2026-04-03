@@ -1,13 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/hooks/use-auth";
-import type { Intention } from "@/lib/types";
-
-export type NewIntention = Pick<Intention, "title"> & {
-  dimension?: string | null;
-  context_tags?: string[];
-  scheduled_date?: string;
-};
+import type { Intention, NewIntention } from "@/lib/types";
 
 function toDateStr(d: Date) {
   return d.toISOString().split("T")[0];

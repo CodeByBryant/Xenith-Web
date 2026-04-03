@@ -1,37 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/hooks/use-auth";
-
-export interface WaterLog {
-  id: string;
-  user_id: string;
-  date: string;
-  amount_ml: number;
-  logged_at: string;
-  created_at: string;
-}
-
-export interface Supplement {
-  id: string;
-  user_id: string;
-  name: string;
-  dosage?: string | null;
-  unit?: string | null;
-  notes?: string | null;
-  active: boolean;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface SupplementLog {
-  id: string;
-  user_id: string;
-  supplement_id: string;
-  date: string;
-  taken: boolean;
-  logged_at: string;
-  created_at: string;
-}
+import type { WaterLog, Supplement, SupplementLog } from "@/lib/types";
 
 function toDateStr(d = new Date()) {
   return d.toISOString().split("T")[0];

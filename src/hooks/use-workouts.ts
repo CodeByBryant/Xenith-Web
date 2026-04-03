@@ -1,20 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/hooks/use-auth";
-
-export interface WorkoutLog {
-  id: string;
-  user_id: string;
-  date: string;
-  exercise_name: string;
-  muscle_groups: string[];
-  sets: number | null;
-  reps: number | null;
-  weight_kg: number | null;
-  duration_minutes: number | null;
-  notes: string | null;
-  created_at: string;
-}
+import type { WorkoutLog } from "@/lib/types";
 
 function toDateStr(d = new Date()) {
   return d.toISOString().split("T")[0];

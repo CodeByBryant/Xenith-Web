@@ -1,17 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/hooks/use-auth";
-
-export type Mood = "great" | "good" | "okay" | "low" | "rough";
-
-export interface Reflection {
-  id: string;
-  content: Record<string, unknown> | null; // Tiptap JSON
-  mood: Mood | null;
-  entry_date: string;
-  created_at: string;
-  updated_at: string;
-}
+import type { Mood, ReflectionWithMood } from "@/lib/types";
 
 function toDateStr(d = new Date()) {
   return d.toISOString().split("T")[0];
@@ -39,7 +29,7 @@ export function useReflections(daysBack = 7) {
         .gte("entry_date", oldest)
         .order("entry_date", { ascending: false });
       if (error) throw error;
-      return (data ?? []) as Reflection[];
+      return (data ?? []) as ReflectionWithMood[];
     },
   });
 

@@ -47,6 +47,9 @@ export default function Settings() {
   const [theme, setTheme] = useState<"light" | "dark" | "system">(
     (profile?.theme as "light" | "dark" | "system") ?? "system",
   );
+  const [preferredUnits, setPreferredUnits] = useState<"metric" | "imperial">(
+    (profile?.preferred_units as "metric" | "imperial") ?? "metric",
+  );
 
   const handleSave = async () => {
     try {
@@ -55,6 +58,7 @@ export default function Settings() {
         timezone,
         theme,
         data_sharing_consent: dataConsent,
+        preferred_units: preferredUnits,
       });
       toast.success("Settings saved.");
     } catch {
@@ -154,6 +158,22 @@ export default function Settings() {
                 <SelectItem value="system">System</SelectItem>
                 <SelectItem value="light">Light</SelectItem>
                 <SelectItem value="dark">Dark</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Units</Label>
+            <Select
+              value={preferredUnits}
+              onValueChange={(v) => setPreferredUnits(v as "metric" | "imperial")}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="metric">Metric (kg, cm)</SelectItem>
+                <SelectItem value="imperial">Imperial (lbs, in)</SelectItem>
               </SelectContent>
             </Select>
           </div>

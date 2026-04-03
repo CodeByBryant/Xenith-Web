@@ -1,30 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/hooks/use-auth";
-
-export interface RoutineItem {
-  id: string;
-  routine_id: string;
-  title: string;
-  estimated_minutes: number;
-  position: number;
-}
-
-export interface Routine {
-  id: string;
-  name: string;
-  time_of_day: "morning" | "afternoon" | "evening";
-  active: boolean;
-  position: number;
-  routine_items?: RoutineItem[];
-}
-
-export interface RoutineCompletion {
-  id: string;
-  routine_id: string;
-  completed_date: string;
-  completed_item_ids: string[];
-}
+import type { RoutineItem, RoutineWithItems, RoutineCompletionLog } from "@/lib/types";
 
 function toDateStr(d = new Date()) {
   return d.toISOString().split("T")[0];
@@ -47,7 +24,7 @@ export function useRoutines() {
         .eq("active", true)
         .order("position", { ascending: true });
       if (error) throw error;
-      return (data ?? []) as Routine[];
+      return (data ?? []) as RoutineWithItems[];
     },
   });
 
@@ -79,7 +56,7 @@ export function useRoutines() {
       time_of_day,
     }: {
       name: string;
-      time_of_day: Routine["time_of_day"];
+      time_of_day: RoutineWithItems["time_of_day"];
     }) => {
       if (!supabase || !user) throw new Error("Not authenticated");
       const { data, error } = await supabase

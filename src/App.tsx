@@ -35,6 +35,15 @@ const CalorieTracker = lazy(() => import("./pages/app/health/CalorieTracker"));
 const WorkoutTracker = lazy(() => import("./pages/app/health/WorkoutTracker"));
 const WaterSupplementsTracker = lazy(() => import("./pages/app/health/WaterSupplementsTracker"));
 const BiometricWizard = lazy(() => import("./pages/app/health/BiometricWizard"));
+const FinanceTools = lazy(() => import("./pages/app/finances/FinanceTools"));
+const TransactionTracker = lazy(() => import("./pages/app/finances/TransactionTracker"));
+const LearningTools = lazy(() => import("./pages/app/learning/LearningTools"));
+const BookTracker = lazy(() => import("./pages/app/learning/BookTracker"));
+const RestTools = lazy(() => import("./pages/app/rest/RestTools"));
+const SleepTracker = lazy(() => import("./pages/app/rest/SleepTracker"));
+const MindTools = lazy(() => import("./pages/app/mind/MindTools"));
+const ThoughtAudit = lazy(() => import("./pages/app/mind/ThoughtAudit"));
+const DailyGratitude = lazy(() => import("./pages/app/mind/DailyGratitude"));
 
 // Lazy-load dev panel — only fetched when route is hit, never bundled in prod
 const Dev = lazy(() => import("./pages/Dev"));
@@ -206,6 +215,60 @@ const router = createBrowserRouter([
             element: (
               <Suspense fallback={AppLoader}>
                 <BiometricWizard />
+              </Suspense>
+            ),
+            errorElement: <RouteError />,
+          },
+          {
+            path: "dimensions/finances",
+            element: (
+              <Suspense fallback={AppLoader}>
+                <FinanceTools />
+              </Suspense>
+            ),
+            errorElement: <RouteError />,
+          },
+          {
+            path: "dimensions/finances/transactions",
+            element: (
+              <Suspense fallback={AppLoader}>
+                <TransactionTracker />
+              </Suspense>
+            ),
+            errorElement: <RouteError />,
+          },
+          {
+            path: "dimensions/learning",
+            element: (
+              <Suspense fallback={AppLoader}>
+                <LearningTools />
+              </Suspense>
+            ),
+            errorElement: <RouteError />,
+          },
+          {
+            path: "dimensions/learning/books",
+            element: (
+              <Suspense fallback={AppLoader}>
+                <BookTracker />
+              </Suspense>
+            ),
+            errorElement: <RouteError />,
+          },
+          {
+            path: "dimensions/rest",
+            element: (
+              <Suspense fallback={AppLoader}>
+                <RestTools />
+              </Suspense>
+            ),
+            errorElement: <RouteError />,
+          },
+          {
+            path: "dimensions/rest/sleep",
+            element: (
+              <Suspense fallback={AppLoader}>
+                <SleepTracker />
               </Suspense>
             ),
             errorElement: <RouteError />,

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Link } from "react-router-dom";
 import {
   Search,
   Camera,
@@ -11,6 +12,8 @@ import {
   Loader2,
   CameraOff,
   Settings,
+  Calculator,
+  ArrowRight,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useNutrition, searchFood, lookupBarcode } from "@/hooks/use-nutrition";
@@ -319,7 +322,29 @@ export default function CalorieTracker() {
   const { logs, totals, isLoading, add, isAdding, remove } = useNutrition(date);
   const { profile, updateProfile, isUpdating } = useProfile();
   const [showCategorySettings, setShowCategorySettings] = useState(false);
+  const [showBiometricPrompt, setShowBiometricPrompt] = useState(false);
   const MEALS = getMealCategories(profile);
+
+  // Check if user has completed biometric setup
+  const hasCompletedBiometrics = !!(profile?.target_calories && profile?.age);
+  
+  // Show prompt once if not completed
+  useEffect(() => {
+    if (!hasCompletedBiometrics && profile && !showBiometricPrompt) {
+      // Only show after profile loads and if not completed
+      const hasSeenPrompt = localStorage.getItem('biometric-prompt-seen');
+      if (!hasSeenPrompt) {
+        setShowBiometricPrompt(true);
+        localStorage.setItem('biometric-prompt-seen', 'true');
+      }
+    }
+  }, [profile, hasCompletedBiometrics, showBiometricPrompt]);
+
+  // Default targets (fallback if not set)
+  const targetCalories = profile?.target_calories || 2000;
+  const targetProtein = profile?.target_protein || 150;
+  const targetCarbs = profile?.target_carbs || 250;
+  const targetFat = profile?.target_fat || 65;
 
   // Search state
   const [query, setQuery] = useState("");
@@ -473,7 +498,7 @@ export default function CalorieTracker() {
                 strokeWidth={5}
                 strokeDasharray={2 * Math.PI * 34}
                 strokeDashoffset={
-                  2 * Math.PI * 34 * (1 - Math.min(totals.calories / 2000, 1))
+                  2 * Math.PI * 34 * (1 - Math.min(totals.calories / targetCalories, 1))
                 }
                 strokeLinecap="round"
                 style={{ transition: "stroke-dashoffset 0.5s ease" }}
@@ -491,21 +516,39 @@ export default function CalorieTracker() {
             <MacroBar
               label="Protein"
               value={totals.protein}
-              max={150}
+              max={targetProtein}
               colorClass={MACRO_COLORS.protein}
             />
             <MacroBar
               label="Carbs"
               value={totals.carbs}
-              max={250}
+              max={targetCarbs}
               colorClass={MACRO_COLORS.carbs}
             />
             <MacroBar
               label="Fat"
               value={totals.fat}
-              max={65}
+              max={targetFat}
               colorClass={MACRO_COLORS.fat}
             />
+          </div>
+        </div>
+        <div className="mt-3 pt-3 border-t border-border">
+          <div className="flex items-center justify-between text-xs">
+            <span className="text-muted-foreground">
+              Target: {targetCalories} kcal · 
+              {' '}{Math.abs(targetCalories - totals.calories)} kcal{' '}
+              {totals.calories < targetCalories ? 'remaining' : 'over'}
+            </span>
+            {!hasCompletedBiometrics && (
+              <Link
+                to="/app/dimensions/health/biometrics"
+                className="text-blue-500 hover:text-blue-400 flex items-center gap-1"
+              >
+                <Calculator className="w-3 h-3" />
+                Set targets
+              </Link>
+            )}
           </div>
         </div>
       </div>
@@ -732,6 +775,50 @@ export default function CalorieTracker() {
         updateProfile={updateProfile}
         isUpdating={isUpdating}
       />
+
+      {/* Biometric wizard prompt */}
+      <AnimatePresence>
+        {showBiometricPrompt && (
+          <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-card border border-border rounded-2xl max-w-md w-full p-6 space-y-4"
+            >
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center shrink-0">
+                  <Calculator className="w-6 h-6 text-purple-500" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold text-foreground mb-1">
+                    Set Your Calorie Targets
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    Complete the Biometric Wizard to get personalized calorie and macro targets based on your age, weight, activity level, and goals.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-2 pt-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowBiometricPrompt(false)}
+                  className="flex-1"
+                >
+                  Maybe Later
+                </Button>
+                <Link to="/app/dimensions/health/biometrics" className="flex-1">
+                  <Button className="w-full">
+                    Get Started
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </Button>
+                </Link>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

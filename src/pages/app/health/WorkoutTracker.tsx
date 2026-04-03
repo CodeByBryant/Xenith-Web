@@ -1,7 +1,8 @@
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Plus, Trash2, Dumbbell, ChevronLeft, ChevronRight, Loader2,
+  Plus, Trash2, Dumbbell, ChevronLeft, ChevronRight, Loader2, Zap, BarChart3,
+  Flame, Target, LucideIcon,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -160,6 +161,60 @@ function BodyMap({
   );
 }
 
+// ─── Workout Presets ─────────────────────────────────────────────────────────
+const WORKOUT_PRESETS = [
+  {
+    name: "Push Day",
+    icon: Dumbbell,
+    exercises: [
+      { name: "Bench Press", muscles: ["chest", "front_delts", "triceps"], sets: 4, reps: 8 },
+      { name: "Shoulder Press", muscles: ["front_delts", "triceps"], sets: 3, reps: 10 },
+      { name: "Incline Dumbbell Press", muscles: ["chest", "front_delts"], sets: 3, reps: 12 },
+      { name: "Tricep Dips", muscles: ["triceps", "chest"], sets: 3, reps: 12 },
+    ],
+  },
+  {
+    name: "Pull Day",
+    icon: Zap,
+    exercises: [
+      { name: "Pull-ups", muscles: ["upper_back", "biceps"], sets: 4, reps: 8 },
+      { name: "Barbell Rows", muscles: ["upper_back", "rear_delts"], sets: 4, reps: 10 },
+      { name: "Dumbbell Curls", muscles: ["biceps"], sets: 3, reps: 12 },
+      { name: "Face Pulls", muscles: ["rear_delts", "traps"], sets: 3, reps: 15 },
+    ],
+  },
+  {
+    name: "Leg Day",
+    icon: Dumbbell,
+    exercises: [
+      { name: "Squats", muscles: ["quads", "glutes", "hamstrings"], sets: 4, reps: 8 },
+      { name: "Leg Press", muscles: ["quads", "glutes"], sets: 3, reps: 12 },
+      { name: "Romanian Deadlifts", muscles: ["hamstrings", "glutes", "lower_back"], sets: 3, reps: 10 },
+      { name: "Calf Raises", muscles: ["calves"], sets: 4, reps: 15 },
+    ],
+  },
+  {
+    name: "Full Body",
+    icon: Flame,
+    exercises: [
+      { name: "Deadlifts", muscles: ["lower_back", "hamstrings", "glutes", "traps"], sets: 3, reps: 6 },
+      { name: "Bench Press", muscles: ["chest", "front_delts", "triceps"], sets: 3, reps: 8 },
+      { name: "Pull-ups", muscles: ["upper_back", "biceps"], sets: 3, reps: 10 },
+      { name: "Squats", muscles: ["quads", "glutes"], sets: 3, reps: 10 },
+    ],
+  },
+  {
+    name: "Core & Abs",
+    icon: Target,
+    exercises: [
+      { name: "Plank", muscles: ["abs"], sets: 3, reps: 0, duration: 1 },
+      { name: "Russian Twists", muscles: ["obliques", "abs"], sets: 3, reps: 20 },
+      { name: "Leg Raises", muscles: ["abs"], sets: 3, reps: 15 },
+      { name: "Side Plank", muscles: ["obliques"], sets: 3, reps: 0, duration: 1 },
+    ],
+  },
+] as const;
+
 // ─── helpers ─────────────────────────────────────────────────────────────────
 function toDateStr(d = new Date()) { return d.toISOString().split("T")[0]; }
 function offsetDate(from: Date, days: number) {
@@ -179,6 +234,7 @@ export default function WorkoutTracker() {
   const { data: history = [] } = useWorkoutHistory(30);
 
   const [selectedMuscles, setSelectedMuscles] = useState<Set<MuscleId>>(new Set());
+  const [tab, setTab] = useState<"log" | "presets" | "analytics">("log");
 
   const [exerciseName, setExerciseName] = useState("");
   const [sets, setSets] = useState<string>("");
@@ -231,23 +287,227 @@ export default function WorkoutTracker() {
 
   const selectedDefs = MUSCLE_DEFS.filter((m) => selectedMuscles.has(m.id as MuscleId));
 
+  const handleApplyPreset = async (preset: typeof WORKOUT_PRESETS[number]) => {
+    try {
+      for (const exercise of preset.exercises) {
+        await add({
+          exercise_name: exercise.name,
+          muscle_groups: exercise.muscles as string[],
+          sets: exercise.sets,
+          reps: exercise.reps || null,
+          weight_kg: null,
+          duration_minutes: (exercise as any).duration || null,
+          notes: `From ${preset.name} preset`,
+        });
+      }
+      toast.success(`${preset.name} logged!`);
+      setTab("log");
+    } catch {
+      toast.error("Failed to apply preset");
+    }
+  };
+
+  // Analytics calculations
+  const analyticsData = useMemo(() => {
+    const totalWorkouts = history.length;
+    const last30Days = history.filter(w => {
+      const daysAgo = Math.floor((Date.now() - new Date(w.date).getTime()) / 86400000);
+      return daysAgo <= 30;
+    });
+    const workoutsThisMonth = last30Days.length;
+    const uniqueDates = new Set(last30Days.map(w => w.date)).size;
+    
+    // Muscle frequency
+    const muscleFreq: Record<string, number> = {};
+    last30Days.forEach(w => {
+      w.muscle_groups.forEach(m => {
+        muscleFreq[m] = (muscleFreq[m] || 0) + 1;
+      });
+    });
+    
+    const topMuscles = Object.entries(muscleFreq)
+      .map(([id, count]) => ({
+        muscle: MUSCLE_DEFS.find(m => m.id === id)?.label || id,
+        count,
+        color: MUSCLE_DEFS.find(m => m.id === id)?.color || "#888",
+      }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 6);
+
+    return {
+      totalWorkouts,
+      workoutsThisMonth,
+      uniqueDates,
+      topMuscles,
+      avgPerWeek: (uniqueDates / 4.3).toFixed(1),
+    };
+  }, [history]);
+
   return (
     <div className="max-w-2xl mx-auto space-y-6">
-      {/* Date nav */}
-      <div className="flex items-center justify-between">
-        <button onClick={() => setDate((d) => offsetDate(d, -1))}
-          className="p-2 rounded-xl hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors">
-          <ChevronLeft className="w-4 h-4" />
+      {/* Tabs */}
+      <div className="flex gap-2 bg-secondary p-1 rounded-xl">
+        <button
+          onClick={() => setTab("log")}
+          className={cn(
+            "flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-2",
+            tab === "log"
+              ? "bg-card text-foreground shadow-sm"
+              : "text-muted-foreground hover:text-foreground"
+          )}
+        >
+          <Dumbbell className="w-4 h-4" />
+          Log Workout
         </button>
-        <span className="text-sm font-medium text-foreground">{formatDate(date)}</span>
-        <button onClick={() => setDate((d) => offsetDate(d, 1))} disabled={isToday}
-          className="p-2 rounded-xl hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors disabled:opacity-30">
-          <ChevronRight className="w-4 h-4" />
+        <button
+          onClick={() => setTab("presets")}
+          className={cn(
+            "flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-2",
+            tab === "presets"
+              ? "bg-card text-foreground shadow-sm"
+              : "text-muted-foreground hover:text-foreground"
+          )}
+        >
+          <Zap className="w-4 h-4" />
+          Presets
+        </button>
+        <button
+          onClick={() => setTab("analytics")}
+          className={cn(
+            "flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-2",
+            tab === "analytics"
+              ? "bg-card text-foreground shadow-sm"
+              : "text-muted-foreground hover:text-foreground"
+          )}
+        >
+          <BarChart3 className="w-4 h-4" />
+          Analytics
         </button>
       </div>
 
-      {/* Main card: body map + form side by side */}
-      <div className="bg-card border border-border rounded-2xl p-5 space-y-4">
+      {/* Date nav (only for log tab) */}
+      {tab === "log" && (
+        <div className="flex items-center justify-between">
+          <button onClick={() => setDate((d) => offsetDate(d, -1))}
+            className="p-2 rounded-xl hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors">
+            <ChevronLeft className="w-4 h-4" />
+          </button>
+          <span className="text-sm font-medium text-foreground">{formatDate(date)}</span>
+          <button onClick={() => setDate((d) => offsetDate(d, 1))} disabled={isToday}
+            className="p-2 rounded-xl hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors disabled:opacity-30">
+            <ChevronRight className="w-4 h-4" />
+          </button>
+        </div>
+      )}
+
+      {/* Presets Tab */}
+      {tab === "presets" && (
+        <div className="space-y-3">
+          <h2 className="text-lg font-semibold text-foreground">Workout Presets</h2>
+          {WORKOUT_PRESETS.map((preset) => {
+            const IconComponent = preset.icon;
+            return (
+              <div
+                key={preset.name}
+                className="bg-card border border-border rounded-2xl p-5 space-y-3"
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-base font-semibold text-foreground flex items-center gap-2">
+                      <IconComponent className="w-5 h-5" />
+                      {preset.name}
+                    </h3>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {preset.exercises.length} exercises
+                    </p>
+                  </div>
+                  <Button onClick={() => handleApplyPreset(preset)} disabled={isAdding} size="sm">
+                    {isAdding ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+                  </Button>
+                </div>
+                <div className="space-y-1.5">
+                  {preset.exercises.map((ex, i) => (
+                    <div
+                      key={i}
+                      className="text-xs text-muted-foreground flex items-center justify-between py-1"
+                    >
+                      <span>{ex.name}</span>
+                      <span className="font-medium">
+                        {ex.sets}×{ex.reps || `${(ex as any).duration}min`}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Analytics Tab */}
+      {tab === "analytics" && (
+        <div className="space-y-4">
+          <h2 className="text-lg font-semibold text-foreground">Analytics</h2>
+          
+          {/* Stats cards */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="bg-card border border-border rounded-xl p-4 text-center">
+              <p className="text-2xl font-bold text-foreground">{analyticsData.workoutsThisMonth}</p>
+              <p className="text-xs text-muted-foreground mt-1">Workouts this month</p>
+            </div>
+            <div className="bg-card border border-border rounded-xl p-4 text-center">
+              <p className="text-2xl font-bold text-foreground">{analyticsData.avgPerWeek}</p>
+              <p className="text-xs text-muted-foreground mt-1">Avg per week</p>
+            </div>
+            <div className="bg-card border border-border rounded-xl p-4 text-center">
+              <p className="text-2xl font-bold text-foreground">{analyticsData.uniqueDates}</p>
+              <p className="text-xs text-muted-foreground mt-1">Unique days</p>
+            </div>
+            <div className="bg-card border border-border rounded-xl p-4 text-center">
+              <p className="text-2xl font-bold text-foreground">{analyticsData.totalWorkouts}</p>
+              <p className="text-xs text-muted-foreground mt-1">Total logged</p>
+            </div>
+          </div>
+
+          {/* Top muscles chart */}
+          <div className="bg-card border border-border rounded-2xl p-5">
+            <h3 className="text-sm font-semibold text-foreground mb-4">
+              Most Trained Muscles (Last 30 Days)
+            </h3>
+            {analyticsData.topMuscles.length > 0 ? (
+              <div className="space-y-2.5">
+                {analyticsData.topMuscles.map((item) => (
+                  <div key={item.muscle}>
+                    <div className="flex justify-between text-xs mb-1">
+                      <span className="text-foreground font-medium">{item.muscle}</span>
+                      <span className="text-muted-foreground">{item.count} sets</span>
+                    </div>
+                    <div className="h-2 bg-secondary rounded-full overflow-hidden">
+                      <div
+                        className="h-full transition-all rounded-full"
+                        style={{
+                          width: `${(item.count / analyticsData.topMuscles[0].count) * 100}%`,
+                          backgroundColor: item.color,
+                        }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground text-center py-6">
+                No workout data yet. Start logging!
+              </p>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Log Tab - existing UI */}
+      {tab === "log" && (
+        <>
+          {/* Main card: body map + form side by side */}
+          <div className="bg-card border border-border rounded-2xl p-5 space-y-4">
         
         {/* Body map — full width, front + back side by side */}
         <div>
@@ -384,6 +644,8 @@ export default function WorkoutTracker() {
             </BarChart>
           </ResponsiveContainer>
         </div>
+      )}
+        </>
       )}
     </div>
   );

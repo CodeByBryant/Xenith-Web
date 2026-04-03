@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { Play, Pause, RotateCcw, Check, Clock, Volume2, VolumeX } from "lucide-react";
+import { Play, Pause, RotateCcw, Check, Clock, Volume2, VolumeX, Volume1, CloudRain, Music } from "lucide-react";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { useFocusSessions } from "@/hooks/use-focus-sessions";
@@ -18,12 +18,12 @@ const ENERGY_LABELS: Record<number, string> = {
   1: "Depleted", 2: "Low", 3: "Okay", 4: "Good", 5: "Peak",
 };
 
-const AUDIO_OPTIONS: { value: AudioType; label: string; emoji: string }[] = [
-  { value: "none", label: "None", emoji: "🔇" },
-  { value: "white-noise", label: "White Noise", emoji: "⚪" },
-  { value: "brown-noise", label: "Brown Noise", emoji: "🟤" },
-  { value: "rain", label: "Rain", emoji: "🌧️" },
-  { value: "lofi", label: "Lo-fi", emoji: "🎵" },
+const AUDIO_OPTIONS: { value: AudioType; label: string; icon: any }[] = [
+  { value: "none", label: "None", icon: VolumeX },
+  { value: "white-noise", label: "White Noise", icon: Volume2 },
+  { value: "brown-noise", label: "Brown Noise", icon: Volume1 },
+  { value: "rain", label: "Rain", icon: CloudRain },
+  { value: "lofi", label: "Lo-fi", icon: Music },
 ];
 
 function pad(n: number) { return String(n).padStart(2, "0"); }
@@ -132,7 +132,10 @@ export default function Focus() {
                   className="w-full flex items-center justify-between px-4 py-2.5 rounded-xl border border-border hover:border-foreground/30 transition-all"
                 >
                   <span className="text-sm text-foreground flex items-center gap-2">
-                    {AUDIO_OPTIONS.find((a) => a.value === audioType)?.emoji}
+                    {(() => {
+                      const Icon = AUDIO_OPTIONS.find((a) => a.value === audioType)?.icon || VolumeX;
+                      return <Icon className="w-4 h-4" />;
+                    })()}
                     {AUDIO_OPTIONS.find((a) => a.value === audioType)?.label}
                   </span>
                   {audioType === "none" ? (
@@ -149,19 +152,22 @@ export default function Focus() {
                       exit={{ opacity: 0, y: -10 }}
                       className="absolute top-full left-0 right-0 mt-2 bg-card border border-border rounded-xl overflow-hidden shadow-lg z-10"
                     >
-                      {AUDIO_OPTIONS.map((option) => (
-                        <button
-                          key={option.value}
-                          onClick={() => handleAudioChange(option.value)}
-                          className={cn(
-                            "w-full flex items-center gap-3 px-4 py-2.5 text-left hover:bg-secondary transition-colors",
-                            audioType === option.value && "bg-secondary"
-                          )}
-                        >
-                          <span className="text-lg">{option.emoji}</span>
-                          <span className="text-sm text-foreground">{option.label}</span>
-                        </button>
-                      ))}
+                      {AUDIO_OPTIONS.map((option) => {
+                        const Icon = option.icon;
+                        return (
+                          <button
+                            key={option.value}
+                            onClick={() => handleAudioChange(option.value)}
+                            className={cn(
+                              "w-full flex items-center gap-3 px-4 py-2.5 text-left hover:bg-secondary transition-colors",
+                              audioType === option.value && "bg-secondary"
+                            )}
+                          >
+                            <Icon className="w-4 h-4 text-muted-foreground" />
+                            <span className="text-sm text-foreground">{option.label}</span>
+                          </button>
+                        );
+                      })}
                     </motion.div>
                   )}
                 </AnimatePresence>

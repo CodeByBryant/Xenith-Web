@@ -213,6 +213,42 @@ export default function Dimensions() {
                   Health Tools →
                 </Link>
               )}
+              {/* Finances tools link */}
+              {dim === "Finances" && (
+                <Link
+                  to="/app/dimensions/finances"
+                  className="inline-flex items-center gap-1 text-[11px] text-yellow-500 hover:text-yellow-400 transition-colors mt-1.5 font-medium"
+                >
+                  Finance Tools →
+                </Link>
+              )}
+              {/* Learning tools link */}
+              {dim === "Learning" && (
+                <Link
+                  to="/app/dimensions/learning"
+                  className="inline-flex items-center gap-1 text-[11px] text-cyan-500 hover:text-cyan-400 transition-colors mt-1.5 font-medium"
+                >
+                  Learning Tools →
+                </Link>
+              )}
+              {/* Rest tools link */}
+              {dim === "Rest" && (
+                <Link
+                  to="/app/dimensions/rest"
+                  className="inline-flex items-center gap-1 text-[11px] text-indigo-400 hover:text-indigo-300 transition-colors mt-1.5 font-medium"
+                >
+                  Rest Tools →
+                </Link>
+              )}
+              {/* Mind tools link */}
+              {dim === "Mind" && (
+                <Link
+                  to="/app/mind"
+                  className="inline-flex items-center gap-1 text-[11px] text-purple-500 hover:text-purple-400 transition-colors mt-1.5 font-medium"
+                >
+                  Mind Tools →
+                </Link>
+              )}
             </div>
           );
         })}
