@@ -61,7 +61,6 @@ export default function FinanceTools() {
           </Link>
         </motion.div>
       </motion.div>
-
       {/* Info note */}
       <motion.p
         initial={{ opacity: 0 }}
@@ -69,7 +68,7 @@ export default function FinanceTools() {
         transition={{ delay: 0.4 }}
         className="text-xs text-muted-foreground text-center mt-8 leading-relaxed"
       >
-        Pro tip — consistent tracking here reveals spending patterns you can't see otherwise.
+        Consistent tracking here reveals spending patterns you can't see otherwise.
         Reality vs. assumptions.
       </motion.p>
     </div>

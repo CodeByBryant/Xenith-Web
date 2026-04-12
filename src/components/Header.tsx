@@ -185,7 +185,7 @@ export const Header = () => {
                     </DropdownMenuContent>
                   </DropdownMenu>
                 ) : (
-                  /* ── Unauthenticated: Sign In + Join Waitlist ── */
+                  /* ── Unauthenticated: Sign In + Start Free ── */
                   <>
                     <motion.div
                       whileHover={{ scale: 1.02 }}
@@ -200,12 +200,12 @@ export const Header = () => {
                       </Link>
                     </motion.div>
                     <motion.a
-                      href="#waitlist"
+                      href="/signin"
                       className="hidden sm:inline-flex px-5 py-2 bg-foreground text-background text-sm font-medium rounded-xl hover:opacity-90 transition-all duration-200"
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                     >
-                      Join Waitlist
+                      Start Free
                     </motion.a>
                   </>
                 )}
@@ -324,14 +324,14 @@ export const Header = () => {
                         </Link>
                       </motion.div>
                       <motion.a
-                        href="#waitlist"
+                        href="/signin"
                         onClick={() => setMobileMenuOpen(false)}
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 0.2 }}
                         className="mt-2 px-4 py-3 bg-foreground text-background text-sm font-medium rounded-xl text-center"
                       >
-                        Join Waitlist
+                        Start Free
                       </motion.a>
                     </>
                   )}

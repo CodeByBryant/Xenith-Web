@@ -1,7 +1,9 @@
 import { useEffect, useRef, startTransition } from "react";
+import { Helmet } from "react-helmet-async";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
+import { hasCompletedOnboarding } from "@/lib/onboarding";
 
 /**
  * Landing page for Supabase OAuth redirects and magic-link clicks.
@@ -32,8 +34,9 @@ export default function AuthCallback() {
         // Check if the user has completed onboarding
         // Only redirect to onboarding for new users (SIGNED_UP event)
         // Falls back to localStorage if the profiles table doesn't exist yet
-        let onboardingComplete =
+        const localOnboardingComplete =
           localStorage.getItem("xenith_onboarding_complete") === "1";
+        let profileOnboardingCompleted: boolean | null | undefined;
         
         try {
           const { data: profile } = await client
@@ -41,11 +44,18 @@ export default function AuthCallback() {
             .select("onboarding_completed")
             .eq("id", data.session.user.id)
             .single();
-          if (profile?.onboarding_completed != null) {
-            onboardingComplete = profile.onboarding_completed as boolean;
-          }
+          profileOnboardingCompleted = profile?.onboarding_completed;
         } catch {
           // table/column doesn't exist yet — rely on localStorage flag
+        }
+
+        const onboardingComplete = hasCompletedOnboarding(
+          profileOnboardingCompleted,
+          localOnboardingComplete,
+        );
+
+        if (onboardingComplete) {
+          localStorage.setItem("xenith_onboarding_complete", "1");
         }
 
         // Only redirect new users to onboarding
@@ -79,6 +89,12 @@ export default function AuthCallback() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
+      <Helmet>
+        <title>Signing In — Xenith</title>
+        <meta name="robots" content="noindex, nofollow" />
+        <link rel="canonical" href="https://xenith.life/auth/callback" />
+      </Helmet>
+
       <div className="flex flex-col items-center gap-4">
         <span className="font-chomsky text-4xl text-foreground animate-pulse">
           X

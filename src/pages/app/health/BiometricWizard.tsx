@@ -62,18 +62,57 @@ export default function BiometricWizard() {
   const { profile, updateProfile, isUpdating } = useProfile();
   const [step, setStep] = useState(1);
 
+  // Get user's preferred units (default to metric)
+  const preferredUnits = (profile?.preferred_units as "metric" | "imperial") || "metric";
+  const isImperial = preferredUnits === "imperial";
+
+  // Conversion helpers
+  const cmToFeet = (cm: number) => {
+    const totalInches = cm / 2.54;
+    const feet = Math.floor(totalInches / 12);
+    const inches = Math.round(totalInches % 12);
+    return { feet, inches };
+  };
+
+  const feetToCm = (feet: number, inches: number) => {
+    return (feet * 12 + inches) * 2.54;
+  };
+
+  const kgToLbs = (kg: number) => Math.round(kg * 2.20462);
+  const lbsToKg = (lbs: number) => lbs / 2.20462;
+
+  // Initialize height and weight from profile
+  const initialHeight = profile?.height_cm || 0;
+  const initialWeight = profile?.weight_kg || 0;
+  const initialHeightFt = initialHeight ? cmToFeet(initialHeight) : { feet: 5, inches: 8 };
+
   // Form state
   const [age, setAge] = useState(profile?.age?.toString() || "");
   const [gender, setGender] = useState<Gender>(profile?.gender as Gender || "male");
+  
+  // Height state (store separately for imperial)
   const [heightCm, setHeightCm] = useState(profile?.height_cm?.toString() || "");
+  const [heightFeet, setHeightFeet] = useState(initialHeightFt.feet.toString());
+  const [heightInches, setHeightInches] = useState(initialHeightFt.inches.toString());
+  
+  // Weight state
   const [weightKg, setWeightKg] = useState(profile?.weight_kg?.toString() || "");
+  const [weightLbs, setWeightLbs] = useState(
+    initialWeight ? kgToLbs(initialWeight).toString() : ""
+  );
+  
   const [activityLevel, setActivityLevel] = useState<ActivityLevel>(
     profile?.activity_level as ActivityLevel || "moderately_active"
   );
   const [goal, setGoal] = useState<Goal>(profile?.goal as Goal || "maintain");
 
   const canProceed = () => {
-    if (step === 1) return age && gender && heightCm && weightKg;
+    if (step === 1) {
+      if (isImperial) {
+        return age && gender && heightFeet && heightInches && weightLbs;
+      }
+      return age && gender && heightCm && weightKg;
+    }
     if (step === 2) return activityLevel;
     if (step === 3) return goal;
     return false;
@@ -81,8 +120,20 @@ export default function BiometricWizard() {
 
   const handleCalculate = async () => {
     const ageNum = parseInt(age);
-    const heightNum = parseFloat(heightCm);
-    const weightNum = parseFloat(weightKg);
+    
+    // Convert to metric for calculations
+    let heightNum: number;
+    let weightNum: number;
+
+    if (isImperial) {
+      const feet = parseInt(heightFeet) || 0;
+      const inches = parseInt(heightInches) || 0;
+      heightNum = feetToCm(feet, inches);
+      weightNum = lbsToKg(parseFloat(weightLbs) || 0);
+    } else {
+      heightNum = parseFloat(heightCm);
+      weightNum = parseFloat(weightKg);
+    }
 
     if (!ageNum || !heightNum || !weightNum) {
       toast.error("Please fill all fields");
@@ -200,30 +251,68 @@ export default function BiometricWizard() {
 
             <div>
               <label className="text-sm text-muted-foreground block mb-2">
-                Height (cm)
+                Height {isImperial ? "(ft, in)" : "(cm)"}
               </label>
-              <Input
-                type="number"
-                placeholder="170"
-                value={heightCm}
-                onChange={(e) => setHeightCm(e.target.value)}
-                min={100}
-                max={250}
-              />
+              {isImperial ? (
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <Input
+                      type="number"
+                      placeholder="5"
+                      value={heightFeet}
+                      onChange={(e) => setHeightFeet(e.target.value)}
+                      min={3}
+                      max={8}
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">Feet</p>
+                  </div>
+                  <div>
+                    <Input
+                      type="number"
+                      placeholder="8"
+                      value={heightInches}
+                      onChange={(e) => setHeightInches(e.target.value)}
+                      min={0}
+                      max={11}
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">Inches</p>
+                  </div>
+                </div>
+              ) : (
+                <Input
+                  type="number"
+                  placeholder="170"
+                  value={heightCm}
+                  onChange={(e) => setHeightCm(e.target.value)}
+                  min={100}
+                  max={250}
+                />
+              )}
             </div>
 
             <div>
               <label className="text-sm text-muted-foreground block mb-2">
-                Weight (kg)
+                Weight {isImperial ? "(lbs)" : "(kg)"}
               </label>
-              <Input
-                type="number"
-                placeholder="70"
-                value={weightKg}
-                onChange={(e) => setWeightKg(e.target.value)}
-                min={30}
-                max={300}
-              />
+              {isImperial ? (
+                <Input
+                  type="number"
+                  placeholder="150"
+                  value={weightLbs}
+                  onChange={(e) => setWeightLbs(e.target.value)}
+                  min={66}
+                  max={660}
+                />
+              ) : (
+                <Input
+                  type="number"
+                  placeholder="70"
+                  value={weightKg}
+                  onChange={(e) => setWeightKg(e.target.value)}
+                  min={30}
+                  max={300}
+                />
+              )}
             </div>
           </motion.div>
         )}

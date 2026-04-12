@@ -1,14 +1,18 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/hooks/use-auth";
+import {
+  getFocusDurationMinutes,
+  isFocusSessionCompleted,
+  isFocusSessionOnDate,
+} from "@/lib/focus-metrics";
 
 export interface FocusSession {
   id: string;
   duration_minutes: number;
   energy_before: number | null;
-  completed: boolean;
   started_at: string;
-  ended_at: string | null;
+  completed_at: string | null;
   intention_id: string | null;
 }
 
@@ -73,25 +77,29 @@ export function useFocusSessions(days?: number) {
   const complete = useMutation({
     mutationFn: async (id: string) => {
       if (!supabase) throw new Error("Not authenticated");
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from("focus_sessions")
-        .update({ completed: true, ended_at: new Date().toISOString() })
-        .eq("id", id);
-      if (error) throw error;
+        .update({ completed_at: new Date().toISOString() })
+        .eq("id", id)
+        .select();
+      if (error) {
+        console.error("Error completing focus session:", error);
+        throw error;
+      }
+      console.log("Focus session completed:", data);
+      return data;
     },
     onSuccess: () =>
       qc.invalidateQueries({ queryKey: ["focus_sessions", user?.id] }),
   });
 
-  const totalMinutesToday = (query.data ?? [])
-    .filter((s) => {
-      const today = new Date().toISOString().split("T")[0];
-      return s.completed && s.started_at.startsWith(today);
-    })
-    .reduce((acc, s) => acc + s.duration_minutes, 0);
+  const sessions = query.data ?? [];
+  const totalMinutesToday = sessions
+    .filter((session) => isFocusSessionCompleted(session) && isFocusSessionOnDate(session))
+    .reduce((acc, session) => acc + getFocusDurationMinutes(session), 0);
 
   return {
-    sessions: query.data ?? [],
+    sessions,
     isLoading: query.isLoading,
     start: start.mutateAsync,
     complete: complete.mutateAsync,

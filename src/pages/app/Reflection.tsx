@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react";
+import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import {
   ChevronLeft,
@@ -120,6 +121,9 @@ export default function Reflection() {
 
   return (
     <div className="max-w-xl mx-auto">
+      <Helmet>
+        <title>Weekly Reflection | Xenith</title>
+      </Helmet>
       {/* Day strip */}
       <div className="flex gap-1.5 mb-6">
         {days.map((ds) => {

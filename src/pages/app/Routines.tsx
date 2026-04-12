@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Helmet } from "react-helmet-async";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Plus,
@@ -93,6 +94,9 @@ export default function Routines() {
 
   return (
     <div className="max-w-lg mx-auto space-y-6">
+      <Helmet>
+        <title>Routines | Xenith</title>
+      </Helmet>
       {/* Add form */}
       <form onSubmit={handleAddRoutine} className="flex gap-2">
         <div className="flex gap-1 p-1 bg-secondary rounded-xl shrink-0">

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Brain, Plus, X, Trash2, Edit2 } from "lucide-react";
+import { Brain, Plus, X, Trash2, Edit2, Lightbulb } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -92,29 +92,38 @@ export default function ThoughtAudit() {
 
   return (
     <div className="min-h-screen bg-background pb-20">
-      <div className="bg-card border-b border-border sticky top-0 z-10">
-        <div className="p-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Brain className="w-5 h-5 text-primary" />
-            <h1 className="text-lg font-semibold">Thought Audit</h1>
+      {/* Header */}
+      <div className="bg-card border border-border sticky top-0 z-10 rounded-2xl mx-4 mt-4 shadow-sm">
+        <div className="p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="p-2 rounded-xl bg-purple-500/10">
+              <Lightbulb className="w-5 h-5 text-purple-500" />
+            </div>
+            <div>
+              <h1 className="text-lg font-semibold">Thought Audit</h1>
+              <p className="text-xs text-muted-foreground">Log intrusive thoughts, tag patterns</p>
+            </div>
           </div>
           <Button
             size="sm"
             onClick={() => setShowAdd(!showAdd)}
             variant={showAdd ? "ghost" : "default"}
+            className="rounded-xl w-full"
           >
-            {showAdd ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+            {showAdd ? <X className="w-4 h-4 mr-2" /> : <Plus className="w-4 h-4 mr-2" />}
+            {showAdd ? "Cancel" : "Log Thought"}
           </Button>
         </div>
 
-        <div className="px-4 pb-3 flex gap-2 overflow-x-auto">
+        {/* Type filter */}
+        <div className="px-4 pb-3 flex flex-wrap gap-2">
           <button
             onClick={() => setTypeFilter(undefined)}
             className={cn(
-              "px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all",
+              "px-4 py-1.5 rounded-xl text-xs font-medium transition-all",
               !typeFilter
                 ? "bg-primary text-primary-foreground"
-                : "bg-secondary text-muted-foreground hover:text-foreground"
+                : "bg-secondary/50 text-muted-foreground hover:text-foreground"
             )}
           >
             All
@@ -124,10 +133,10 @@ export default function ThoughtAudit() {
               key={t.value}
               onClick={() => setTypeFilter(t.value)}
               className={cn(
-                "px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all",
+                "px-4 py-1.5 rounded-xl text-xs font-medium transition-all",
                 typeFilter === t.value
                   ? "bg-primary text-primary-foreground"
-                  : "bg-secondary text-muted-foreground hover:text-foreground"
+                  : "bg-secondary/50 text-muted-foreground hover:text-foreground"
               )}
             >
               {t.label}
@@ -142,13 +151,14 @@ export default function ThoughtAudit() {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="overflow-hidden bg-card border-b border-border"
+            className="overflow-hidden"
           >
-            <div className="p-4 space-y-4">
-              <div>
-                <label className="text-xs text-muted-foreground font-medium">
-                  What was the thought?
-                </label>
+            <div className="p-4">
+              <div className="bg-card border border-border rounded-2xl p-4 space-y-4">
+                <div>
+                  <label className="text-xs text-muted-foreground font-medium">
+                    What was the thought?
+                  </label>
                 <Textarea
                   placeholder="I'm not good enough for this..."
                   value={thought}
@@ -158,7 +168,7 @@ export default function ThoughtAudit() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid sm:grid-cols-2 gap-3">
                 <div>
                   <label className="text-xs text-muted-foreground font-medium">Type</label>
                   <div className="grid grid-cols-2 gap-2 mt-1.5">
@@ -227,7 +237,7 @@ export default function ThoughtAudit() {
               </div>
 
               <div className="flex gap-2">
-                <Button onClick={handleSubmit} className="flex-1">
+                <Button onClick={handleSubmit} className="flex-1 rounded-xl">
                   {editingId ? "Update" : "Log Thought"}
                 </Button>
                 {editingId && (
@@ -237,11 +247,13 @@ export default function ThoughtAudit() {
                       resetForm();
                       setShowAdd(false);
                     }}
+                    className="rounded-xl"
                   >
                     Cancel
                   </Button>
                 )}
               </div>
+            </div>
             </div>
           </motion.div>
         )}
@@ -259,44 +271,45 @@ export default function ThoughtAudit() {
           return (
             <div
               key={log.id}
-              className="bg-card border border-border rounded-lg p-3 space-y-2"
+              className="bg-card border border-border rounded-2xl p-4 space-y-2 hover:border-primary/40 transition-all shadow-sm"
             >
               <div className="flex items-start justify-between gap-3">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className={cn("px-2 py-0.5 rounded-full text-xs font-medium", config?.color)}>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-2 flex-wrap">
+                    <span className={cn("px-2.5 py-1 rounded-lg text-xs font-medium bg-secondary/50", config?.color)}>
                       {config?.label}
                     </span>
                     {log.intensity && (
-                      <span className="text-xs text-muted-foreground">
+                      <span className="text-xs text-muted-foreground bg-secondary/50 px-2.5 py-1 rounded-lg">
                         Intensity: {log.intensity}/5
                       </span>
                     )}
                   </div>
-                  <p className="text-sm">{log.thought}</p>
+                  <p className="text-sm leading-relaxed break-words">{log.thought}</p>
                   {log.trigger && (
-                    <p className="text-xs text-muted-foreground mt-2">
+                    <p className="text-xs text-muted-foreground mt-2 bg-secondary/30 px-2.5 py-1.5 rounded-lg break-words">
                       <span className="font-medium">Trigger:</span> {log.trigger}
                     </p>
                   )}
                   {log.response && (
-                    <p className="text-xs text-muted-foreground mt-1">
+                    <p className="text-xs text-muted-foreground mt-1 bg-secondary/30 px-2.5 py-1.5 rounded-lg break-words">
                       <span className="font-medium">Response:</span> {log.response}
                     </p>
                   )}
-                  <p className="text-xs text-muted-foreground mt-2">
+                  <p className="text-xs text-muted-foreground/60 mt-2">
                     {new Date(log.logged_at).toLocaleDateString()} at{" "}
                     {new Date(log.logged_at).toLocaleTimeString()}
                   </p>
                 </div>
                 <div className="flex flex-col gap-1">
-                  <Button variant="ghost" size="sm" onClick={() => loadLog(log)}>
+                  <Button variant="ghost" size="sm" onClick={() => loadLog(log)} className="rounded-lg">
                     <Edit2 className="w-3.5 h-3.5" />
                   </Button>
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => handleDelete(log.id)}
+                    className="rounded-lg"
                   >
                     <Trash2 className="w-3.5 h-3.5 text-red-500" />
                   </Button>

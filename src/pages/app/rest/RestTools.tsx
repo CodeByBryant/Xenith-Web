@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Moon, ChevronRight, ArrowLeft } from "lucide-react";
+import { Moon, ChevronRight, ArrowLeft, Sparkles } from "lucide-react";
 
 const containerVariants = {
   hidden: {},
@@ -58,6 +58,26 @@ export default function RestTools() {
             <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition-all shrink-0" />
           </Link>
         </motion.div>
+
+        <motion.div variants={itemVariants}>
+          <Link
+            to="/app/dimensions/rest/recharge"
+            className="group flex items-center gap-4 p-5 bg-card border border-border rounded-2xl hover:border-teal-500/40 transition-all duration-200"
+          >
+            <div className="w-12 h-12 rounded-xl bg-teal-500/10 flex items-center justify-center shrink-0 group-hover:bg-teal-500/20 transition-colors">
+              <Sparkles className="w-5 h-5 text-teal-500" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-foreground">
+                Recharge Log
+              </p>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Track non-sleep rest and recovery activities
+              </p>
+            </div>
+            <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition-all shrink-0" />
+          </Link>
+        </motion.div>
       </motion.div>
 
       <motion.p
@@ -66,8 +86,8 @@ export default function RestTools() {
         transition={{ delay: 0.4 }}
         className="text-xs text-muted-foreground text-center mt-8 leading-relaxed"
       >
-        Quality over quantity. Track inputs (caffeine, screen time, stress) to see what actually
-        affects your recovery.
+        Pro tip — use these tools to inform your weekly Rest dimension score.
+        Consistent logging here should reflect in a higher self-rating.
       </motion.p>
     </div>
   );

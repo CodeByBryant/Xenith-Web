@@ -3,15 +3,30 @@ import { motion } from "framer-motion";
 const footerLinks = [
   { label: "Features", href: "#features" },
   { label: "Pricing", href: "#pricing" },
-  { label: "Waitlist", href: "#waitlist" },
+  { label: "Start", href: "#start" },
   { label: "Privacy", href: "/privacy" },
   { label: "Terms", href: "/terms" },
 ];
 
 const socialLinks = [
-  { label: "X", ariaLabel: "X (Twitter)", href: "https://x.com/xenithapp", external: true },
-  { label: "IG", ariaLabel: "Instagram", href: "https://instagram.com/xenithapp", external: true },
-  { label: "TT", ariaLabel: "TikTok", href: "https://tiktok.com/@xenithapp", external: true },
+  {
+    label: "X",
+    ariaLabel: "X (Twitter)",
+    href: "https://x.com/xenithapp",
+    external: true,
+  },
+  {
+    label: "IG",
+    ariaLabel: "Instagram",
+    href: "https://instagram.com/xenithapp",
+    external: true,
+  },
+  {
+    label: "TT",
+    ariaLabel: "TikTok",
+    href: "https://tiktok.com/@xenithapp",
+    external: true,
+  },
 ];
 
 export const Footer = () => {

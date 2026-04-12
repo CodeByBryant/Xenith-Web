@@ -14,7 +14,10 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       <Helmet>
         <title>Xenith - Discipline | Intention | Execution</title>
-        <meta name="description" content="A minimalist productivity platform for students and young professionals. Track intentions, build sustainable routines, and grow across all dimensions of life." />
+        <meta
+          name="description"
+          content="Xenith is a live execution platform for students and professionals. Plan intentions, run focus sessions, manage projects, and track growth across every life dimension."
+        />
         <link rel="canonical" href="https://xenith.life/" />
       </Helmet>
       <Header />

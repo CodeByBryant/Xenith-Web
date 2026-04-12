@@ -1,11 +1,18 @@
 import { useState, useEffect, startTransition } from "react";
+import { Helmet } from "react-helmet-async";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Mail, Loader2, Eye, EyeOff, Check, X } from "lucide-react";
 import { toast } from "sonner";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
+import {
+  LEGAL_POLICY_VERSION,
+  PRIVACY_URL,
+  TERMS_URL,
+} from "@/lib/legal";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
@@ -145,6 +152,8 @@ export default function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [acceptedPrivacy, setAcceptedPrivacy] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -157,6 +166,8 @@ export default function SignIn() {
     setMode(next);
     setPassword("");
     setConfirmPassword("");
+    setAcceptedPrivacy(false);
+    setAcceptedTerms(false);
     setEmailSent(false);
   };
 
@@ -185,11 +196,23 @@ export default function SignIn() {
       return toast.error("Please meet all password requirements.");
     if (password !== confirmPassword)
       return toast.error("Passwords don't match.");
+    if (!acceptedPrivacy || !acceptedTerms)
+      return toast.error("Please accept Privacy Policy and Terms to continue.");
+
+    const acceptedAt = new Date().toISOString();
+
     setLoading(true);
     const { error } = await supabase.auth.signUp({
       email: email.trim(),
       password,
-      options: { emailRedirectTo: `${APP_URL}/auth/callback` },
+      options: {
+        emailRedirectTo: `${APP_URL}/auth/callback`,
+        data: {
+          privacy_accepted_at: acceptedAt,
+          terms_accepted_at: acceptedAt,
+          legal_policy_version: LEGAL_POLICY_VERSION,
+        },
+      },
     });
     setLoading(false);
     if (error) toast.error(error.message);
@@ -204,14 +227,30 @@ export default function SignIn() {
     if (!isSupabaseConfigured || !supabase)
       return toast.error("Supabase is not configured.");
     if (!email.trim()) return toast.error("Please enter your email address.");
+
     setLoading(true);
     const { error } = await supabase.auth.signInWithOtp({
       email: email.trim(),
-      options: { emailRedirectTo: `${APP_URL}/auth/callback` },
+      options: {
+        emailRedirectTo: `${APP_URL}/auth/callback`,
+        shouldCreateUser: false,
+      },
     });
     setLoading(false);
-    if (error) toast.error(error.message);
-    else {
+    if (error) {
+      const msg = error.message.toLowerCase();
+      if (
+        msg.includes("signup") ||
+        msg.includes("not found") ||
+        msg.includes("not allowed")
+      ) {
+        toast.error(
+          "No account found for this email. Create an account with password first.",
+        );
+        return;
+      }
+      toast.error(error.message);
+    } else {
       setEmailSent(true);
       toast.success("Magic link sent — check your inbox.");
     }
@@ -219,6 +258,16 @@ export default function SignIn() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4">
+      <Helmet>
+        <title>Sign In — Xenith</title>
+        <meta
+          name="description"
+          content="Sign in to Xenith with your password or a one-time sign-in magic link for existing accounts."
+        />
+        <meta name="robots" content="noindex, follow" />
+        <link rel="canonical" href="https://xenith.life/signin" />
+      </Helmet>
+
       <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,hsl(var(--foreground)/0.03),transparent_60%)] pointer-events-none" />
 
       <motion.div
@@ -460,13 +509,72 @@ export default function SignIn() {
                         </p>
                       )}
                     </div>
+
+                    <div className="space-y-2 rounded-xl border border-border bg-secondary/30 p-3">
+                      <div className="flex items-start gap-2">
+                        <Checkbox
+                          id="accept-privacy"
+                          checked={acceptedPrivacy}
+                          onCheckedChange={(checked) =>
+                            setAcceptedPrivacy(checked === true)
+                          }
+                          disabled={loading}
+                          className="mt-0.5"
+                        />
+                        <Label
+                          htmlFor="accept-privacy"
+                          className="text-xs font-normal leading-relaxed text-muted-foreground"
+                        >
+                          I have read and accept the{" "}
+                          <a
+                            href={PRIVACY_URL}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-foreground underline underline-offset-2"
+                          >
+                            Privacy Policy
+                          </a>
+                          .
+                        </Label>
+                      </div>
+
+                      <div className="flex items-start gap-2">
+                        <Checkbox
+                          id="accept-terms"
+                          checked={acceptedTerms}
+                          onCheckedChange={(checked) =>
+                            setAcceptedTerms(checked === true)
+                          }
+                          disabled={loading}
+                          className="mt-0.5"
+                        />
+                        <Label
+                          htmlFor="accept-terms"
+                          className="text-xs font-normal leading-relaxed text-muted-foreground"
+                        >
+                          I agree to the{" "}
+                          <a
+                            href={TERMS_URL}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-foreground underline underline-offset-2"
+                          >
+                            Terms of Service
+                          </a>
+                          .
+                        </Label>
+                      </div>
+                    </div>
+
                     <Button
                       type="submit"
                       className="h-11 font-medium"
                       disabled={
                         loading ||
                         getStrength(password) < 5 ||
-                        password !== confirmPassword
+                        password !== confirmPassword ||
+                        !acceptedPrivacy ||
+                        !acceptedTerms
                       }
                     >
                       {loading ? (

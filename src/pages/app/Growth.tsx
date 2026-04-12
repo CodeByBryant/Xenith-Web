@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { Helmet } from "react-helmet-async";
 import {
   ReactFlow,
   ReactFlowProvider,
@@ -719,6 +720,9 @@ export default function Growth() {
 
   return (
     <div className="max-w-3xl mx-auto space-y-5">
+      <Helmet>
+        <title>Growth Path | Xenith</title>
+      </Helmet>
       {/* ── Overall header ── */}
       <div className="flex items-center justify-between border border-border rounded-2xl px-5 py-4 bg-card">
         <div>

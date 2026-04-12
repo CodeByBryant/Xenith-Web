@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Check, X, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
 // ─── Pricing constants ───────────────────────────────────────────────
 const MONTHLY_PRICE = 4.99;
@@ -108,15 +109,6 @@ const proFeatures: FeatureGroup[] = [
   },
 ];
 
-// ─── Save the selected plan so the waitlist form can read it ─────────
-const savePlan = (plan: "free" | "pro") => {
-  try {
-    sessionStorage.setItem("xenith_selected_plan", plan);
-  } catch {
-    // Private browsing — ignore
-  }
-};
-
 // ─── FeatureList sub-component ───────────────────────────────────────
 const FeatureList = ({
   groups,
@@ -165,7 +157,9 @@ const FeatureList = ({
                 ) : (
                   <X
                     className={`w-3 h-3 ${
-                      highlighted ? "text-background/30" : "text-muted-foreground/30"
+                      highlighted
+                        ? "text-background/30"
+                        : "text-muted-foreground/30"
                     }`}
                   />
                 )}
@@ -175,7 +169,9 @@ const FeatureList = ({
                 {item.note && (
                   <span
                     className={`ml-1 text-xs ${
-                      highlighted ? "text-background/40" : "text-muted-foreground"
+                      highlighted
+                        ? "text-background/40"
+                        : "text-muted-foreground"
                     }`}
                   >
                     ({item.note})
@@ -296,16 +292,19 @@ export const PricingSection = () => {
 
               <FeatureList groups={freeFeatures} highlighted={false} />
 
-              <motion.a
-                href="#waitlist"
-                onClick={() => savePlan("free")}
+              <motion.div
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="mt-8 w-full py-4 rounded-xl font-medium flex items-center justify-center gap-2 transition-all duration-200 bg-foreground text-background hover:opacity-90"
+                className="mt-8"
               >
-                <span>Start Free</span>
-                <ArrowRight className="w-4 h-4" />
-              </motion.a>
+                <Link
+                  to="/signin?plan=free"
+                  className="w-full py-4 rounded-xl font-medium flex items-center justify-center gap-2 transition-all duration-200 bg-foreground text-background hover:opacity-90"
+                >
+                  <span>Start Free</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </motion.div>
             </div>
           </motion.div>
 
@@ -353,16 +352,19 @@ export const PricingSection = () => {
 
               <FeatureList groups={proFeatures} highlighted />
 
-              <motion.a
-                href="#waitlist"
-                onClick={() => savePlan("pro")}
+              <motion.div
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="mt-8 w-full py-4 rounded-xl font-medium flex items-center justify-center gap-2 transition-all duration-200 bg-background text-foreground hover:bg-background/90"
+                className="mt-8"
               >
-                <span>Join Waitlist for Pro</span>
-                <ArrowRight className="w-4 h-4" />
-              </motion.a>
+                <Link
+                  to="/signin?plan=pro"
+                  className="w-full py-4 rounded-xl font-medium flex items-center justify-center gap-2 transition-all duration-200 bg-background text-foreground hover:bg-background/90"
+                >
+                  <span>Start Pro</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </motion.div>
             </div>
           </motion.div>
         </div>

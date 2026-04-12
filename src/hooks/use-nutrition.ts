@@ -3,15 +3,7 @@ import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/hooks/use-auth";
 import type { MealType, NutritionLog, FoodSearchResult } from "@/lib/types";
 
-interface OpenFoodFactsProduct {
-  product_name: string;
-  nutriments: {
-    "energy-kcal_100g": number;
-    proteins_100g: number;
-    carbohydrates_100g: number;
-    fat_100g: number;
-  };
-}
+export type { FoodSearchResult, MealType } from "@/lib/types";
 
 function toDateStr(d = new Date()) {
   return d.toISOString().split("T")[0];
@@ -70,6 +62,16 @@ export function useNutrition(date?: Date) {
     protein: +(query.data?.reduce((s, e) => s + e.protein, 0) ?? 0).toFixed(1),
     carbs: +(query.data?.reduce((s, e) => s + e.carbs, 0) ?? 0).toFixed(1),
     fat: +(query.data?.reduce((s, e) => s + e.fat, 0) ?? 0).toFixed(1),
+    // Key micronutrients
+    fiber: +(query.data?.reduce((s, e) => s + (e.fiber || 0), 0) ?? 0).toFixed(1),
+    sugar: +(query.data?.reduce((s, e) => s + (e.sugar || 0), 0) ?? 0).toFixed(1),
+    sodium: Math.round(query.data?.reduce((s, e) => s + (e.sodium || 0), 0) ?? 0),
+    cholesterol: Math.round(query.data?.reduce((s, e) => s + (e.cholesterol || 0), 0) ?? 0),
+    saturated_fat: +(query.data?.reduce((s, e) => s + (e.saturated_fat || 0), 0) ?? 0).toFixed(1),
+    vitamin_c: +(query.data?.reduce((s, e) => s + (e.vitamin_c || 0), 0) ?? 0).toFixed(1),
+    calcium: Math.round(query.data?.reduce((s, e) => s + (e.calcium || 0), 0) ?? 0),
+    iron: +(query.data?.reduce((s, e) => s + (e.iron || 0), 0) ?? 0).toFixed(1),
+    potassium: Math.round(query.data?.reduce((s, e) => s + (e.potassium || 0), 0) ?? 0),
   };
 
   return {
@@ -115,87 +117,75 @@ export function useNutritionWeekStats() {
   });
 }
 
-interface USDAFood {
-  fdcId: number;
-  description: string;
-  foodNutrients: Array<{
-    nutrientId: number;
-    nutrientName: string;
-    value: number;
-  }>;
+const SEARCH_RETRY_DELAYS_MS = [250, 800, 1500] as const;
+
+export class FoodSearchError extends Error {
+  code: number;
+
+  constructor(message: string, code: number) {
+    super(message);
+    this.name = "FoodSearchError";
+    this.code = code;
+  }
 }
 
-/** Search USDA FoodData Central by food name */
-export async function searchFood(query: string): Promise<FoodSearchResult[]> {
-  if (!query.trim()) return [];
-  try {
-    // USDA FoodData Central API (free, no key required for search)
-    const res = await fetch(
-      `https://api.nal.usda.gov/fdc/v1/foods/search?query=${encodeURIComponent(query)}&pageSize=25&api_key=DEMO_KEY`
-    );
-    
-    if (!res.ok) {
-      console.error('USDA API error:', res.status, res.statusText);
-      return [];
-    }
-    
-    const data = await res.json();
-    if (!data.foods || data.foods.length === 0) {
-      console.log('No foods found for:', query);
-      return [];
-    }
+async function searchFoodOnce(query: string): Promise<FoodSearchResult[]> {
+  const supportsAbortTimeout =
+    typeof AbortSignal !== "undefined" &&
+    "timeout" in AbortSignal &&
+    typeof AbortSignal.timeout === "function";
 
-    const queryLower = query.toLowerCase();
-    
-    return (
-      (data.foods ?? [])
-        .filter(
-          (food: USDAFood) =>
-            food.description &&
-            food.description.length > 2 &&
-            food.description.length < 150 &&
-            food.foodNutrients &&
-            food.foodNutrients.length > 0
-        )
-        .map((food: USDAFood) => {
-          const name = food.description.trim();
-          const nameLower = name.toLowerCase();
-          
-          // Calculate relevance score
-          let relevance = 0;
-          if (nameLower === queryLower) relevance = 100;
-          else if (nameLower.startsWith(queryLower)) relevance = 80;
-          else if (nameLower.includes(queryLower)) relevance = 60;
-          else relevance = 30;
-          
-          // Extract nutrients (USDA uses nutrient IDs)
-          // 1008 = Energy (kcal), 1003 = Protein, 1005 = Carbs, 1004 = Fat
-          const nutrients = food.foodNutrients.reduce((acc, n) => {
-            if (n.nutrientId === 1008) acc.calories = n.value;
-            if (n.nutrientId === 1003) acc.protein = n.value;
-            if (n.nutrientId === 1005) acc.carbs = n.value;
-            if (n.nutrientId === 1004) acc.fat = n.value;
-            return acc;
-          }, { calories: 0, protein: 0, carbs: 0, fat: 0 });
+  const requestOptions = supportsAbortTimeout
+    ? { signal: AbortSignal.timeout(10000) }
+    : undefined;
 
-          return {
-            name,
-            calories_per_100g: Math.round(nutrients.calories),
-            protein_per_100g: +nutrients.protein.toFixed(1),
-            carbs_per_100g: +nutrients.carbs.toFixed(1),
-            fat_per_100g: +nutrients.fat.toFixed(1),
-            _relevance: relevance,
-          };
-        })
-        .filter((food: any) => food.calories_per_100g > 0) // Filter out items with no calorie data
-        .sort((a: any, b: any) => (b._relevance || 0) - (a._relevance || 0))
-        .slice(0, 12)
-        .map(({ _relevance, ...food }: any) => food)
-    );
-  } catch (err) {
-    console.error('Food search error:', err);
-    return [];
+  const response = await fetch(
+    `/api/food?query=${encodeURIComponent(query)}`,
+    requestOptions,
+  );
+
+  if (response.status === 429) {
+    throw new FoodSearchError("Food search rate-limited", 429);
   }
+
+  if (!response.ok) {
+    throw new FoodSearchError(`Food search failed (${response.status})`, response.status);
+  }
+
+  const payload = await response.json();
+  if (Array.isArray(payload)) return payload as FoodSearchResult[];
+  if (Array.isArray(payload?.items)) return payload.items as FoodSearchResult[];
+  return [];
+}
+
+/** Search foods via backend proxy with retry/backoff for transient failures. */
+export async function searchFood(query: string): Promise<FoodSearchResult[]> {
+  const trimmed = query.trim();
+  if (!trimmed) return [];
+
+  let lastError: unknown;
+
+  for (let attempt = 0; attempt <= SEARCH_RETRY_DELAYS_MS.length; attempt += 1) {
+    try {
+      return await searchFoodOnce(trimmed);
+    } catch (error) {
+      lastError = error;
+      const code = error instanceof FoodSearchError ? error.code : 0;
+      const isRetryable = code === 429 || code >= 500 || code === 0;
+
+      if (!isRetryable || attempt === SEARCH_RETRY_DELAYS_MS.length) {
+        break;
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, SEARCH_RETRY_DELAYS_MS[attempt]));
+    }
+  }
+
+  if (lastError instanceof FoodSearchError) {
+    throw lastError;
+  }
+
+  throw new FoodSearchError("Food search unavailable", 503);
 }
 
 /** Lookup a single product by barcode via Open Food Facts */

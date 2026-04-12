@@ -1,12 +1,9 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
-import { WaitlistForm } from "../WaitlistForm";
-import { ArrowUpRight } from "lucide-react";
-import { useWaitlistCount } from "@/hooks/use-waitlist-count";
+import { ArrowRight, Sparkles } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export const CTASection = () => {
-  const { count, loading } = useWaitlistCount();
-  const displayCount = count !== null ? count.toLocaleString() : "—";
   const sectionRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -19,7 +16,7 @@ export const CTASection = () => {
   return (
     <section
       ref={sectionRef}
-      id="waitlist"
+      id="start"
       className="py-32 md:py-48 px-6 bg-foreground text-background relative overflow-hidden"
     >
       {/* Dramatic X watermark with parallax */}
@@ -50,12 +47,8 @@ export const CTASection = () => {
             transition={{ delay: 0.2 }}
             className="inline-flex items-center gap-2 px-4 py-2 border border-background/20 rounded-full text-sm text-background/60 mb-8"
           >
-            <motion.div
-              animate={{ scale: [1, 1.3, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
-              className="w-2 h-2 rounded-full bg-[#22c55e]"
-            />
-            <span>Limited beta spots remaining</span>
+            <Sparkles className="w-4 h-4" />
+            <span>Now live for everyone</span>
           </motion.div>
 
           <h2 className="text-4xl md:text-5xl lg:text-7xl font-serif font-medium leading-[1.1] mb-6">
@@ -86,8 +79,8 @@ export const CTASection = () => {
             transition={{ delay: 0.5 }}
             className="text-lg md:text-xl text-background/60 max-w-xl mx-auto mb-12"
           >
-            Join the waitlist. Get early access. Lock in 50% off Pro forever. No
-            spam. Just updates on launch.
+            Create your account and start building momentum today. No waitlist,
+            no invite code, no friction.
           </motion.p>
 
           <motion.div
@@ -95,9 +88,21 @@ export const CTASection = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.6 }}
-            className="max-w-md mx-auto mb-8"
+            className="flex flex-wrap items-center justify-center gap-3 mb-8"
           >
-            <WaitlistForm variant="footer" />
+            <Link
+              to="/signin"
+              className="inline-flex items-center gap-2 rounded-xl bg-background px-6 py-3 text-sm font-medium text-foreground transition-opacity hover:opacity-90"
+            >
+              Start free now
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+            <Link
+              to="/app"
+              className="inline-flex items-center gap-2 rounded-xl border border-background/30 px-6 py-3 text-sm font-medium text-background transition-colors hover:bg-background/10"
+            >
+              Open app
+            </Link>
           </motion.div>
 
           <motion.div
@@ -107,17 +112,9 @@ export const CTASection = () => {
             transition={{ delay: 0.8 }}
             className="flex flex-wrap items-center justify-center gap-6 text-sm text-background/40"
           >
-            <motion.div
-              whileHover={{ x: 3 }}
-              className="flex items-center gap-2"
-            >
-              <ArrowUpRight className="w-4 h-4" />
-              <span className="tabular-nums">
-                {loading ? "…" : displayCount} on the list
-              </span>
-            </motion.div>
+            <span>Ship goals, not excuses</span>
             <div className="w-1 h-1 rounded-full bg-background/20" />
-            <span>Free during beta</span>
+            <span>Start in under 60 seconds</span>
             <div className="w-1 h-1 rounded-full bg-background/20" />
             <span>Cancel anytime</span>
           </motion.div>

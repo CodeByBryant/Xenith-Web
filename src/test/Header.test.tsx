@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 
 // Mock framer-motion to avoid animation issues in tests
 vi.mock("framer-motion", () => ({
@@ -8,14 +9,29 @@ vi.mock("framer-motion", () => ({
     {
       get: (_target, prop) => {
         const Tag = prop as string;
-        return ({ children, ...rest }: React.HTMLAttributes<HTMLElement> & { children?: React.ReactNode }) => {
+        return ({
+          children,
+          ...rest
+        }: React.HTMLAttributes<HTMLElement> & {
+          children?: React.ReactNode;
+        }) => {
           const filtered = Object.fromEntries(
-            Object.entries(rest).filter(([k]) => !["initial", "animate", "exit", "transition", "whileHover", "whileTap"].includes(k))
+            Object.entries(rest).filter(
+              ([k]) =>
+                ![
+                  "initial",
+                  "animate",
+                  "exit",
+                  "transition",
+                  "whileHover",
+                  "whileTap",
+                ].includes(k),
+            ),
           );
           return React.createElement(Tag, filtered, children);
         };
       },
-    }
+    },
   ),
   AnimatePresence: ({ children }: { children: React.ReactNode }) => children,
 }));
@@ -23,6 +39,19 @@ vi.mock("framer-motion", () => ({
 // Mock ThemeToggle
 vi.mock("@/components/ThemeToggle", () => ({
   ThemeToggle: () => null,
+}));
+
+vi.mock("@/hooks/use-auth", () => ({
+  useAuth: () => ({
+    user: null,
+    session: null,
+  }),
+}));
+
+vi.mock("@/hooks/use-profile", () => ({
+  useProfile: () => ({
+    profile: null,
+  }),
 }));
 
 import React from "react";
@@ -37,10 +66,12 @@ describe("Header scroll handler", () => {
   beforeEach(() => {
     addEventListenerSpy = vi.spyOn(window, "addEventListener");
     removeEventListenerSpy = vi.spyOn(window, "removeEventListener");
-    rafSpy = vi.spyOn(window, "requestAnimationFrame").mockImplementation((cb) => {
-      cb(0);
-      return 1;
-    });
+    rafSpy = vi
+      .spyOn(window, "requestAnimationFrame")
+      .mockImplementation((cb) => {
+        cb(0);
+        return 1;
+      });
     cafSpy = vi.spyOn(window, "cancelAnimationFrame");
   });
 
@@ -49,16 +80,24 @@ describe("Header scroll handler", () => {
   });
 
   it("registers scroll listener with passive option", () => {
-    render(<Header />);
+    render(
+      <MemoryRouter>
+        <Header />
+      </MemoryRouter>,
+    );
     expect(addEventListenerSpy).toHaveBeenCalledWith(
       "scroll",
       expect.any(Function),
-      { passive: true }
+      { passive: true },
     );
   });
 
   it("uses requestAnimationFrame to throttle scroll updates", () => {
-    render(<Header />);
+    render(
+      <MemoryRouter>
+        <Header />
+      </MemoryRouter>,
+    );
 
     // Fire scroll event
     window.dispatchEvent(new Event("scroll"));
@@ -66,11 +105,15 @@ describe("Header scroll handler", () => {
   });
 
   it("removes scroll listener on unmount", () => {
-    const { unmount } = render(<Header />);
+    const { unmount } = render(
+      <MemoryRouter>
+        <Header />
+      </MemoryRouter>,
+    );
     unmount();
     expect(removeEventListenerSpy).toHaveBeenCalledWith(
       "scroll",
-      expect.any(Function)
+      expect.any(Function),
     );
   });
 
@@ -78,7 +121,11 @@ describe("Header scroll handler", () => {
     // Override RAF to NOT immediately invoke the callback (simulates pending frame)
     rafSpy.mockImplementation(() => 42);
 
-    render(<Header />);
+    render(
+      <MemoryRouter>
+        <Header />
+      </MemoryRouter>,
+    );
 
     window.dispatchEvent(new Event("scroll"));
     window.dispatchEvent(new Event("scroll"));

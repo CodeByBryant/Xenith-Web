@@ -162,7 +162,21 @@ function BodyMap({
 }
 
 // ─── Workout Presets ─────────────────────────────────────────────────────────
-const WORKOUT_PRESETS = [
+interface WorkoutPresetExercise {
+  name: string;
+  muscles: MuscleId[];
+  sets: number;
+  reps?: number;
+  duration?: number;
+}
+
+interface WorkoutPreset {
+  name: string;
+  icon: LucideIcon;
+  exercises: WorkoutPresetExercise[];
+}
+
+const WORKOUT_PRESETS: WorkoutPreset[] = [
   {
     name: "Push Day",
     icon: Dumbbell,
@@ -213,7 +227,7 @@ const WORKOUT_PRESETS = [
       { name: "Side Plank", muscles: ["obliques"], sets: 3, reps: 0, duration: 1 },
     ],
   },
-] as const;
+];
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 function toDateStr(d = new Date()) { return d.toISOString().split("T")[0]; }
@@ -287,16 +301,16 @@ export default function WorkoutTracker() {
 
   const selectedDefs = MUSCLE_DEFS.filter((m) => selectedMuscles.has(m.id as MuscleId));
 
-  const handleApplyPreset = async (preset: typeof WORKOUT_PRESETS[number]) => {
+  const handleApplyPreset = async (preset: WorkoutPreset) => {
     try {
       for (const exercise of preset.exercises) {
         await add({
           exercise_name: exercise.name,
-          muscle_groups: exercise.muscles as string[],
+          muscle_groups: exercise.muscles,
           sets: exercise.sets,
           reps: exercise.reps || null,
           weight_kg: null,
-          duration_minutes: (exercise as any).duration || null,
+          duration_minutes: exercise.duration || null,
           notes: `From ${preset.name} preset`,
         });
       }
@@ -433,7 +447,7 @@ export default function WorkoutTracker() {
                     >
                       <span>{ex.name}</span>
                       <span className="font-medium">
-                        {ex.sets}×{ex.reps || `${(ex as any).duration}min`}
+                        {ex.sets}×{ex.reps || `${ex.duration}min`}
                       </span>
                     </div>
                   ))}

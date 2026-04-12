@@ -18,13 +18,11 @@ import {
   Bug,
   Wifi,
   HardDrive,
-  Users,
   Package,
   ToggleLeft,
   Accessibility,
   Trash2,
 } from "lucide-react";
-import { useWaitlistCount } from "@/hooks/use-waitlist-count";
 import { isSupabaseConfigured } from "@/lib/supabase";
 
 // ─── Types ───────────────────────────────────────────────────────────
@@ -39,6 +37,13 @@ interface DevInfo {
   memory: { used: number; total: number } | null;
   supabaseStatus: "connected" | "disconnected" | "no-config";
   timestamp: string;
+}
+
+interface ConnectionInfo {
+  effectiveType?: string;
+  downlink?: number;
+  rtt?: number;
+  saveData?: boolean;
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────
@@ -172,10 +177,11 @@ const StatusBadge = ({
 const DevPage = () => {
   const [info, setInfo] = useState<DevInfo | null>(null);
   const [copied, setCopied] = useState(false);
-  const { count: waitlistCount, loading: waitlistLoading } = useWaitlistCount();
   const [localStorageItems, setLocalStorageItems] = useState<
     { key: string; size: string }[]
   >([]);
+  const networkInfo = (navigator as Navigator & { connection?: ConnectionInfo })
+    .connection;
 
   // Scan localStorage
   useEffect(() => {
@@ -472,60 +478,20 @@ const DevPage = () => {
           <Row label="Cores" value={`${navigator.hardwareConcurrency}`} />
         </Section>
 
-        {/* Waitlist */}
-        <Section title="Waitlist" icon={Users}>
-          <Row
-            label="Total signups"
-            value={
-              waitlistLoading
-                ? "Loading…"
-                : waitlistCount !== null
-                  ? waitlistCount.toLocaleString()
-                  : "—"
-            }
-            mono
-          />
-          <Row
-            label="Data source"
-            value={isSupabaseConfigured ? "Supabase" : "localStorage"}
-          />
-          {!isSupabaseConfigured && (
-            <div className="mt-2">
-              <button
-                onClick={() => {
-                  localStorage.removeItem("xenith_waitlist");
-                  window.location.reload();
-                }}
-                className="flex items-center gap-1.5 px-2 py-1 rounded bg-red-500/10 border border-red-500/20 text-[11px] text-red-400 hover:bg-red-500/20 transition-colors"
-              >
-                <Trash2 className="w-3 h-3" />
-                Clear local waitlist
-              </button>
-            </div>
-          )}
-        </Section>
-
         {/* Network */}
         <Section title="Network" icon={Wifi}>
           <Row label="Online" value={navigator.onLine ? "Yes" : "No"} />
           <Row
             label="Effective type"
-            value={(navigator as any).connection?.effectiveType || "unknown"}
+            value={networkInfo?.effectiveType || "unknown"}
           />
           <Row
             label="Downlink"
-            value={`${(navigator as any).connection?.downlink || "?"} Mbps`}
+            value={`${networkInfo?.downlink || "?"} Mbps`}
             mono
           />
-          <Row
-            label="RTT"
-            value={`${(navigator as any).connection?.rtt || "?"}ms`}
-            mono
-          />
-          <Row
-            label="Save data"
-            value={(navigator as any).connection?.saveData ? "Yes" : "No"}
-          />
+          <Row label="RTT" value={`${networkInfo?.rtt || "?"}ms`} mono />
+          <Row label="Save data" value={networkInfo?.saveData ? "Yes" : "No"} />
         </Section>
 
         {/* localStorage */}
@@ -653,7 +619,7 @@ const DevPage = () => {
               { label: "Features", href: "/#features" },
               { label: "Demo", href: "/#preview" },
               { label: "Pricing", href: "/#pricing" },
-              { label: "Waitlist", href: "/#waitlist" },
+              { label: "Start", href: "/#start" },
               { label: "Privacy", href: "/privacy" },
               { label: "Terms", href: "/terms" },
             ].map((link) => (

@@ -7,10 +7,15 @@ import { toast } from "sonner";
 
 export type AudioType = "none" | "white-noise" | "brown-noise" | "rain" | "lofi";
 
+interface WindowWithWebkitAudioContext extends Window {
+  webkitAudioContext?: typeof AudioContext;
+}
+
 class FocusAudioPlayer {
   private audioContext: AudioContext | null = null;
   private noiseNode: AudioBufferSourceNode | null = null;
   private gainNode: GainNode | null = null;
+  private oscillators: OscillatorNode[] = [];
   private currentType: AudioType = "none";
   private htmlAudio: HTMLAudioElement | null = null;
 
@@ -20,6 +25,15 @@ class FocusAudioPlayer {
 
   get activeType() {
     return this.currentType;
+  }
+
+  private createAudioContext() {
+    const AudioContextCtor =
+      window.AudioContext || (window as WindowWithWebkitAudioContext).webkitAudioContext;
+    if (!AudioContextCtor) {
+      throw new Error("Web Audio API is not supported in this browser");
+    }
+    return new AudioContextCtor();
   }
 
   async play(type: AudioType, volume: number = 0.3) {
@@ -38,7 +52,7 @@ class FocusAudioPlayer {
 
   private playNoise(type: "white-noise" | "brown-noise", volume: number) {
     try {
-      this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      this.audioContext = this.createAudioContext();
       const ctx = this.audioContext;
       
       const bufferSize = ctx.sampleRate * 2;
@@ -79,7 +93,7 @@ class FocusAudioPlayer {
     if (type === "rain") {
       // Generate rain-like noise (filtered white noise)
       try {
-        this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+        this.audioContext = this.createAudioContext();
         const ctx = this.audioContext;
         
         const bufferSize = ctx.sampleRate * 2;
@@ -114,7 +128,7 @@ class FocusAudioPlayer {
     } else if (type === "lofi") {
       // For lofi, we'll generate a simple ambient tone
       try {
-        this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+        this.audioContext = this.createAudioContext();
         const ctx = this.audioContext;
         
         // Create oscillators for ambient sound
@@ -137,7 +151,7 @@ class FocusAudioPlayer {
         osc2.start(0);
         
         // Store reference to stop later
-        (this as any).oscillators = [osc1, osc2];
+        this.oscillators = [osc1, osc2];
       } catch (error) {
         console.error("Failed to play lofi audio:", error);
         toast.error("Audio playback not supported");
@@ -152,12 +166,12 @@ class FocusAudioPlayer {
       this.noiseNode = null;
     }
 
-    if ((this as any).oscillators) {
-      (this as any).oscillators.forEach((osc: OscillatorNode) => {
+    if (this.oscillators.length > 0) {
+      this.oscillators.forEach((osc) => {
         osc.stop();
         osc.disconnect();
       });
-      (this as any).oscillators = null;
+      this.oscillators = [];
     }
 
     if (this.gainNode) {

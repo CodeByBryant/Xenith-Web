@@ -2,11 +2,19 @@ User-agent: Googlebot
 Allow: /
 Disallow: /dev
 Disallow: /og
+Disallow: /app
+Disallow: /signin
+Disallow: /onboarding
+Disallow: /auth
 
 User-agent: Bingbot
 Allow: /
 Disallow: /dev
 Disallow: /og
+Disallow: /app
+Disallow: /signin
+Disallow: /onboarding
+Disallow: /auth
 
 User-agent: Twitterbot
 Allow: /
@@ -18,6 +26,10 @@ User-agent: *
 Allow: /
 Disallow: /dev
 Disallow: /og
+Disallow: /app
+Disallow: /signin
+Disallow: /onboarding
+Disallow: /auth
 
 Sitemap: https://xenith.life/sitemap.xml
 

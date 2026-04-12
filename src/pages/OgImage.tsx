@@ -63,27 +63,28 @@ const OgImage = () => {
 
           <div className="bg-background/10 backdrop-blur-md border border-background/20 rounded-2xl p-8 relative">
             <div className="text-[12px] uppercase tracking-[0.3em] text-background/50 mb-5">
-              Early Access
+              Now Live
             </div>
 
             <h3 className="text-[28px] font-serif text-background mb-3">
-              Claim your spot.
+              Start free now.
             </h3>
 
             <p className="text-[14px] text-background/50 mb-6">
-              Join ambitious students and professionals already on the waitlist.
+              Xenith is open. Build momentum with intentions, focus, and
+              projects.
             </p>
 
             {/* Fake input + button */}
             <div className="flex gap-2 mb-6">
               <div className="flex-1 h-[44px] rounded-lg bg-background/10 border border-background/20 flex items-center px-4">
                 <span className="text-[14px] text-background/30">
-                  Enter your email
+                  Sign in to continue
                 </span>
               </div>
               <div className="h-[44px] px-5 rounded-lg bg-background flex items-center justify-center">
                 <span className="text-[14px] font-medium text-foreground">
-                  Join →
+                  Start →
                 </span>
               </div>
             </div>
@@ -92,7 +93,7 @@ const OgImage = () => {
             <div className="pt-5 border-t border-background/10 flex items-center gap-5 text-[12px] text-background/40">
               <div className="flex items-center gap-2">
                 <div className="w-[8px] h-[8px] rounded-full bg-[#22c55e]" />
-                <span>Free during beta</span>
+                <span>Live now</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-[8px] h-[8px] rounded-full bg-background" />
@@ -106,7 +107,7 @@ const OgImage = () => {
       {/* Bottom bar */}
       <div className="absolute bottom-0 inset-x-0 h-px bg-background/10" />
       <div className="absolute bottom-4 right-[80px] text-[12px] text-background/20 tracking-wider">
-        xenith.app
+        xenith.life
       </div>
     </div>
   );

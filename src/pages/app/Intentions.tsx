@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Helmet } from "react-helmet-async";
 import { Plus, Check, Trash2, ChevronLeft, ChevronRight, Tag, Bell, BellOff, Clock } from "lucide-react";
 import { toast } from "sonner";
 import { useIntentions } from "@/hooks/use-intentions";
@@ -58,6 +59,9 @@ export default function Intentions() {
 
   return (
     <div className="max-w-lg mx-auto">
+      <Helmet>
+        <title>Daily Intentions | Xenith</title>
+      </Helmet>
       {/* Date nav */}
       <div className="flex items-center justify-between mb-6">
         <button

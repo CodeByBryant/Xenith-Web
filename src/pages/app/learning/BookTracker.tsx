@@ -107,30 +107,36 @@ export default function BookTracker() {
   return (
     <div className="min-h-screen bg-background pb-20">
       {/* Header */}
-      <div className="bg-card border-b border-border sticky top-0 z-10">
+      <div className="bg-card border border-border sticky top-0 z-10 rounded-2xl mx-4 mt-4 shadow-sm">
         <div className="p-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <BookOpen className="w-5 h-5 text-primary" />
-            <h1 className="text-lg font-semibold">Book Tracker</h1>
+            <div className="p-2 rounded-xl bg-cyan-500/10">
+              <BookOpen className="w-5 h-5 text-cyan-500" />
+            </div>
+            <div>
+              <h1 className="text-lg font-semibold">Book Tracker</h1>
+              <p className="text-xs text-muted-foreground">Reading progress & insights</p>
+            </div>
           </div>
           <Button
             size="sm"
             onClick={() => setShowAdd(!showAdd)}
             variant={showAdd ? "ghost" : "default"}
+            className="rounded-xl"
           >
             {showAdd ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
           </Button>
         </div>
 
         {/* Status filter */}
-        <div className="px-4 pb-3 flex gap-2 overflow-x-auto">
+        <div className="px-4 pb-3 flex flex-wrap gap-2">
           <button
             onClick={() => setStatusFilter(undefined)}
             className={cn(
-              "px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all",
+              "px-4 py-1.5 rounded-xl text-xs font-medium transition-all",
               !statusFilter
                 ? "bg-primary text-primary-foreground"
-                : "bg-secondary text-muted-foreground hover:text-foreground"
+                : "bg-secondary/50 text-muted-foreground hover:text-foreground"
             )}
           >
             All
@@ -138,138 +144,105 @@ export default function BookTracker() {
           {Object.entries(STATUS_CONFIG).map(([key, config]) => (
             <button
               key={key}
-              onClick={() => setStatusFilter(key as Book["status"])}
+              onClick={() => setStatusFilter(key as string)}
               className={cn(
-                "px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all",
+                "px-4 py-1.5 rounded-xl text-xs font-medium transition-all flex items-center gap-1.5",
                 statusFilter === key
                   ? "bg-primary text-primary-foreground"
-                  : "bg-secondary text-muted-foreground hover:text-foreground"
+                  : "bg-secondary/50 text-muted-foreground hover:text-foreground"
               )}
             >
+              <config.icon className="w-3 h-3" />
               {config.label}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Add/Edit Form */}
+      {/* Add/Edit Form - Compact */}
       <AnimatePresence>
         {showAdd && (
           <motion.div
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="overflow-hidden bg-card border-b border-border"
+            className="overflow-hidden mx-4 mt-4 bg-card border border-border rounded-2xl shadow-sm"
           >
-            <div className="p-4 space-y-4">
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-xs text-muted-foreground font-medium">
-                    Book Title
-                  </label>
-                  <Input
-                    placeholder="Atomic Habits"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    className="mt-1.5"
-                    autoFocus
-                  />
-                </div>
-                <div>
-                  <label className="text-xs text-muted-foreground font-medium">
-                    Author
-                  </label>
-                  <Input
-                    placeholder="James Clear"
-                    value={author}
-                    onChange={(e) => setAuthor(e.target.value)}
-                    className="mt-1.5"
-                  />
-                </div>
+            <div className="p-4 space-y-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <Input
+                  placeholder="Book Title *"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  autoFocus
+                  className="rounded-xl"
+                />
+                <Input
+                  placeholder="Author"
+                  value={author}
+                  onChange={(e) => setAuthor(e.target.value)}
+                  className="rounded-xl"
+                />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-xs text-muted-foreground font-medium">Status</label>
-                  <div className="grid grid-cols-2 gap-2 mt-1.5">
-                    {Object.entries(STATUS_CONFIG).map(([key, config]) => (
-                      <button
-                        key={key}
-                        onClick={() => setStatus(key as Book["status"])}
-                        className={cn(
-                          "py-2 px-3 rounded-lg text-xs font-medium transition-all flex items-center justify-center gap-1.5",
-                          status === key
-                            ? "bg-primary text-primary-foreground"
-                            : "bg-secondary text-muted-foreground hover:text-foreground"
-                        )}
-                      >
-                        <config.icon className="w-3 h-3" />
-                        {config.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <label className="text-xs text-muted-foreground font-medium">
-                    Progress %
-                  </label>
-                  <Input
-                    type="number"
-                    min="0"
-                    max="100"
-                    placeholder="0"
-                    value={progress}
-                    onChange={(e) => setProgress(e.target.value)}
-                    className="mt-1.5"
-                  />
-                </div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                {Object.entries(STATUS_CONFIG).map(([key, config]) => (
+                  <button
+                    key={key}
+                    onClick={() => setStatus(key as Book["status"])}
+                    className={cn(
+                      "py-2 px-2 rounded-xl text-xs font-medium transition-all flex items-center justify-center gap-1",
+                      status === key
+                        ? "bg-primary text-primary-foreground shadow-sm"
+                        : "bg-secondary/50 text-muted-foreground hover:bg-secondary"
+                    )}
+                  >
+                    <config.icon className="w-3 h-3" />
+                    {config.label}
+                  </button>
+                ))}
               </div>
 
-              {/* Page tracking */}
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-xs text-muted-foreground font-medium">
-                    Total Pages
-                  </label>
-                  <Input
-                    type="number"
-                    min="0"
-                    placeholder="300"
-                    value={totalPages}
-                    onChange={(e) => setTotalPages(e.target.value)}
-                    className="mt-1.5"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs text-muted-foreground font-medium">
-                    Current Page
-                  </label>
-                  <Input
-                    type="number"
-                    min="0"
-                    placeholder="150"
-                    value={currentPage}
-                    onChange={(e) => {
-                      setCurrentPage(e.target.value);
-                      if (totalPages && e.target.value) {
-                        const percent = Math.round(
-                          (parseInt(e.target.value) / parseInt(totalPages)) * 100
-                        );
-                        setProgress(String(percent));
-                      }
-                    }}
-                    className="mt-1.5"
-                  />
-                </div>
+              <div className="grid grid-cols-3 gap-3">
+                <Input
+                  type="number"
+                  min="0"
+                  max="100"
+                  placeholder="Progress %"
+                  value={progress}
+                  onChange={(e) => setProgress(e.target.value)}
+                  className="rounded-xl"
+                />
+                <Input
+                  type="number"
+                  min="0"
+                  placeholder="Total Pages"
+                  value={totalPages}
+                  onChange={(e) => setTotalPages(e.target.value)}
+                  className="rounded-xl"
+                />
+                <Input
+                  type="number"
+                  min="0"
+                  placeholder="Current Page"
+                  value={currentPage}
+                  onChange={(e) => {
+                    setCurrentPage(e.target.value);
+                    if (totalPages && e.target.value) {
+                      const percent = Math.round(
+                        (parseInt(e.target.value) / parseInt(totalPages)) * 100
+                      );
+                      setProgress(String(percent));
+                    }
+                  }}
+                  className="rounded-xl"
+                />
               </div>
 
               {status === "completed" && (
-                <div>
-                  <label className="text-xs text-muted-foreground font-medium">
-                    Rating
-                  </label>
-                  <div className="flex gap-1.5 mt-1.5">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground font-medium">Rating:</span>
+                  <div className="flex gap-1">
                     {[1, 2, 3, 4, 5].map((star) => (
                       <button
                         key={star}
@@ -291,33 +264,25 @@ export default function BookTracker() {
                 </div>
               )}
 
-              <div>
-                <label className="text-xs text-muted-foreground font-medium">
-                  Key Takeaways
-                </label>
-                <Textarea
-                  placeholder="What did you learn?"
-                  value={takeaways}
-                  onChange={(e) => setTakeaways(e.target.value)}
-                  className="mt-1.5"
-                />
-              </div>
+              <Textarea
+                placeholder="Key Takeaways"
+                value={takeaways}
+                onChange={(e) => setTakeaways(e.target.value)}
+                className="rounded-xl min-h-[60px]"
+                rows={2}
+              />
 
-              <div>
-                <label className="text-xs text-muted-foreground font-medium">
-                  Notes
-                </label>
-                <Textarea
-                  placeholder="Additional notes..."
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  className="mt-1.5"
-                />
-              </div>
+              <Textarea
+                placeholder="Notes"
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                className="rounded-xl min-h-[60px]"
+                rows={2}
+              />
 
-              <div className="flex gap-2">
-                <Button onClick={handleSubmit} className="flex-1">
-                  {editingId ? "Update" : "Add Book"}
+              <div className="flex gap-2 pt-1">
+                <Button onClick={handleSubmit} className="flex-1 rounded-xl">
+                  {editingId ? "Update Book" : "Add Book"}
                 </Button>
                 {editingId && (
                   <Button
@@ -326,6 +291,7 @@ export default function BookTracker() {
                       resetForm();
                       setShowAdd(false);
                     }}
+                    className="rounded-xl"
                   >
                     Cancel
                   </Button>
@@ -336,73 +302,131 @@ export default function BookTracker() {
         )}
       </AnimatePresence>
 
-      {/* Books list */}
-      <div className="p-4 space-y-3">
+      {/* Books Grid - Shelf View */}
+      <div className="p-4">
         {isLoading && <p className="text-sm text-muted-foreground">Loading...</p>}
         {!isLoading && books.length === 0 && (
           <p className="text-sm text-muted-foreground text-center py-8">
             No books yet. Tap + to add one.
           </p>
         )}
-        {books.map((book) => {
-          const config = STATUS_CONFIG[book.status];
-          return (
-            <div
-              key={book.id}
-              className="bg-card border border-border rounded-lg p-3 space-y-2"
-            >
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex-1">
-                  <h3 className="font-medium">{book.title}</h3>
-                  {book.author && (
-                    <p className="text-sm text-muted-foreground">{book.author}</p>
-                  )}
-                  <div className="flex items-center gap-2 mt-2">
-                    <span className={cn("text-xs font-medium", config.color)}>
-                      {config.label}
-                    </span>
-                    {book.current_page && book.total_pages ? (
-                      <span className="text-xs text-muted-foreground">
-                        Page {book.current_page} of {book.total_pages}
-                      </span>
-                    ) : (
-                      <span className="text-xs text-muted-foreground">
-                        {book.progress_percent}% complete
-                      </span>
-                    )}
-                    {book.rating && (
-                      <div className="flex gap-0.5">
-                        {Array.from({ length: book.rating }).map((_, i) => (
-                          <Star
-                            key={i}
-                            className="w-3 h-3 fill-yellow-500 text-yellow-500"
-                          />
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                  {book.key_takeaways && (
-                    <p className="text-xs text-muted-foreground mt-2 line-clamp-2">
-                      {book.key_takeaways}
-                    </p>
-                  )}
-                </div>
-                <div className="flex flex-col gap-1">
-                  <Button variant="ghost" size="sm" onClick={() => loadBook(book)}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {books.map((book) => {
+            const config = STATUS_CONFIG[book.status];
+            const borderColorClass = {
+              reading: "border-blue-500/40",
+              completed: "border-green-500/40",
+              paused: "border-yellow-500/40",
+              abandoned: "border-red-500/40",
+            }[book.status];
+
+            return (
+              <motion.div
+                key={book.id}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                className={cn(
+                  "bg-card border-2 rounded-2xl p-4 hover:shadow-lg transition-all relative group",
+                  borderColorClass
+                )}
+              >
+                {/* Status badge */}
+                <div className="absolute top-3 right-3 flex gap-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => loadBook(book)}
+                    className="h-7 w-7 p-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
                     <Edit2 className="w-3.5 h-3.5" />
                   </Button>
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => handleDelete(book.id)}
+                    className="h-7 w-7 p-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
                   >
                     <Trash2 className="w-3.5 h-3.5 text-red-500" />
                   </Button>
                 </div>
-              </div>
-            </div>
-          );
-        })}
+
+                <div className="pr-16">
+                  <span
+                    className={cn(
+                      "inline-flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-lg",
+                      config.color,
+                      "bg-secondary/50"
+                    )}
+                  >
+                    <config.icon className="w-3 h-3" />
+                    {config.label}
+                  </span>
+                </div>
+
+                {/* Book info */}
+                <div className="mt-3 space-y-2">
+                  <h3 className="font-bold text-base leading-tight line-clamp-2">
+                    {book.title}
+                  </h3>
+                  {book.author && (
+                    <p className="text-sm text-muted-foreground line-clamp-1">
+                      {book.author}
+                    </p>
+                  )}
+
+                  {/* Progress */}
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-muted-foreground">Progress</span>
+                      <span className="font-medium">{book.progress_percent}%</span>
+                    </div>
+                    <div className="h-1.5 bg-secondary rounded-full overflow-hidden">
+                      <div
+                        className={cn(
+                          "h-full transition-all rounded-full",
+                          {
+                            reading: "bg-blue-500",
+                            completed: "bg-green-500",
+                            paused: "bg-yellow-500",
+                            abandoned: "bg-red-500",
+                          }[book.status]
+                        )}
+                        style={{ width: `${book.progress_percent}%` }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Page info */}
+                  {book.current_page && book.total_pages && (
+                    <div className="text-xs text-muted-foreground">
+                      Page {book.current_page} of {book.total_pages}
+                    </div>
+                  )}
+
+                  {/* Rating */}
+                  {book.rating && (
+                    <div className="flex gap-0.5 pt-1">
+                      {Array.from({ length: book.rating }).map((_, i) => (
+                        <Star
+                          key={i}
+                          className="w-3.5 h-3.5 fill-yellow-500 text-yellow-500"
+                        />
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Takeaways preview */}
+                  {book.key_takeaways && (
+                    <p className="text-xs text-muted-foreground line-clamp-2 pt-1 border-t border-border/50">
+                      {book.key_takeaways}
+                    </p>
+                  )}
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

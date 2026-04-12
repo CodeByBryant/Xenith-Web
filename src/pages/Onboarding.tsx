@@ -1,4 +1,5 @@
 import { useState, startTransition } from "react";
+import { Helmet } from "react-helmet-async";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -12,6 +13,7 @@ import {
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/lib/supabase";
+import { LEGAL_LAST_UPDATED, PRIVACY_URL, TERMS_URL } from "@/lib/legal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -227,6 +229,29 @@ function Step3({
       <p className="text-xs text-muted-foreground text-center">
         Your data is end-to-end encrypted and never sold.
       </p>
+
+      <p className="text-[11px] text-muted-foreground text-center leading-relaxed">
+        Privacy Policy and Terms of Service were accepted at signup (policy
+        version {LEGAL_LAST_UPDATED}). Review anytime: {" "}
+        <a
+          href={PRIVACY_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-foreground underline underline-offset-2"
+        >
+          Privacy
+        </a>{" "}
+        and{" "}
+        <a
+          href={TERMS_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-foreground underline underline-offset-2"
+        >
+          Terms
+        </a>
+        .
+      </p>
     </div>
   );
 }
@@ -290,21 +315,33 @@ export default function Onboarding() {
           data_sharing_consent: dataConsent,
           last_active_at: new Date().toISOString(),
         };
-        // Only include onboarding_completed if the column exists in the schema.
-        // We catch any 400/PGRST error and still proceed.
-        try {
-          await supabase
+        const { error: updateError } = await supabase
+          .from("profiles")
+          .update({ ...payload, onboarding_completed: true })
+          .eq("id", user.id);
+
+        if (updateError) {
+          const { error: upsertWithOnboardingError } = await supabase
             .from("profiles")
             .upsert(
-              { ...payload, onboarding_completed: true },
+              { id: user.id, ...payload, onboarding_completed: true },
               { onConflict: "id" },
             );
-        } catch {
-          // Retry without onboarding_completed in case the column doesn't exist yet
-          await supabase.from("profiles").upsert(payload, { onConflict: "id" });
+
+          if (upsertWithOnboardingError) {
+            // Retry without onboarding_completed in case the column doesn't exist yet.
+            const { error: fallbackError } = await supabase
+              .from("profiles")
+              .upsert({ id: user.id, ...payload }, { onConflict: "id" });
+
+            if (fallbackError) {
+              throw fallbackError;
+            }
+          }
         }
       }
-    } catch {
+    } catch (error) {
+      console.error("Onboarding profile sync failed", error);
       // Non-blocking — preferences saved to localStorage, DB will sync later
       toast.warning(
         "Preferences saved locally. They'll sync once the DB is ready.",
@@ -334,6 +371,16 @@ export default function Onboarding() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4">
+      <Helmet>
+        <title>Onboarding — Xenith</title>
+        <meta
+          name="description"
+          content="Complete your Xenith onboarding preferences before entering the app."
+        />
+        <meta name="robots" content="noindex, nofollow" />
+        <link rel="canonical" href="https://xenith.life/onboarding" />
+      </Helmet>
+
       <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,hsl(var(--foreground)/0.03),transparent_60%)] pointer-events-none" />
 
       <motion.div

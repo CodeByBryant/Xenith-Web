@@ -7,7 +7,7 @@
       "@/*": ["./src/*"]
     },
     "noImplicitAny": false,
-    "ignoreDeprecations": "6.0",
+    "ignoreDeprecations": "5.0",
     "noUnusedParameters": false,
     "skipLibCheck": true,
     "allowJs": true,

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { Helmet } from "react-helmet-async";
 import { Outlet, NavLink, useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { LogOut, Menu, Settings } from "lucide-react";
@@ -164,6 +165,10 @@ export default function AppLayout() {
 
   return (
     <div className="min-h-screen bg-background flex">
+      <Helmet>
+        <meta name="robots" content="noindex, follow" />
+      </Helmet>
+
       <FocusTimerProvider>
         {/* ── Desktop sidebar (fixed) ── */}
         {!isMobile && (

@@ -8,7 +8,6 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 import { HelmetProvider } from "react-helmet-async";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { WaitlistCountProvider } from "@/context/WaitlistCountContext";
 import { AuthProvider } from "@/context/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
@@ -33,17 +32,41 @@ const AppSettings = lazy(() => import("./pages/app/Settings"));
 const HealthTools = lazy(() => import("./pages/app/health/HealthTools"));
 const CalorieTracker = lazy(() => import("./pages/app/health/CalorieTracker"));
 const WorkoutTracker = lazy(() => import("./pages/app/health/WorkoutTracker"));
-const WaterSupplementsTracker = lazy(() => import("./pages/app/health/WaterSupplementsTracker"));
-const BiometricWizard = lazy(() => import("./pages/app/health/BiometricWizard"));
+const WaterSupplementsTracker = lazy(
+  () => import("./pages/app/health/WaterSupplementsTracker"),
+);
+const BiometricWizard = lazy(
+  () => import("./pages/app/health/BiometricWizard"),
+);
 const FinanceTools = lazy(() => import("./pages/app/finances/FinanceTools"));
-const TransactionTracker = lazy(() => import("./pages/app/finances/TransactionTracker"));
+const TransactionTracker = lazy(
+  () => import("./pages/app/finances/TransactionTracker"),
+);
 const LearningTools = lazy(() => import("./pages/app/learning/LearningTools"));
 const BookTracker = lazy(() => import("./pages/app/learning/BookTracker"));
 const RestTools = lazy(() => import("./pages/app/rest/RestTools"));
 const SleepTracker = lazy(() => import("./pages/app/rest/SleepTracker"));
+const RechargeLog = lazy(() => import("./pages/app/rest/RechargeLog"));
+const WorkTools = lazy(() => import("./pages/app/work/WorkTools"));
+const WinLossJournal = lazy(() => import("./pages/app/work/WinLossJournal"));
+const EnergyTaskMatcher = lazy(
+  () => import("./pages/app/work/EnergyTaskMatcher"),
+);
 const MindTools = lazy(() => import("./pages/app/mind/MindTools"));
 const ThoughtAudit = lazy(() => import("./pages/app/mind/ThoughtAudit"));
 const DailyGratitude = lazy(() => import("./pages/app/mind/DailyGratitude"));
+const RelationshipsTools = lazy(
+  () => import("./pages/app/relationships/RelationshipsTools"),
+);
+const ConnectionTracker = lazy(
+  () => import("./pages/app/relationships/ConnectionTracker"),
+);
+const PurposeTools = lazy(() => import("./pages/app/purpose/PurposeTools"));
+const DecisionJournal = lazy(
+  () => import("./pages/app/purpose/DecisionJournal"),
+);
+const ValuesCheckin = lazy(() => import("./pages/app/purpose/ValuesCheckin"));
+const Projects = lazy(() => import("./pages/app/Projects"));
 
 // Lazy-load dev panel — only fetched when route is hit, never bundled in prod
 const Dev = lazy(() => import("./pages/Dev"));
@@ -68,7 +91,11 @@ const router = createBrowserRouter([
   { path: "/privacy", element: <Privacy />, errorElement: <RouteError /> },
   { path: "/terms", element: <Terms />, errorElement: <RouteError /> },
   { path: "/signin", element: <SignIn />, errorElement: <RouteError /> },
-  { path: "/auth/callback", element: <AuthCallback />, errorElement: <RouteError /> },
+  {
+    path: "/auth/callback",
+    element: <AuthCallback />,
+    errorElement: <RouteError />,
+  },
 
   // ─── Protected: onboarding ───────────────────────────────────────
   {
@@ -175,6 +202,15 @@ const router = createBrowserRouter([
             errorElement: <RouteError />,
           },
           {
+            path: "projects",
+            element: (
+              <Suspense fallback={AppLoader}>
+                <Projects />
+              </Suspense>
+            ),
+            errorElement: <RouteError />,
+          },
+          {
             path: "dimensions/health",
             element: (
               <Suspense fallback={AppLoader}>
@@ -273,6 +309,114 @@ const router = createBrowserRouter([
             ),
             errorElement: <RouteError />,
           },
+          {
+            path: "dimensions/rest/recharge",
+            element: (
+              <Suspense fallback={AppLoader}>
+                <RechargeLog />
+              </Suspense>
+            ),
+            errorElement: <RouteError />,
+          },
+          {
+            path: "dimensions/work",
+            element: (
+              <Suspense fallback={AppLoader}>
+                <WorkTools />
+              </Suspense>
+            ),
+            errorElement: <RouteError />,
+          },
+          {
+            path: "dimensions/work/wins-losses",
+            element: (
+              <Suspense fallback={AppLoader}>
+                <WinLossJournal />
+              </Suspense>
+            ),
+            errorElement: <RouteError />,
+          },
+          {
+            path: "dimensions/work/energy-tasks",
+            element: (
+              <Suspense fallback={AppLoader}>
+                <EnergyTaskMatcher />
+              </Suspense>
+            ),
+            errorElement: <RouteError />,
+          },
+          {
+            path: "mind",
+            element: (
+              <Suspense fallback={AppLoader}>
+                <MindTools />
+              </Suspense>
+            ),
+            errorElement: <RouteError />,
+          },
+          {
+            path: "mind/thought-audit",
+            element: (
+              <Suspense fallback={AppLoader}>
+                <ThoughtAudit />
+              </Suspense>
+            ),
+            errorElement: <RouteError />,
+          },
+          {
+            path: "mind/gratitude",
+            element: (
+              <Suspense fallback={AppLoader}>
+                <DailyGratitude />
+              </Suspense>
+            ),
+            errorElement: <RouteError />,
+          },
+          {
+            path: "dimensions/relationships",
+            element: (
+              <Suspense fallback={AppLoader}>
+                <RelationshipsTools />
+              </Suspense>
+            ),
+            errorElement: <RouteError />,
+          },
+          {
+            path: "dimensions/relationships/connections",
+            element: (
+              <Suspense fallback={AppLoader}>
+                <ConnectionTracker />
+              </Suspense>
+            ),
+            errorElement: <RouteError />,
+          },
+          {
+            path: "dimensions/purpose",
+            element: (
+              <Suspense fallback={AppLoader}>
+                <PurposeTools />
+              </Suspense>
+            ),
+            errorElement: <RouteError />,
+          },
+          {
+            path: "dimensions/purpose/decisions",
+            element: (
+              <Suspense fallback={AppLoader}>
+                <DecisionJournal />
+              </Suspense>
+            ),
+            errorElement: <RouteError />,
+          },
+          {
+            path: "dimensions/purpose/values",
+            element: (
+              <Suspense fallback={AppLoader}>
+                <ValuesCheckin />
+              </Suspense>
+            ),
+            errorElement: <RouteError />,
+          },
         ],
       },
     ],
@@ -315,14 +459,12 @@ const App = () => (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          <WaitlistCountProvider>
-            <TooltipProvider>
-              <Sonner />
-              <RouterProvider router={router} />
-              <Analytics />
-              <SpeedInsights />
-            </TooltipProvider>
-          </WaitlistCountProvider>
+          <TooltipProvider>
+            <Sonner />
+            <RouterProvider router={router} />
+            <Analytics />
+            <SpeedInsights />
+          </TooltipProvider>
         </AuthProvider>
       </QueryClientProvider>
     </ErrorBoundary>

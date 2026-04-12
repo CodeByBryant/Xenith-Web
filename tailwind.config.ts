@@ -1,8 +1,14 @@
 import type { Config } from "tailwindcss";
+import tailwindcssAnimate from "tailwindcss-animate";
 
 export default {
   darkMode: ["class"],
-  content: ["./pages/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./app/**/*.{ts,tsx}", "./src/**/*.{ts,tsx}"],
+  content: [
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
+  ],
   prefix: "",
   theme: {
     container: {
@@ -13,9 +19,19 @@ export default {
       },
     },
     extend: {
+      spacing: {
+        4.5: "1.125rem",
+        5.5: "1.375rem",
+        7.5: "1.875rem",
+        13: "3.25rem",
+        15: "3.75rem",
+        18: "4.5rem",
+        22: "5.5rem",
+      },
       fontFamily: {
         serif: ["Playfair Display", "Georgia", "serif"],
         sans: ["Inter", "system-ui", "sans-serif"],
+        chomsky: ["Chomsky", "serif"],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -119,7 +135,14 @@ export default {
         "fade-in-up": "fade-in-up 0.6s ease-out forwards",
         "scale-in": "scale-in 0.3s ease-out forwards",
       },
+      transitionTimingFunction: {
+        smooth: "cubic-bezier(0.22, 1, 0.36, 1)",
+      },
+      transitionDuration: {
+        350: "350ms",
+        450: "450ms",
+      },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [tailwindcssAnimate],
 } satisfies Config;

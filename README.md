@@ -74,13 +74,27 @@ npm install
 
 # Set up environment variables
 cp .env.example .env.local
-# Add your Supabase URL and anon key
+# Update values in .env.local
 
 # Start the dev server
 npm run dev
 ```
 
 Open [http://localhost:5173](http://localhost:5173) in your browser.
+
+Required environment variables:
+
+```bash
+VITE_SUPABASE_URL=https://YOUR_PROJECT.supabase.co
+VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY=YOUR_SUPABASE_ANON_KEY
+VITE_APP_URL=http://localhost:5173
+
+# Used by /api/food (calorie search proxy)
+USDA_FDC_API_KEY=YOUR_USDA_FDC_API_KEY
+```
+
+Get a USDA FoodData Central API key at
+[USDA FoodData Central key signup](https://fdc.nal.usda.gov/api-key-signup).
 
 ### Available Scripts
 

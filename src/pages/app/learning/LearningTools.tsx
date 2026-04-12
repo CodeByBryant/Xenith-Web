@@ -69,7 +69,7 @@ export default function LearningTools() {
         transition={{ delay: 0.4 }}
         className="text-xs text-muted-foreground text-center mt-8 leading-relaxed"
       >
-        Pro tip — logging books here should correlate with your weekly Learning dimension score.
+        Logging books here should correlate with your weekly Learning dimension score.
         Consistent reading reflects in higher self-ratings.
       </motion.p>
     </div>

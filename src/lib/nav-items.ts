@@ -7,6 +7,7 @@ import {
   BookOpen,
   BarChart2,
   TrendingUp,
+  FolderKanban,
 } from "lucide-react";
 import React from "react";
 
@@ -23,6 +24,7 @@ export const NAV_ITEMS: NavItem[] = [
   { label: "Life Dimensions", path: "/app/dimensions", icon: Activity },
   { label: "Focus Timer", path: "/app/focus", icon: Timer },
   { label: "Routines", path: "/app/routines", icon: RotateCw },
+  { label: "Projects", path: "/app/projects", icon: FolderKanban },
   { label: "Reflection", path: "/app/reflection", icon: BookOpen },
   { label: "Insights", path: "/app/insights", icon: BarChart2 },
   { label: "Growth Path", path: "/app/growth", icon: TrendingUp },

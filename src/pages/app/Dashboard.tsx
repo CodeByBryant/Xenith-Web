@@ -1,340 +1,909 @@
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import { Helmet } from "react-helmet-async";
 import {
-  CheckSquare,
   Activity,
-  Timer,
-  RotateCw,
-  BookOpen,
   ArrowRight,
-  Circle,
-  CheckCircle2,
-  Flame,
-  TrendingUp,
+  BookOpen,
   Calendar,
+  CheckSquare,
+  Coins,
+  Flame,
+  GripVertical,
+  Heart,
+  Moon,
+  MoveDown,
+  MoveUp,
+  RotateCw,
+  Sparkles,
+  Timer,
+  TrendingUp,
 } from "lucide-react";
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
-import { useProfile } from "@/hooks/use-profile";
-import { useIntentions } from "@/hooks/use-intentions";
-import { useRoutines } from "@/hooks/use-routines";
-import { useFocusSessions } from "@/hooks/use-focus-sessions";
-import { useReflections } from "@/hooks/use-reflections";
+import { useBooks } from "@/hooks/use-books";
+import { useDashboardPreferences } from "@/hooks/use-dashboard-preferences";
 import { useDimensionScores } from "@/hooks/use-dimension-scores";
+import { useFocusSessions } from "@/hooks/use-focus-sessions";
+import { useIntentions } from "@/hooks/use-intentions";
+import { useNutrition } from "@/hooks/use-nutrition";
+import { useProfile } from "@/hooks/use-profile";
+import { useRechargeActivities } from "@/hooks/use-recharge-activities";
+import { useReflections } from "@/hooks/use-reflections";
+import { useRoutines } from "@/hooks/use-routines";
+import { useSleepLogs } from "@/hooks/use-sleep-logs";
+import { useTransactions } from "@/hooks/use-transactions";
+import { useWater } from "@/hooks/use-water-supplements";
+import { useWorkouts } from "@/hooks/use-workouts";
+import {
+  getCompletedFocusSessionsThisWeek,
+  getTotalFocusMinutes,
+} from "@/lib/focus-metrics";
+import { LIFE_DIMENSIONS } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
-const hour = new Date().getHours();
-const greeting =
-  hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+type DashboardWidgetId =
+  | "intentions"
+  | "routines"
+  | "focus"
+  | "reflection"
+  | "dimensions"
+  | "health"
+  | "finances"
+  | "learning"
+  | "rest"
+  | "quick-actions";
+
+interface WidgetMeta {
+  id: DashboardWidgetId;
+  title: string;
+  description: string;
+  href?: string;
+  icon: typeof CheckSquare;
+}
+
+interface WidgetAccent {
+  iconBg: string;
+  iconText: string;
+  accentBar: string;
+  metricText: string;
+  hoverBorder: string;
+}
+
+const WIDGET_META: WidgetMeta[] = [
+  {
+    id: "intentions",
+    title: "Intentions",
+    description: "Today completion",
+    href: "/app/intentions",
+    icon: CheckSquare,
+  },
+  {
+    id: "routines",
+    title: "Routines",
+    description: "Daily adherence",
+    href: "/app/routines",
+    icon: RotateCw,
+  },
+  {
+    id: "focus",
+    title: "Focus",
+    description: "Deep work this week",
+    href: "/app/focus",
+    icon: Flame,
+  },
+  {
+    id: "reflection",
+    title: "Reflection",
+    description: "Journal consistency",
+    href: "/app/reflection",
+    icon: BookOpen,
+  },
+  {
+    id: "dimensions",
+    title: "Dimensions",
+    description: "Life balance index",
+    href: "/app/dimensions",
+    icon: Activity,
+  },
+  {
+    id: "health",
+    title: "Health",
+    description: "Nutrition and movement",
+    href: "/app/dimensions/health",
+    icon: Heart,
+  },
+  {
+    id: "finances",
+    title: "Finances",
+    description: "Monthly flow",
+    href: "/app/dimensions/finances",
+    icon: Coins,
+  },
+  {
+    id: "learning",
+    title: "Learning",
+    description: "Books and progress",
+    href: "/app/dimensions/learning",
+    icon: TrendingUp,
+  },
+  {
+    id: "rest",
+    title: "Rest",
+    description: "Recovery and sleep",
+    href: "/app/dimensions/rest",
+    icon: Moon,
+  },
+  {
+    id: "quick-actions",
+    title: "Quick Actions",
+    description: "Jump into tools",
+    icon: Sparkles,
+  },
+];
+
+const DEFAULT_WIDGET_ORDER = WIDGET_META.map((widget) => widget.id);
+
+const WIDGET_ACCENTS: Record<DashboardWidgetId, WidgetAccent> = {
+  intentions: {
+    iconBg: "bg-blue-500/15",
+    iconText: "text-blue-500",
+    accentBar: "bg-blue-500",
+    metricText: "text-blue-500",
+    hoverBorder: "hover:border-blue-500/35",
+  },
+  routines: {
+    iconBg: "bg-emerald-500/15",
+    iconText: "text-emerald-500",
+    accentBar: "bg-emerald-500",
+    metricText: "text-emerald-500",
+    hoverBorder: "hover:border-emerald-500/35",
+  },
+  focus: {
+    iconBg: "bg-orange-500/15",
+    iconText: "text-orange-500",
+    accentBar: "bg-orange-500",
+    metricText: "text-orange-500",
+    hoverBorder: "hover:border-orange-500/35",
+  },
+  reflection: {
+    iconBg: "bg-violet-500/15",
+    iconText: "text-violet-500",
+    accentBar: "bg-violet-500",
+    metricText: "text-violet-500",
+    hoverBorder: "hover:border-violet-500/35",
+  },
+  dimensions: {
+    iconBg: "bg-fuchsia-500/15",
+    iconText: "text-fuchsia-500",
+    accentBar: "bg-fuchsia-500",
+    metricText: "text-fuchsia-500",
+    hoverBorder: "hover:border-fuchsia-500/35",
+  },
+  health: {
+    iconBg: "bg-rose-500/15",
+    iconText: "text-rose-500",
+    accentBar: "bg-rose-500",
+    metricText: "text-rose-500",
+    hoverBorder: "hover:border-rose-500/35",
+  },
+  finances: {
+    iconBg: "bg-green-500/15",
+    iconText: "text-green-500",
+    accentBar: "bg-green-500",
+    metricText: "text-green-500",
+    hoverBorder: "hover:border-green-500/35",
+  },
+  learning: {
+    iconBg: "bg-cyan-500/15",
+    iconText: "text-cyan-500",
+    accentBar: "bg-cyan-500",
+    metricText: "text-cyan-500",
+    hoverBorder: "hover:border-cyan-500/35",
+  },
+  rest: {
+    iconBg: "bg-indigo-500/15",
+    iconText: "text-indigo-500",
+    accentBar: "bg-indigo-500",
+    metricText: "text-indigo-500",
+    hoverBorder: "hover:border-indigo-500/35",
+  },
+  "quick-actions": {
+    iconBg: "bg-amber-500/15",
+    iconText: "text-amber-500",
+    accentBar: "bg-amber-500",
+    metricText: "text-amber-500",
+    hoverBorder: "hover:border-amber-500/35",
+  },
+};
+
+const DIMENSION_ACCENTS: Record<string, string> = {
+  Health: "bg-emerald-500",
+  Mind: "bg-violet-500",
+  Relationships: "bg-pink-500",
+  Work: "bg-blue-500",
+  Finances: "bg-yellow-500",
+  Learning: "bg-cyan-500",
+  Rest: "bg-indigo-500",
+  Purpose: "bg-orange-500",
+};
+
+const QUICK_ACTIONS = [
+  {
+    label: "Start Focus Session",
+    description: "Open timer and run deep work",
+    path: "/app/focus",
+    icon: Timer,
+    accentBg: "bg-orange-500/20",
+    accentText: "text-orange-500",
+  },
+  {
+    label: "Weekly Insights",
+    description: "Analyze your trends",
+    path: "/app/insights",
+    icon: TrendingUp,
+    accentBg: "bg-cyan-500/20",
+    accentText: "text-cyan-500",
+  },
+  {
+    label: "Project Workspace",
+    description: "Capture and organize work",
+    path: "/app/projects",
+    icon: BookOpen,
+    accentBg: "bg-violet-500/20",
+    accentText: "text-violet-500",
+  },
+] as const;
 
 function toDateStr(d = new Date()) {
   return d.toISOString().split("T")[0];
 }
 
-const QUICK_ACTIONS = [
-  {
-    label: "Focus Timer",
-    description: "Deep work session",
-    path: "/app/focus",
-    icon: Timer,
-  },
-  {
-    label: "Insights",
-    description: "View analytics",
-    path: "/app/insights",
-    icon: TrendingUp,
-  },
-  {
-    label: "Growth Path",
-    description: "Track your skills",
-    path: "/app/growth",
-    icon: Activity,
-  },
-] as const;
+function normalizeDate(dateLike?: string | null) {
+  if (!dateLike) return null;
+  return dateLike.slice(0, 10);
+}
 
-const containerVariants = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.05 } },
-};
-const itemVariants = {
-  hidden: { opacity: 0, y: 12 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.3 } },
-};
+function reorder<T>(arr: T[], from: T, to: T) {
+  const next = [...arr];
+  const fromIdx = next.indexOf(from);
+  const toIdx = next.indexOf(to);
+
+  if (fromIdx === -1 || toIdx === -1) return arr;
+
+  const [item] = next.splice(fromIdx, 1);
+  next.splice(toIdx, 0, item);
+  return next;
+}
 
 export default function Dashboard() {
   const { user } = useAuth();
   const { profile } = useProfile();
   const { intentions } = useIntentions();
   const { routines, completions } = useRoutines();
-  const { sessions } = useFocusSessions(7);
-  const { reflections } = useReflections(7);
-  const { scores } = useDimensionScores();
-  
+  const { sessions } = useFocusSessions(14);
+  const { reflections } = useReflections(14);
+  const { currentScores } = useDimensionScores(1);
+  const { totals: nutritionTotals, logs: nutritionLogs } = useNutrition(
+    new Date(),
+  );
+  const { workouts } = useWorkouts(new Date());
+  const { totalMl } = useWater(new Date());
+  const { transactions } = useTransactions(
+    new Date().toISOString().slice(0, 7),
+  );
+  const { books } = useBooks();
+  const { logs: sleepLogs } = useSleepLogs(7);
+  const { activities: rechargeActivities } = useRechargeActivities(7);
+
+  const {
+    preferences,
+    isLoading: preferencesLoading,
+    reorderWidgets,
+    setWidgetVisible,
+    resetPreferences,
+  } = useDashboardPreferences(DEFAULT_WIDGET_ORDER);
+
+  const [editMode, setEditMode] = useState(false);
+  const [draggingWidget, setDraggingWidget] =
+    useState<DashboardWidgetId | null>(null);
+
   const firstName =
     (profile?.name ?? user?.email ?? "").split(/[\s@]/)[0] || "there";
-  
   const today = toDateStr();
-  const todayIntentions = intentions.filter((i) => i.target_date === today);
-  const completedIntentions = todayIntentions.filter((i) => i.completed);
-  
-  const todayReflection = reflections.find((r) => r.entry_date === today);
-  const recentSessions = sessions.slice(0, 3);
-  const totalFocusMinutes = recentSessions.reduce((sum, s) => sum + (s.duration_minutes ?? 0), 0);
-  
-  const thisWeek = toDateStr(new Date(Date.now() - 7 * 24 * 60 * 60 * 1000));
-  const weekScore = scores.find((s) => s.week_start_date === thisWeek);
+
+  const todayIntentions = intentions.filter(
+    (intention) =>
+      normalizeDate(intention.scheduled_date) === today ||
+      normalizeDate(intention.due_date) === today,
+  );
+
+  const completedIntentions = todayIntentions.filter(
+    (intention) => intention.completed_at !== null,
+  ).length;
+
+  const weekFocusSessions = getCompletedFocusSessionsThisWeek(sessions);
+  const totalFocusMinutes = getTotalFocusMinutes(weekFocusSessions);
+
+  const todayReflection = reflections.find(
+    (entry) => entry.entry_date === today,
+  );
+
+  const routineCompletionStats = useMemo(() => {
+    const totalItems = routines.reduce(
+      (acc, routine) => acc + (routine.items?.length ?? 0),
+      0,
+    );
+
+    const completedItems = completions.reduce(
+      (acc, completion) => acc + (completion.completed_item_ids?.length ?? 0),
+      0,
+    );
+
+    const adherence =
+      totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0;
+
+    return {
+      totalItems,
+      completedItems,
+      adherence,
+    };
+  }, [completions, routines]);
+
+  const dimensionAverage = useMemo(() => {
+    const values = LIFE_DIMENSIONS.map(
+      (dimension) => currentScores[dimension],
+    ).filter((score) => score > 0);
+
+    if (!values.length) return 0;
+    return Number(
+      (values.reduce((sum, score) => sum + score, 0) / values.length).toFixed(
+        1,
+      ),
+    );
+  }, [currentScores]);
+
+  const monthlyFinance = useMemo(() => {
+    return transactions.reduce(
+      (acc, transaction) => {
+        if (transaction.type === "income") {
+          acc.income += Number(transaction.amount);
+        } else {
+          acc.expense += Number(transaction.amount);
+        }
+        return acc;
+      },
+      { income: 0, expense: 0 },
+    );
+  }, [transactions]);
+
+  const booksInProgress = books.filter(
+    (book) => book.status === "reading",
+  ).length;
+  const booksCompleted = books.filter(
+    (book) => book.status === "completed",
+  ).length;
+
+  const sleepAverage = useMemo(() => {
+    const values = sleepLogs
+      .map((log) => Number(log.hours_slept || 0))
+      .filter((value) => value > 0);
+    if (!values.length) return 0;
+    return Number(
+      (values.reduce((sum, value) => sum + value, 0) / values.length).toFixed(
+        1,
+      ),
+    );
+  }, [sleepLogs]);
+
+  const topDimensionHighlights = useMemo(
+    () =>
+      LIFE_DIMENSIONS.map((dimension) => ({
+        dimension,
+        score: currentScores[dimension] ?? 0,
+      }))
+        .filter((item) => item.score > 0)
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 3),
+    [currentScores],
+  );
+
+  const widgetOrder =
+    preferences.widget_order.length > 0
+      ? (preferences.widget_order as DashboardWidgetId[])
+      : DEFAULT_WIDGET_ORDER;
+
+  const hiddenSet = new Set(preferences.hidden_widgets);
+
+  const visibleWidgets = widgetOrder.filter(
+    (widgetId) => !hiddenSet.has(widgetId),
+  );
+
+  const hiddenWidgets = WIDGET_META.filter((widget) =>
+    hiddenSet.has(widget.id),
+  );
+
+  const widgetMap = useMemo(
+    () =>
+      Object.fromEntries(
+        WIDGET_META.map((widget) => [widget.id, widget]),
+      ) as Record<DashboardWidgetId, WidgetMeta>,
+    [],
+  );
+
+  const handleDrop = async (targetId: DashboardWidgetId) => {
+    if (!draggingWidget || draggingWidget === targetId) return;
+    const nextOrder = reorder(widgetOrder, draggingWidget, targetId);
+    await reorderWidgets(nextOrder);
+    setDraggingWidget(null);
+  };
+
+  const moveWidget = async (
+    widgetId: DashboardWidgetId,
+    direction: "up" | "down",
+  ) => {
+    const currentIndex = widgetOrder.indexOf(widgetId);
+    if (currentIndex === -1) return;
+
+    const swapIndex = direction === "up" ? currentIndex - 1 : currentIndex + 1;
+    if (swapIndex < 0 || swapIndex >= widgetOrder.length) return;
+
+    const next = [...widgetOrder];
+    const [item] = next.splice(currentIndex, 1);
+    next.splice(swapIndex, 0, item);
+    await reorderWidgets(next);
+  };
+
+  const renderWidgetBody = (widgetId: DashboardWidgetId) => {
+    const accent = WIDGET_ACCENTS[widgetId];
+
+    switch (widgetId) {
+      case "intentions": {
+        const progress =
+          todayIntentions.length > 0
+            ? Math.round((completedIntentions / todayIntentions.length) * 100)
+            : 0;
+
+        return (
+          <div className="space-y-3">
+            <p
+              className={cn(
+                "text-3xl font-semibold tabular-nums",
+                accent.metricText,
+              )}
+            >
+              {completedIntentions}/{todayIntentions.length || 0}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              {progress}% complete today
+            </p>
+            <div className="h-2 w-full rounded-full bg-secondary">
+              <div
+                className={cn(
+                  "h-2 rounded-full transition-all",
+                  accent.accentBar,
+                )}
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+          </div>
+        );
+      }
+      case "routines":
+        return (
+          <div className="space-y-3">
+            <p
+              className={cn(
+                "text-3xl font-semibold tabular-nums",
+                accent.metricText,
+              )}
+            >
+              {routineCompletionStats.adherence}%
+            </p>
+            <p className="text-xs text-muted-foreground">
+              {routineCompletionStats.completedItems}/
+              {routineCompletionStats.totalItems} routine steps done today
+            </p>
+          </div>
+        );
+      case "focus":
+        return (
+          <div className="space-y-3">
+            <p
+              className={cn(
+                "text-3xl font-semibold tabular-nums",
+                accent.metricText,
+              )}
+            >
+              {totalFocusMinutes}m
+            </p>
+            <p className="text-xs text-muted-foreground">
+              {weekFocusSessions.length} completed session
+              {weekFocusSessions.length === 1 ? "" : "s"} this week
+            </p>
+          </div>
+        );
+      case "reflection":
+        return (
+          <div className="space-y-3">
+            <p className={cn("text-lg font-medium", accent.metricText)}>
+              {todayReflection ? "Entry captured" : "No entry yet"}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              {reflections.length} reflections logged over 14 days
+            </p>
+          </div>
+        );
+      case "dimensions":
+        return (
+          <div className="space-y-3">
+            <p
+              className={cn(
+                "text-3xl font-semibold tabular-nums",
+                accent.metricText,
+              )}
+            >
+              {dimensionAverage || "—"}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Current life balance average score
+            </p>
+            {topDimensionHighlights.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {topDimensionHighlights.map((item) => (
+                  <span
+                    key={item.dimension}
+                    className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-2.5 py-1 text-[11px] text-muted-foreground"
+                  >
+                    <span
+                      className={cn(
+                        "h-2 w-2 rounded-full",
+                        DIMENSION_ACCENTS[item.dimension] ?? "bg-foreground",
+                      )}
+                    />
+                    {item.dimension}
+                    <span className="font-medium text-foreground">
+                      {item.score}
+                    </span>
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+        );
+      case "health":
+        return (
+          <div className="space-y-3 text-sm text-muted-foreground">
+            <p>
+              Calories today:{" "}
+              <span className={cn("font-medium", accent.metricText)}>
+                {nutritionTotals.calories}
+              </span>
+            </p>
+            <p>
+              Water today:{" "}
+              <span className={cn("font-medium", accent.metricText)}>
+                {totalMl} ml
+              </span>
+            </p>
+            <p>
+              Workouts logged:{" "}
+              <span className={cn("font-medium", accent.metricText)}>
+                {workouts.length}
+              </span>
+            </p>
+            <p>
+              Meals tracked:{" "}
+              <span className={cn("font-medium", accent.metricText)}>
+                {nutritionLogs.length}
+              </span>
+            </p>
+          </div>
+        );
+      case "finances": {
+        const net = monthlyFinance.income - monthlyFinance.expense;
+        return (
+          <div className="space-y-3 text-sm text-muted-foreground">
+            <p>
+              Income:{" "}
+              <span className={cn("font-medium", accent.metricText)}>
+                ${monthlyFinance.income.toFixed(2)}
+              </span>
+            </p>
+            <p>
+              Expenses:{" "}
+              <span className={cn("font-medium", accent.metricText)}>
+                ${monthlyFinance.expense.toFixed(2)}
+              </span>
+            </p>
+            <p>
+              Net flow:{" "}
+              <span className={cn("font-medium", accent.metricText)}>
+                ${net.toFixed(2)}
+              </span>
+            </p>
+          </div>
+        );
+      }
+      case "learning":
+        return (
+          <div className="space-y-3 text-sm text-muted-foreground">
+            <p>
+              In progress:{" "}
+              <span className={cn("font-medium", accent.metricText)}>
+                {booksInProgress}
+              </span>
+            </p>
+            <p>
+              Completed:{" "}
+              <span className={cn("font-medium", accent.metricText)}>
+                {booksCompleted}
+              </span>
+            </p>
+            <p>
+              Total tracked:{" "}
+              <span className={cn("font-medium", accent.metricText)}>
+                {books.length}
+              </span>
+            </p>
+          </div>
+        );
+      case "rest":
+        return (
+          <div className="space-y-3 text-sm text-muted-foreground">
+            <p>
+              Avg sleep (7d):{" "}
+              <span className={cn("font-medium", accent.metricText)}>
+                {sleepAverage || "—"}h
+              </span>
+            </p>
+            <p>
+              Sleep entries:{" "}
+              <span className={cn("font-medium", accent.metricText)}>
+                {sleepLogs.length}
+              </span>
+            </p>
+            <p>
+              Recharge sessions:{" "}
+              <span className={cn("font-medium", accent.metricText)}>
+                {rechargeActivities.length}
+              </span>
+            </p>
+          </div>
+        );
+      case "quick-actions":
+        return (
+          <div className="space-y-2">
+            {QUICK_ACTIONS.map(
+              ({
+                icon: Icon,
+                label,
+                description,
+                path,
+                accentBg,
+                accentText,
+              }) => (
+                <Link
+                  key={path}
+                  to={path}
+                  className="flex items-center gap-3 rounded-xl border border-border bg-secondary/40 p-3 transition-colors hover:bg-secondary"
+                >
+                  <span
+                    className={cn(
+                      "flex h-8 w-8 items-center justify-center rounded-lg",
+                      accentBg,
+                    )}
+                  >
+                    <Icon className={cn("h-4 w-4", accentText)} />
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-sm font-medium text-foreground">
+                      {label}
+                    </span>
+                    <span className="block truncate text-xs text-muted-foreground">
+                      {description}
+                    </span>
+                  </span>
+                </Link>
+              ),
+            )}
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6">
-      {/* Greeting */}
+    <div className="mx-auto max-w-6xl space-y-6">
+      <Helmet>
+        <title>Dashboard | Xenith</title>
+      </Helmet>
+
       <motion.div
-        initial={{ opacity: 0, y: 10 }}
+        initial={{ opacity: 0, y: 6 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="mb-6"
+        className="rounded-2xl border border-border bg-card p-6"
       >
-        <h1 className="text-3xl font-semibold text-foreground">
-          {greeting}, {firstName}.
-        </h1>
-        <p className="text-sm text-muted-foreground mt-1 flex items-center gap-2">
-          <Calendar className="w-4 h-4" />
-          {new Date().toLocaleDateString("en-US", {
-            weekday: "long",
-            month: "long",
-            day: "numeric",
-          })}
-        </p>
-      </motion.div>
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-semibold text-foreground">
+              Welcome back, {firstName}.
+            </h1>
+            <p className="mt-1 flex items-center gap-2 text-sm text-muted-foreground">
+              <Calendar className="h-4 w-4" />
+              {new Date().toLocaleDateString("en-US", {
+                weekday: "long",
+                month: "long",
+                day: "numeric",
+              })}
+            </p>
+          </div>
 
-      {/* Widget Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {/* Intentions Widget */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-        >
-          <Link
-            to="/app/intentions"
-            className="block h-full p-5 bg-card border border-border rounded-2xl hover:border-foreground/30 transition-all group"
-          >
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <CheckSquare className="w-5 h-5 text-foreground" />
-                <h3 className="text-sm font-semibold text-foreground">
-                  Today's Intentions
-                </h3>
-              </div>
-              <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground group-hover:translate-x-1 transition-all" />
-            </div>
-            {todayIntentions.length > 0 ? (
-              <div className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <div className="text-3xl font-bold text-foreground">
-                    {completedIntentions.length}/{todayIntentions.length}
-                  </div>
-                  <div className="text-xs text-muted-foreground">completed</div>
-                </div>
-                <div className="h-2 bg-secondary rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-foreground rounded-full transition-all"
-                    style={{
-                      width: `${(completedIntentions.length / todayIntentions.length) * 100}%`,
-                    }}
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  {todayIntentions.slice(0, 3).map((intention) => (
-                    <div key={intention.id} className="flex items-center gap-2 text-xs">
-                      {intention.completed ? (
-                        <CheckCircle2 className="w-3.5 h-3.5 text-foreground" />
-                      ) : (
-                        <Circle className="w-3.5 h-3.5 text-muted-foreground" />
-                      )}
-                      <span
-                        className={cn(
-                          "truncate",
-                          intention.completed
-                            ? "line-through text-muted-foreground"
-                            : "text-foreground"
-                        )}
-                      >
-                        {intention.title}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <p className="text-sm text-muted-foreground">No intentions set for today</p>
-            )}
-          </Link>
-        </motion.div>
-
-        {/* Routines Widget */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15 }}
-        >
-          <Link
-            to="/app/routines"
-            className="block h-full p-5 bg-card border border-border rounded-2xl hover:border-foreground/30 transition-all group"
-          >
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <RotateCw className="w-5 h-5 text-foreground" />
-                <h3 className="text-sm font-semibold text-foreground">Routines</h3>
-              </div>
-              <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground group-hover:translate-x-1 transition-all" />
-            </div>
-            {routines.length > 0 ? (
-              <div className="space-y-3">
-                <div className="text-2xl font-bold text-foreground">
-                  {routines.length} {routines.length === 1 ? "routine" : "routines"}
-                </div>
-                <div className="space-y-1.5">
-                  {routines.slice(0, 3).map((routine) => {
-                    const items = routine.items ?? [];
-                    const completion = completions.find((c) => c.routine_id === routine.id);
-                    const completed = completion?.completed_item_ids?.length ?? 0;
-                    const total = items.length;
-                    return (
-                      <div key={routine.id} className="flex items-center justify-between text-xs">
-                        <span className="text-foreground truncate">{routine.name}</span>
-                        <span className="text-muted-foreground tabular-nums">
-                          {completed}/{total}
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            ) : (
-              <p className="text-sm text-muted-foreground">No routines created yet</p>
-            )}
-          </Link>
-        </motion.div>
-
-        {/* Focus Widget */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-        >
-          <Link
-            to="/app/focus"
-            className="block h-full p-5 bg-card border border-border rounded-2xl hover:border-foreground/30 transition-all group"
-          >
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <Flame className="w-5 h-5 text-orange-500" />
-                <h3 className="text-sm font-semibold text-foreground">Focus Time</h3>
-              </div>
-              <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground group-hover:translate-x-1 transition-all" />
-            </div>
-            <div className="space-y-2">
-              <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-bold text-foreground">
-                  {totalFocusMinutes}
-                </span>
-                <span className="text-xs text-muted-foreground">min this week</span>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                {recentSessions.length} {recentSessions.length === 1 ? "session" : "sessions"} completed
-              </p>
-            </div>
-          </Link>
-        </motion.div>
-
-        {/* Reflection Widget */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.25 }}
-        >
-          <Link
-            to="/app/reflection"
-            className="block h-full p-5 bg-card border border-border rounded-2xl hover:border-foreground/30 transition-all group"
-          >
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <BookOpen className="w-5 h-5 text-foreground" />
-                <h3 className="text-sm font-semibold text-foreground">Journal</h3>
-              </div>
-              <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground group-hover:translate-x-1 transition-all" />
-            </div>
-            {todayReflection ? (
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-foreground" />
-                  <span className="text-sm text-foreground">Reflection complete</span>
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  {reflections.length} {reflections.length === 1 ? "entry" : "entries"} this week
-                </p>
-              </div>
-            ) : (
-              <p className="text-sm text-muted-foreground">No reflection yet today</p>
-            )}
-          </Link>
-        </motion.div>
-
-        {/* Dimensions Widget */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-        >
-          <Link
-            to="/app/dimensions"
-            className="block h-full p-5 bg-card border border-border rounded-2xl hover:border-foreground/30 transition-all group"
-          >
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <Activity className="w-5 h-5 text-foreground" />
-                <h3 className="text-sm font-semibold text-foreground">Life Dimensions</h3>
-              </div>
-              <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground group-hover:translate-x-1 transition-all" />
-            </div>
-            {weekScore ? (
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-foreground" />
-                  <span className="text-sm text-foreground">Weekly check-in complete</span>
-                </div>
-              </div>
-            ) : (
-              <p className="text-sm text-muted-foreground">Complete your weekly check-in</p>
-            )}
-          </Link>
-        </motion.div>
-      </div>
-
-      {/* Quick Actions */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.35 }}
-      >
-        <h2 className="text-sm font-semibold text-foreground mb-3">Quick Actions</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          {QUICK_ACTIONS.map(({ label, description, path, icon: Icon }) => (
-            <Link
-              key={path}
-              to={path}
-              className="group flex items-center gap-3 p-4 bg-card border border-border rounded-xl hover:border-foreground/30 hover:bg-secondary/50 transition-all"
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              variant={editMode ? "default" : "outline"}
+              size="sm"
+              onClick={() => setEditMode((prev) => !prev)}
             >
-              <div className="w-9 h-9 rounded-lg bg-secondary group-hover:bg-foreground/10 flex items-center justify-center shrink-0 transition-colors">
-                <Icon className="w-4 h-4 text-foreground" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-foreground">{label}</p>
-                <p className="text-xs text-muted-foreground truncate">{description}</p>
-              </div>
-            </Link>
-          ))}
+              {editMode ? "Done" : "Customize widgets"}
+            </Button>
+            <Button variant="ghost" size="sm" onClick={resetPreferences}>
+              Reset layout
+            </Button>
+          </div>
+        </div>
+
+        <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-4">
+          <div className="rounded-xl border border-border bg-background px-3 py-2">
+            <p className="text-xs text-muted-foreground">Intentions</p>
+            <p className="text-sm font-semibold text-foreground">
+              {completedIntentions}/{todayIntentions.length || 0} done
+            </p>
+          </div>
+          <div className="rounded-xl border border-border bg-background px-3 py-2">
+            <p className="text-xs text-muted-foreground">Focus this week</p>
+            <p className="text-sm font-semibold text-foreground">
+              {totalFocusMinutes} minutes
+            </p>
+          </div>
+          <div className="rounded-xl border border-border bg-background px-3 py-2">
+            <p className="text-xs text-muted-foreground">Monthly net</p>
+            <p className="text-sm font-semibold text-foreground">
+              ${(monthlyFinance.income - monthlyFinance.expense).toFixed(2)}
+            </p>
+          </div>
+          <div className="rounded-xl border border-border bg-background px-3 py-2">
+            <p className="text-xs text-muted-foreground">Sleep avg (7d)</p>
+            <p className="text-sm font-semibold text-foreground">
+              {sleepAverage || "—"}h
+            </p>
+          </div>
         </div>
       </motion.div>
+
+      {editMode && hiddenWidgets.length > 0 && (
+        <div className="rounded-2xl border border-border bg-card p-4">
+          <p className="mb-3 text-sm font-medium text-foreground">
+            Add hidden widgets
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {hiddenWidgets.map((widget) => (
+              <Button
+                key={widget.id}
+                variant="secondary"
+                size="sm"
+                onClick={() => setWidgetVisible(widget.id, true)}
+              >
+                Add {widget.title}
+              </Button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div
+        className={cn(
+          "grid grid-cols-1 gap-4 lg:grid-cols-2",
+          preferencesLoading && "opacity-60",
+        )}
+      >
+        {visibleWidgets.map((widgetId) => {
+          const widget = widgetMap[widgetId];
+          const Icon = widget.icon;
+          const accent = WIDGET_ACCENTS[widget.id];
+
+          return (
+            <motion.div
+              key={widget.id}
+              layout
+              draggable={editMode}
+              onDragStart={() => setDraggingWidget(widget.id)}
+              onDragOver={(event) => {
+                if (!editMode) return;
+                event.preventDefault();
+              }}
+              onDrop={() => handleDrop(widget.id)}
+              className={cn(
+                "rounded-2xl border border-border bg-card p-5 transition-colors",
+                accent.hoverBorder,
+                editMode ? "cursor-move" : "cursor-default",
+              )}
+            >
+              <div
+                className={cn("mb-4 h-1 w-14 rounded-full", accent.accentBar)}
+              />
+              <div className="mb-4 flex items-start justify-between gap-3">
+                <div className="flex items-center gap-2">
+                  {editMode && (
+                    <GripVertical className="h-4 w-4 text-muted-foreground" />
+                  )}
+                  <span
+                    className={cn(
+                      "flex h-8 w-8 items-center justify-center rounded-lg",
+                      accent.iconBg,
+                    )}
+                  >
+                    <Icon className={cn("h-4 w-4", accent.iconText)} />
+                  </span>
+                  <div>
+                    <p className="text-sm font-semibold text-foreground">
+                      {widget.title}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {widget.description}
+                    </p>
+                  </div>
+                </div>
+
+                {editMode ? (
+                  <div className="flex items-center gap-1">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7"
+                      onClick={() => moveWidget(widget.id, "up")}
+                      aria-label={`Move ${widget.title} up`}
+                    >
+                      <MoveUp className="h-3.5 w-3.5" />
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7"
+                      onClick={() => moveWidget(widget.id, "down")}
+                      aria-label={`Move ${widget.title} down`}
+                    >
+                      <MoveDown className="h-3.5 w-3.5" />
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setWidgetVisible(widget.id, false)}
+                    >
+                      Hide
+                    </Button>
+                  </div>
+                ) : widget.href ? (
+                  <Link
+                    to={widget.href}
+                    className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+                  >
+                    Open
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </Link>
+                ) : null}
+              </div>
+
+              {renderWidgetBody(widget.id)}
+            </motion.div>
+          );
+        })}
+      </div>
     </div>
   );
 }

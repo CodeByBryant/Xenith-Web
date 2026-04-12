@@ -14,6 +14,9 @@ export interface Profile {
   notification_time?: string | null; // time (HH:MM:SS)
   timezone?: string | null; // default 'America/New_York'
   data_sharing_consent?: boolean | null; // default false
+  terms_accepted_at?: string | null; // timestamptz
+  privacy_accepted_at?: string | null; // timestamptz
+  legal_policy_version?: string | null;
   preferred_units?: string | null; // 'metric' | 'imperial'
   custom_meal_1?: string | null;
   custom_meal_2?: string | null;
@@ -36,7 +39,7 @@ export interface Profile {
   last_active_at?: string | null; // timestamptz
 }
 
-export interface Project {
+export interface LegacyProject {
   id: string; // uuid
   user_id: string; // uuid (fk -> auth.users.id)
   title?: string | null;
@@ -165,7 +168,7 @@ export interface Transaction {
   id: string;
   user_id: string;
   amount: number;
-  type: 'income' | 'expense';
+  type: "income" | "expense";
   category: string;
   description?: string | null;
   date: string;
@@ -218,7 +221,7 @@ export interface SupplementLog {
   created_at: string;
 }
 
-export type MealType = 
+export type MealType =
   | "breakfast"
   | "lunch"
   | "dinner"
@@ -241,6 +244,38 @@ export interface NutritionLog {
   fat: number;
   grams: number;
   created_at: string;
+  // Micronutrients (optional)
+  fiber?: number | null;
+  sugar?: number | null;
+  sodium?: number | null;
+  cholesterol?: number | null;
+  saturated_fat?: number | null;
+  polyunsaturated_fat?: number | null;
+  monounsaturated_fat?: number | null;
+  trans_fat?: number | null;
+  vitamin_a?: number | null;
+  vitamin_c?: number | null;
+  vitamin_d?: number | null;
+  vitamin_e?: number | null;
+  vitamin_k?: number | null;
+  thiamin?: number | null;
+  riboflavin?: number | null;
+  niacin?: number | null;
+  vitamin_b6?: number | null;
+  folate?: number | null;
+  vitamin_b12?: number | null;
+  calcium?: number | null;
+  iron?: number | null;
+  magnesium?: number | null;
+  phosphorus?: number | null;
+  potassium?: number | null;
+  zinc?: number | null;
+  selenium?: number | null;
+  // Serving information
+  brand?: string | null;
+  serving_size?: string | null;
+  serving_unit?: string | null;
+  fdcId?: number | null;
 }
 
 export interface FoodSearchResult {
@@ -249,6 +284,39 @@ export interface FoodSearchResult {
   protein_per_100g: number;
   carbs_per_100g: number;
   fat_per_100g: number;
+  // Micronutrients per 100g (optional)
+  fiber_per_100g?: number;
+  sugar_per_100g?: number;
+  sodium_per_100g?: number;
+  cholesterol_per_100g?: number;
+  saturated_fat_per_100g?: number;
+  polyunsaturated_fat_per_100g?: number;
+  monounsaturated_fat_per_100g?: number;
+  trans_fat_per_100g?: number;
+  vitamin_a_per_100g?: number;
+  vitamin_c_per_100g?: number;
+  vitamin_d_per_100g?: number;
+  vitamin_e_per_100g?: number;
+  vitamin_k_per_100g?: number;
+  thiamin_per_100g?: number;
+  riboflavin_per_100g?: number;
+  niacin_per_100g?: number;
+  vitamin_b6_per_100g?: number;
+  folate_per_100g?: number;
+  vitamin_b12_per_100g?: number;
+  calcium_per_100g?: number;
+  iron_per_100g?: number;
+  magnesium_per_100g?: number;
+  phosphorus_per_100g?: number;
+  potassium_per_100g?: number;
+  zinc_per_100g?: number;
+  selenium_per_100g?: number;
+  // Metadata
+  brand?: string;
+  serving_size?: string;
+  serving_unit?: string;
+  fdcId?: number;
+  data_type?: string; // "SR Legacy", "Branded", etc.
 }
 
 // ─── Routines & Intentions ───────────────────────────────────────────
@@ -399,7 +467,13 @@ export interface SleepLogInput {
 }
 
 // Thought Audit Types
-export type ThoughtType = 'anxiety' | 'distraction' | 'ego' | 'negative' | 'worry' | 'other';
+export type ThoughtType =
+  | "anxiety"
+  | "distraction"
+  | "ego"
+  | "negative"
+  | "worry"
+  | "other";
 
 export interface ThoughtLog {
   id: string;
@@ -457,4 +531,180 @@ export interface GratitudeEntry {
 export interface GratitudeInput {
   entry_date: string;
   items: string[];
+}
+
+// Win/Loss Journal Types
+export interface WinLossEntry {
+  id: string;
+  user_id: string;
+  entry_date: string;
+  entry_type: "win" | "loss";
+  title: string;
+  description: string | null;
+  lesson_learned: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface WinLossInput {
+  entry_date: string;
+  entry_type: "win" | "loss";
+  title: string;
+  description?: string;
+  lesson_learned?: string;
+}
+
+// Energy Log Types
+export interface EnergyLog {
+  id: string;
+  user_id: string;
+  log_date: string;
+  time_of_day: string;
+  energy_level: number;
+  task_type: string | null;
+  notes: string | null;
+  created_at: string;
+}
+
+export interface EnergyLogInput {
+  log_date: string;
+  time_of_day: string;
+  energy_level: number;
+  task_type?: string;
+  notes?: string;
+}
+
+// Recharge Activity Types
+export interface RechargeActivity {
+  id: string;
+  user_id: string;
+  activity_date: string;
+  activity_type:
+    | "meditation"
+    | "walk"
+    | "hobby"
+    | "social"
+    | "reading"
+    | "other";
+  duration_minutes: number | null;
+  feeling_before: number | null;
+  feeling_after: number | null;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface RechargeActivityInput {
+  activity_date: string;
+  activity_type:
+    | "meditation"
+    | "walk"
+    | "hobby"
+    | "social"
+    | "reading"
+    | "other";
+  duration_minutes?: number;
+  feeling_before?: number;
+  feeling_after?: number;
+  notes?: string;
+}
+
+// Decision Journal Types
+export interface DecisionJournal {
+  id: string;
+  user_id: string;
+  decision_date: string;
+  decision_title: string;
+  decision_description?: string;
+  options_considered?: string[];
+  chosen_option: string;
+  reasoning?: string;
+  expected_outcome?: string;
+  actual_outcome?: string;
+  outcome_date?: string;
+  lessons_learned?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface DecisionJournalInput {
+  decision_date: string;
+  decision_title: string;
+  decision_description?: string;
+  options_considered?: string[];
+  chosen_option: string;
+  reasoning?: string;
+  expected_outcome?: string;
+  actual_outcome?: string;
+  outcome_date?: string;
+  lessons_learned?: string;
+}
+
+// Values Check-In Types
+export interface ValuesCheckin {
+  id: string;
+  user_id: string;
+  checkin_date: string;
+  core_values: string[];
+  alignment_score: number;
+  aligned_actions?: string;
+  misaligned_actions?: string;
+  reflection?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ValuesCheckinInput {
+  checkin_date: string;
+  core_values: string[];
+  alignment_score: number;
+  aligned_actions?: string;
+  misaligned_actions?: string;
+  reflection?: string;
+}
+
+// Notion-like Projects Types
+export interface Project {
+  id: string;
+  user_id: string;
+  name: string;
+  icon?: string | null;
+  color?: string | null;
+  position: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Folder {
+  id: string;
+  user_id: string;
+  project_id: string;
+  parent_folder_id?: string | null;
+  name: string;
+  position: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Page {
+  id: string;
+  user_id: string;
+  project_id: string;
+  folder_id?: string | null;
+  parent_page_id?: string | null;
+  title: string;
+  content: Record<string, unknown>; // Tiptap JSON content
+  widgets?: Array<{ id: string; type: string }>; // Widget configuration
+  position: number;
+  is_favorite: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface DashboardPreferences {
+  user_id: string;
+  widget_order: string[];
+  hidden_widgets: string[];
+  created_at: string;
+  updated_at: string;
 }

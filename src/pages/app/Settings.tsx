@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth";
@@ -95,6 +96,9 @@ export default function Settings() {
 
   return (
     <div className="max-w-lg mx-auto">
+      <Helmet>
+        <title>Settings | Xenith</title>
+      </Helmet>
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}

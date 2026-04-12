@@ -16,15 +16,21 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { toast } from "sonner";
-import { useNutrition, searchFood, lookupBarcode } from "@/hooks/use-nutrition";
+import {
+  useNutrition,
+  searchFood,
+  lookupBarcode,
+  FoodSearchError,
+} from "@/hooks/use-nutrition";
 import { useProfile } from "@/hooks/use-profile";
 import type { FoodSearchResult, MealType } from "@/hooks/use-nutrition";
+import type { Profile } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
 // ─── helper to get all meal categories ─────────────────────────────────
-function getMealCategories(profile: any): { id: MealType; label: string }[] {
+function getMealCategories(profile: Profile | null): { id: MealType; label: string }[] {
   const base: { id: MealType; label: string }[] = [
     { id: "breakfast", label: "Breakfast" },
     { id: "lunch", label: "Lunch" },
@@ -70,6 +76,32 @@ function scale(food: FoodSearchResult, grams: number) {
     protein: +(food.protein_per_100g * f).toFixed(1),
     carbs: +(food.carbs_per_100g * f).toFixed(1),
     fat: +(food.fat_per_100g * f).toFixed(1),
+    fiber: food.fiber_per_100g ? +(food.fiber_per_100g * f).toFixed(1) : undefined,
+    sugar: food.sugar_per_100g ? +(food.sugar_per_100g * f).toFixed(1) : undefined,
+    sodium: food.sodium_per_100g ? +(food.sodium_per_100g * f).toFixed(1) : undefined,
+    cholesterol: food.cholesterol_per_100g ? +(food.cholesterol_per_100g * f).toFixed(1) : undefined,
+    saturated_fat: food.saturated_fat_per_100g ? +(food.saturated_fat_per_100g * f).toFixed(1) : undefined,
+    polyunsaturated_fat: food.polyunsaturated_fat_per_100g ? +(food.polyunsaturated_fat_per_100g * f).toFixed(1) : undefined,
+    monounsaturated_fat: food.monounsaturated_fat_per_100g ? +(food.monounsaturated_fat_per_100g * f).toFixed(1) : undefined,
+    trans_fat: food.trans_fat_per_100g ? +(food.trans_fat_per_100g * f).toFixed(1) : undefined,
+    vitamin_a: food.vitamin_a_per_100g ? +(food.vitamin_a_per_100g * f).toFixed(1) : undefined,
+    vitamin_c: food.vitamin_c_per_100g ? +(food.vitamin_c_per_100g * f).toFixed(1) : undefined,
+    vitamin_d: food.vitamin_d_per_100g ? +(food.vitamin_d_per_100g * f).toFixed(1) : undefined,
+    vitamin_e: food.vitamin_e_per_100g ? +(food.vitamin_e_per_100g * f).toFixed(2) : undefined,
+    vitamin_k: food.vitamin_k_per_100g ? +(food.vitamin_k_per_100g * f).toFixed(1) : undefined,
+    thiamin: food.thiamin_per_100g ? +(food.thiamin_per_100g * f).toFixed(2) : undefined,
+    riboflavin: food.riboflavin_per_100g ? +(food.riboflavin_per_100g * f).toFixed(2) : undefined,
+    niacin: food.niacin_per_100g ? +(food.niacin_per_100g * f).toFixed(2) : undefined,
+    vitamin_b6: food.vitamin_b6_per_100g ? +(food.vitamin_b6_per_100g * f).toFixed(2) : undefined,
+    folate: food.folate_per_100g ? +(food.folate_per_100g * f).toFixed(1) : undefined,
+    vitamin_b12: food.vitamin_b12_per_100g ? +(food.vitamin_b12_per_100g * f).toFixed(2) : undefined,
+    calcium: food.calcium_per_100g ? +(food.calcium_per_100g * f).toFixed(1) : undefined,
+    iron: food.iron_per_100g ? +(food.iron_per_100g * f).toFixed(2) : undefined,
+    magnesium: food.magnesium_per_100g ? +(food.magnesium_per_100g * f).toFixed(1) : undefined,
+    phosphorus: food.phosphorus_per_100g ? +(food.phosphorus_per_100g * f).toFixed(1) : undefined,
+    potassium: food.potassium_per_100g ? +(food.potassium_per_100g * f).toFixed(1) : undefined,
+    zinc: food.zinc_per_100g ? +(food.zinc_per_100g * f).toFixed(2) : undefined,
+    selenium: food.selenium_per_100g ? +(food.selenium_per_100g * f).toFixed(1) : undefined,
   };
 }
 
@@ -207,8 +239,8 @@ function CategorySettingsDialog({
 }: {
   isOpen: boolean;
   onClose: () => void;
-  profile: any;
-  updateProfile: (updates: any) => Promise<any>;
+  profile: Profile | null;
+  updateProfile: (updates: Partial<Profile>) => Promise<Profile>;
   isUpdating: boolean;
 }) {
   const [custom1, setCustom1] = useState(profile?.custom_meal_1 || "");
@@ -376,15 +408,16 @@ export default function CalorieTracker() {
         const items = await searchFood(query);
         if (active) {
           setResults(items || []);
-          if (items.length === 0) {
-            console.log('No results found for query:', query);
-          }
         }
       } catch (error) {
         console.error('Food search error:', error);
         if (active) {
           setResults([]);
-          toast.error('Failed to search foods. Please try again.');
+          if (error instanceof FoodSearchError && error.code === 429) {
+            toast.error("Food search is rate-limited right now. Please try again in a minute.");
+          } else {
+            toast.error('Failed to search foods. Please try again.');
+          }
         }
       } finally {
         if (active) {
@@ -427,6 +460,10 @@ export default function CalorieTracker() {
         food_name: selected.name,
         grams,
         ...macros,
+        brand: selected.brand || undefined,
+        serving_size: selected.serving_size || undefined,
+        serving_unit: selected.serving_unit || undefined,
+        fdcId: selected.fdcId || undefined,
       });
       setSelected(null);
       setQuery("");
@@ -553,6 +590,39 @@ export default function CalorieTracker() {
         </div>
       </div>
 
+      {/* Micronutrients section */}
+      <div className="bg-card border border-border rounded-2xl p-5">
+        <h3 className="text-sm font-semibold text-foreground mb-3">Key Micronutrients</h3>
+        <div className="grid grid-cols-2 gap-x-6 gap-y-3">
+          {[
+            { label: 'Fiber', value: totals.fiber, unit: 'g', target: 25, color: 'text-green-500' },
+            { label: 'Sugar', value: totals.sugar, unit: 'g', target: 50, color: 'text-yellow-500' },
+            { label: 'Sodium', value: totals.sodium, unit: 'mg', target: 2300, color: 'text-orange-500' },
+            { label: 'Cholesterol', value: totals.cholesterol, unit: 'mg', target: 300, color: 'text-red-500' },
+            { label: 'Sat. Fat', value: totals.saturated_fat, unit: 'g', target: 20, color: 'text-rose-500' },
+            { label: 'Vitamin C', value: totals.vitamin_c, unit: 'mg', target: 90, color: 'text-cyan-500' },
+            { label: 'Calcium', value: totals.calcium, unit: 'mg', target: 1000, color: 'text-blue-500' },
+            { label: 'Iron', value: totals.iron, unit: 'mg', target: 18, color: 'text-purple-500' },
+            { label: 'Potassium', value: totals.potassium, unit: 'mg', target: 3500, color: 'text-indigo-500' },
+          ].map(({ label, value, unit, target, color }) => (
+            <div key={label} className="flex items-center justify-between">
+              <span className="text-xs text-muted-foreground">{label}</span>
+              <div className="flex items-baseline gap-1">
+                <span className={cn("text-xs font-semibold tabular-nums", color)}>
+                  {value > 0 ? value.toLocaleString() : '0'}
+                </span>
+                <span className="text-[10px] text-muted-foreground">
+                  / {target}{unit}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+        <p className="text-xs text-muted-foreground mt-3 text-center">
+          Daily value targets are approximate. Consult your healthcare provider for personalized recommendations.
+        </p>
+      </div>
+
       {/* Search + scan */}
       <div className="space-y-2">
         <div className="relative">
@@ -606,14 +676,28 @@ export default function CalorieTracker() {
                 <button
                   key={i}
                   onClick={() => handleSelectFood(food)}
-                  className="w-full flex items-center justify-between px-4 py-2.5 hover:bg-secondary text-left transition-colors"
+                  className="w-full flex flex-col px-4 py-2.5 hover:bg-secondary text-left transition-colors gap-0.5"
                 >
-                  <span className="text-sm text-foreground truncate flex-1 mr-3">
-                    {food.name}
-                  </span>
-                  <span className="text-xs text-muted-foreground shrink-0">
-                    {food.calories_per_100g} kcal/100g
-                  </span>
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm text-foreground truncate">
+                        {food.name}
+                      </p>
+                      {food.brand && (
+                        <p className="text-xs text-muted-foreground truncate">
+                          {food.brand}
+                        </p>
+                      )}
+                    </div>
+                    <span className="text-xs text-muted-foreground shrink-0">
+                      {food.calories_per_100g} cal
+                    </span>
+                  </div>
+                  {food.serving_size && food.serving_unit && (
+                    <p className="text-xs text-muted-foreground">
+                      Serving: {food.serving_size}{food.serving_unit}
+                    </p>
+                  )}
                 </button>
               ))}
             </motion.div>

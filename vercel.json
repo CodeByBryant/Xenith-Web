@@ -2,8 +2,20 @@
   "framework": "vite",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }, { "source": "/api/(.*)", "destination": "/api/$1" }],
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/$1" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ],
   "headers": [
+    {
+      "source": "/api/food",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, s-maxage=600, stale-while-revalidate=120"
+        }
+      ]
+    },
     {
       "source": "/assets/(.*)",
       "headers": [

@@ -153,7 +153,7 @@ export default function HealthTools() {
         transition={{ delay: 0.4 }}
         className="text-xs text-muted-foreground text-center mt-8 leading-relaxed"
       >
-        Pro tip — use these tools to inform your weekly Health dimension score.
+        Use these tools to inform your weekly Health dimension score.
         Consistent logging here should reflect in a higher self-rating.
       </motion.p>
     </div>

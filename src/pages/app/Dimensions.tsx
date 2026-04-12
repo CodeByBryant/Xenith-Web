@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { toast } from "sonner";
 import {
   ChevronLeft,
@@ -136,6 +137,9 @@ export default function Dimensions() {
 
   return (
     <div className="max-w-lg mx-auto">
+      <Helmet>
+        <title>Life Dimensions | Xenith</title>
+      </Helmet>
       {/* Week nav */}
       <div className="flex items-center justify-between mb-6">
         <button
@@ -247,6 +251,33 @@ export default function Dimensions() {
                   className="inline-flex items-center gap-1 text-[11px] text-purple-500 hover:text-purple-400 transition-colors mt-1.5 font-medium"
                 >
                   Mind Tools →
+                </Link>
+              )}
+              {/* Relationships tools link */}
+              {dim === "Relationships" && (
+                <Link
+                  to="/app/dimensions/relationships"
+                  className="inline-flex items-center gap-1 text-[11px] text-pink-500 hover:text-pink-400 transition-colors mt-1.5 font-medium"
+                >
+                  Relationship Tools →
+                </Link>
+              )}
+              {/* Work tools link */}
+              {dim === "Work" && (
+                <Link
+                  to="/app/dimensions/work"
+                  className="inline-flex items-center gap-1 text-[11px] text-blue-500 hover:text-blue-400 transition-colors mt-1.5 font-medium"
+                >
+                  Work Tools →
+                </Link>
+              )}
+              {/* Purpose tools link */}
+              {dim === "Purpose" && (
+                <Link
+                  to="/app/dimensions/purpose"
+                  className="inline-flex items-center gap-1 text-[11px] text-orange-500 hover:text-orange-400 transition-colors mt-1.5 font-medium"
+                >
+                  Purpose Tools →
                 </Link>
               )}
             </div>
