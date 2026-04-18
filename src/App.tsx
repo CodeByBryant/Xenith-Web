@@ -1,6 +1,7 @@
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import * as Sentry from "@sentry/react";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { RouteError } from "@/components/RouteError";
 import { lazy, Suspense } from "react";
@@ -86,7 +87,10 @@ const AppLoader = (
   </div>
 );
 
-const router = createBrowserRouter([
+const sentryCreateBrowserRouter =
+  Sentry.wrapCreateBrowserRouterV6(createBrowserRouter);
+
+const router = sentryCreateBrowserRouter([
   { path: "/", element: <Index />, errorElement: <RouteError /> },
   { path: "/privacy", element: <Privacy />, errorElement: <RouteError /> },
   { path: "/terms", element: <Terms />, errorElement: <RouteError /> },
