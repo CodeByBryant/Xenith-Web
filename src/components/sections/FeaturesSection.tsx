@@ -46,7 +46,7 @@ const features: Feature[] = [
     icon: Flag,
     title: "Growth Path",
     description:
-      "Build core skills: Discipline, Focus, Consistency, Endurance, Insight, Resolve.",
+      "Build core skills over the 8 life dimensions. Progress is the point.",
     accent: "from-red-500 to-red-600",
   },
   {

@@ -16,7 +16,7 @@ export const PreviewSection = () => {
     <section
       ref={sectionRef}
       id="preview"
-      className="py-32 md:py-48 px-6 relative overflow-hidden"
+      className="py-32 md:py-48 px-4 sm:px-6 relative overflow-hidden"
     >
       {/* Animated radial glow */}
       <motion.div

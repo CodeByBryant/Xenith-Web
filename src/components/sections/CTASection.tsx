@@ -1,12 +1,8 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import { WaitlistForm } from "../WaitlistForm";
-import { ArrowUpRight } from "lucide-react";
-import { useWaitlistCount } from "@/hooks/use-waitlist-count";
 
 export const CTASection = () => {
-  const { count, loading } = useWaitlistCount();
-  const displayCount = count !== null ? count.toLocaleString() : "—";
   const sectionRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -107,17 +103,9 @@ export const CTASection = () => {
             transition={{ delay: 0.8 }}
             className="flex flex-wrap items-center justify-center gap-6 text-sm text-background/40"
           >
-            <motion.div
-              whileHover={{ x: 3 }}
-              className="flex items-center gap-2"
-            >
-              <ArrowUpRight className="w-4 h-4" />
-              <span className="tabular-nums">
-                {loading ? "…" : displayCount} on the list
-              </span>
-            </motion.div>
-            <div className="w-1 h-1 rounded-full bg-background/20" />
             <span>Free during beta</span>
+            <div className="w-1 h-1 rounded-full bg-background/20" />
+            <span>No credit card</span>
             <div className="w-1 h-1 rounded-full bg-background/20" />
             <span>Cancel anytime</span>
           </motion.div>

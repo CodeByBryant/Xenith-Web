@@ -41,8 +41,7 @@ export const PhoneMockup = ({ children }: PhoneMockupProps) => {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.8 }}
-      className="relative mx-auto"
-      style={{ width: "375px" }}
+      className="relative mx-auto w-full max-w-[375px]"
     >
       {/* iPhone 15 Pro Frame */}
       <div className="relative rounded-[55px] bg-demo-surface p-[12px] shadow-2xl">

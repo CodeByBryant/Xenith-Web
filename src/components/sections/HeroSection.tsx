@@ -1,11 +1,8 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import { WaitlistForm } from "../WaitlistForm";
-import { useWaitlistCount } from "@/hooks/use-waitlist-count";
 
 export const HeroSection = () => {
-  const { count, loading } = useWaitlistCount();
-  const displayCount = count !== null ? count.toLocaleString() : "—";
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -20,7 +17,7 @@ export const HeroSection = () => {
   return (
     <section
       ref={containerRef}
-      className="min-h-[120vh] flex items-start pt-32 md:pt-0 md:items-center justify-center px-6 relative overflow-hidden"
+      className="min-h-[120vh] flex items-start pt-32 md:pt-0 md:items-center justify-center px-4 sm:px-6 relative overflow-hidden"
     >
       {/* Animated gradient orbs */}
       <motion.div
@@ -143,7 +140,7 @@ export const HeroSection = () => {
           </div>
 
           {/* Right side - CTA Block */}
-          <div className="lg:col-span-5">
+          <div className="lg:col-span-5 min-w-0">
             <motion.div
               initial={{ opacity: 0, y: 40, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -153,7 +150,7 @@ export const HeroSection = () => {
                 type: "spring",
                 stiffness: 80,
               }}
-              className="relative overflow-hidden"
+              className="relative overflow-hidden w-full"
             >
               {/* Animated decorative border frame */}
               <motion.div
@@ -169,7 +166,7 @@ export const HeroSection = () => {
                 className="absolute -inset-8 border border-foreground/5 rounded-3xl hidden sm:block"
               />
 
-              <div className="bg-card/60 backdrop-blur-md border border-border/80 rounded-2xl p-8 relative shadow-2xl shadow-foreground/5 max-w-sm mx-auto w-full">
+              <div className="bg-card/60 backdrop-blur-md border border-border/80 rounded-2xl p-5 sm:p-8 relative shadow-2xl shadow-foreground/5 max-w-[22rem] sm:max-w-sm mx-auto w-full">
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -184,16 +181,8 @@ export const HeroSection = () => {
                 </h3>
 
                 <p className="text-muted-foreground text-sm mb-6">
-                  Join{" "}
-                  <motion.span
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 1.1 }}
-                    className="text-foreground font-medium tabular-nums"
-                  >
-                    {loading ? "…" : displayCount}
-                  </motion.span>{" "}
-                  ambitious students and professionals already on the waitlist.
+                  Join ambitious students and professionals getting early access
+                  to Xenith.
                 </p>
 
                 <WaitlistForm variant="hero" />

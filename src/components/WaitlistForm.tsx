@@ -41,7 +41,8 @@ export const WaitlistForm = ({ variant = "hero" }: WaitlistFormProps) => {
 
   const validateEmail = (email: string) => {
     if (email.length > 254) return false;
-    const regex = /^[a-zA-Z0-9_%+\-]+(\.[a-zA-Z0-9_%+\-]+)*@[a-zA-Z0-9\-]+(\.[a-zA-Z0-9\-]+)*\.[a-zA-Z]{2,}$/;
+    const regex =
+      /^[a-zA-Z0-9_%+\-]+(\.[a-zA-Z0-9_%+\-]+)*@[a-zA-Z0-9\-]+(\.[a-zA-Z0-9\-]+)*\.[a-zA-Z]{2,}$/;
     return regex.test(email);
   };
 
@@ -142,7 +143,7 @@ export const WaitlistForm = ({ variant = "hero" }: WaitlistFormProps) => {
         <motion.button
           type="submit"
           disabled={status === "loading" || status === "success"}
-          className={`px-6 py-4 font-medium rounded-xl flex items-center justify-center gap-2 transition-all duration-200 disabled:opacity-50 ${
+          className={`w-full sm:w-auto px-6 py-4 font-medium rounded-xl flex items-center justify-center gap-2 transition-all duration-200 disabled:opacity-50 ${
             isFooter
               ? "bg-background text-foreground hover:bg-background/90"
               : "bg-foreground text-background hover:opacity-90"
