@@ -5,6 +5,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth";
 import { useProfile } from "@/hooks/use-profile";
+import { FeedbackPopup } from "@/components/FeedbackPopup";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -185,7 +186,7 @@ export const Header = () => {
                     </DropdownMenuContent>
                   </DropdownMenu>
                 ) : (
-                  /* ── Unauthenticated: Sign In + Start Free ── */
+                     /* ── Unauthenticated: Sign In + Start Free Beta ── */
                   <>
                     <motion.div
                       whileHover={{ scale: 1.02 }}
@@ -205,7 +206,7 @@ export const Header = () => {
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                     >
-                      Start Free
+                       Start Free Beta
                     </motion.a>
                   </>
                 )}
@@ -331,7 +332,7 @@ export const Header = () => {
                         transition={{ delay: 0.2 }}
                         className="mt-2 px-4 py-3 bg-foreground text-background text-sm font-medium rounded-xl text-center"
                       >
-                        Start Free
+                         Start Free Beta
                       </motion.a>
                     </>
                   )}
@@ -341,6 +342,7 @@ export const Header = () => {
           )}
         </AnimatePresence>
       </motion.header>
+      <FeedbackPopup />
     </>
   );
 };

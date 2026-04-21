@@ -16,7 +16,7 @@ const Index = () => {
         <title>Xenith - Discipline | Intention | Execution</title>
         <meta
           name="description"
-          content="Xenith is a live execution platform for students and professionals. Plan intentions, run focus sessions, manage projects, and track growth across every life dimension."
+          content="Xenith is a completely free beta execution platform for students and professionals. Plan intentions, run focus sessions, manage projects, and track growth across every life dimension."
         />
         <link rel="canonical" href="https://xenith.life/" />
       </Helmet>

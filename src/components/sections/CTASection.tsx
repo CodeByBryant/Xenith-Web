@@ -48,7 +48,7 @@ export const CTASection = () => {
             className="inline-flex items-center gap-2 px-4 py-2 border border-background/20 rounded-full text-sm text-background/60 mb-8"
           >
             <Sparkles className="w-4 h-4" />
-            <span>Now live for everyone</span>
+            <span>Completely free beta</span>
           </motion.div>
 
           <h2 className="text-4xl md:text-5xl lg:text-7xl font-serif font-medium leading-[1.1] mb-6">
@@ -79,8 +79,8 @@ export const CTASection = () => {
             transition={{ delay: 0.5 }}
             className="text-lg md:text-xl text-background/60 max-w-xl mx-auto mb-12"
           >
-            Create your account and start building momentum today. No waitlist,
-            no invite code, no friction.
+            Create your account and start building momentum today. Free during
+            beta while we stress test and improve with your feedback.
           </motion.p>
 
           <motion.div
@@ -94,7 +94,7 @@ export const CTASection = () => {
               to="/signin"
               className="inline-flex items-center gap-2 rounded-xl bg-background px-6 py-3 text-sm font-medium text-foreground transition-opacity hover:opacity-90"
             >
-              Start free now
+               Start free beta now
               <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
@@ -116,7 +116,7 @@ export const CTASection = () => {
             <div className="w-1 h-1 rounded-full bg-background/20" />
             <span>Start in under 60 seconds</span>
             <div className="w-1 h-1 rounded-full bg-background/20" />
-            <span>Cancel anytime</span>
+             <span>Built with your feedback</span>
           </motion.div>
         </motion.div>
       </div>

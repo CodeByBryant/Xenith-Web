@@ -36,7 +36,7 @@ export const HeroSection = () => {
             className="mb-8 inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-xs uppercase tracking-[0.3em] text-muted-foreground"
           >
             <Sparkles className="h-3.5 w-3.5" />
-            Live Product
+            Free Beta Live
           </motion.div>
 
           <motion.h1
@@ -56,8 +56,9 @@ export const HeroSection = () => {
             transition={{ delay: 0.2, duration: 0.6 }}
             className="mt-8 max-w-xl text-lg text-muted-foreground md:text-xl"
           >
-            Xenith is now open. Plan intentions, run focused sessions, track
-            health and recovery, and manage projects in one command center.
+            Xenith is completely free during beta. Stress test your system:
+            plan intentions, run focused sessions, track recovery, and manage
+            projects in one command center.
           </motion.p>
 
           <motion.div
@@ -70,7 +71,7 @@ export const HeroSection = () => {
               to="/signin"
               className="inline-flex items-center gap-2 rounded-xl bg-foreground px-6 py-3 text-sm font-medium text-background transition-opacity hover:opacity-90"
             >
-              Start free now
+              Start free beta now
               <ArrowRight className="h-4 w-4" />
             </Link>
             <a
@@ -91,7 +92,7 @@ export const HeroSection = () => {
         >
           <div className="rounded-2xl border border-border bg-card/80 p-6 backdrop-blur">
             <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
-              What you can do today
+               What you can test today
             </p>
             <div className="mt-5 space-y-3">
               {[
