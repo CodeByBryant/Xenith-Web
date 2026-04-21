@@ -56,8 +56,7 @@ export const HeroSection = () => {
             transition={{ delay: 0.2, duration: 0.6 }}
             className="mt-8 max-w-xl text-lg text-muted-foreground md:text-xl"
           >
-            Xenith is completely free during beta. Stress test your system:
-            plan intentions, run focused sessions, track recovery, and manage
+            Xenith is completely free during beta. Plan intentions, run focused sessions, track recovery, and manage
             projects in one command center.
           </motion.p>
 
@@ -71,7 +70,7 @@ export const HeroSection = () => {
               to="/signin"
               className="inline-flex items-center gap-2 rounded-xl bg-foreground px-6 py-3 text-sm font-medium text-background transition-opacity hover:opacity-90"
             >
-              Start free beta now
+              Start free now
               <ArrowRight className="h-4 w-4" />
             </Link>
             <a
@@ -92,7 +91,7 @@ export const HeroSection = () => {
         >
           <div className="rounded-2xl border border-border bg-card/80 p-6 backdrop-blur">
             <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
-               What you can test today
+               What you can build today
             </p>
             <div className="mt-5 space-y-3">
               {[
