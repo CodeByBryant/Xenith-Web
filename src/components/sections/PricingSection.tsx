@@ -49,7 +49,7 @@ export const PricingSection = () => {
             <span className="text-muted-foreground">during beta.</span>
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            We’re stress testing Xenith before monetization. Every core feature
+            We’re stress testing Xenith before monetization. Every feature
             is currently unlocked at no cost.
           </p>
         </motion.div>
