@@ -6,3 +6,4 @@ export const TERMS_URL = "https://xenith.life/terms";
 
 export const PRIVACY_EMAIL = "privacy@xenith.life";
 export const LEGAL_EMAIL = "legal@xenith.life";
+export const SUPPORT_EMAIL = "support@xenith.life";

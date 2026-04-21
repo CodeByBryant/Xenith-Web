@@ -53,7 +53,7 @@ describe("Landing conversion", () => {
       </MemoryRouter>,
     );
 
-    const startLink = screen.getByRole("link", { name: /start free now/i });
+    const startLink = screen.getByRole("link", { name: /start free beta now/i });
     expect(startLink).toHaveAttribute("href", "/signin");
     expect(screen.queryByText(/waitlist/i)).not.toBeInTheDocument();
   });
@@ -65,26 +65,27 @@ describe("Landing conversion", () => {
       </MemoryRouter>,
     );
 
-    const startLink = screen.getByRole("link", { name: /start free now/i });
+    const startLink = screen.getByRole("link", {
+      name: /start free beta now/i,
+    });
     expect(startLink).toHaveAttribute("href", "/signin");
     expect(screen.queryByText(/join waitlist/i)).not.toBeInTheDocument();
   });
 
-  it("routes pricing CTAs directly to signup", () => {
+  it("routes free-beta pricing CTA directly to signup", () => {
     render(
       <MemoryRouter>
         <PricingSection />
       </MemoryRouter>,
     );
 
-    expect(screen.getByRole("link", { name: /start free/i })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: /start free beta/i })).toHaveAttribute(
       "href",
-      "/signin?plan=free",
+      "/signin",
     );
 
-    expect(screen.getByRole("link", { name: /start pro/i })).toHaveAttribute(
-      "href",
-      "/signin?plan=pro",
-    );
+    expect(
+      screen.queryByRole("link", { name: /start pro/i }),
+    ).not.toBeInTheDocument();
   });
 });

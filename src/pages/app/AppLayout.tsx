@@ -10,6 +10,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { Separator } from "@/components/ui/separator";
 import { NAV_ITEMS } from "@/lib/nav-items";
 import { FocusTimerProvider } from "@/context/FocusTimerContext";
+import { FeedbackPopup } from "@/components/FeedbackPopup";
 
 // ─── Sidebar content (shared between desktop + mobile drawer) ────────
 function SidebarContent({ onNavClick }: { onNavClick?: () => void }) {
@@ -247,6 +248,7 @@ export default function AppLayout() {
             <Outlet />
           </main>
         </div>
+        <FeedbackPopup />
       </FocusTimerProvider>
     </div>
   );
