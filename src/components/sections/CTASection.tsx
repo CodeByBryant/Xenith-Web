@@ -79,8 +79,7 @@ export const CTASection = () => {
             transition={{ delay: 0.5 }}
             className="text-lg md:text-xl text-background/60 max-w-xl mx-auto mb-12"
           >
-            Create your account and start building momentum today. Free during
-            beta while we stress test and improve with your feedback.
+            Create your account and start building momentum today.
           </motion.p>
 
           <motion.div
@@ -94,7 +93,7 @@ export const CTASection = () => {
               to="/signin"
               className="inline-flex items-center gap-2 rounded-xl bg-background px-6 py-3 text-sm font-medium text-foreground transition-opacity hover:opacity-90"
             >
-               Start free beta now
+               Start free now
               <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
